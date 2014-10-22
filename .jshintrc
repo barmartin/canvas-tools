@@ -1,0 +1,19 @@
+{
+  "boss": true,
+  "curly": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "immed": true,
+  "latedef": "nofunc",
+  "newcap": false,
+  "noarg": true,
+  "quotmark": "single",
+  "undef": true,
+  "unused": "vars",
+  "asi": true,
+
+  "node": true,
+  
+  "curly": true,
+  "indent": 2
+}
