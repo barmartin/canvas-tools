@@ -8,6 +8,7 @@ define(function (require) {
 
   var _globalInit = function() {
     window.cKit = new cKit();
+    window.initInterface();
   };
 
   if (document.readyState === 'complete') {

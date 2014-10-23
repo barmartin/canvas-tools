@@ -137,7 +137,7 @@ define(function(require) {
       if ( index === 0 && kit.toggleCurveColor ) {
         kit.context.strokeStyle = '#00ff00';
       }
-      kit.context.lineWidth = 2;
+      kit.context.lineWidth = 1;
       kit.context.beginPath();
       if(flower.rotation === 0) {
         kit.context.moveTo( pedal[0].x, pedal[0].y );

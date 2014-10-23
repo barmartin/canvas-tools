@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Bezier Kaleidoscope</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Bezier Kaleidoscope">
+        <meta name="author" content="Barry Martin">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />  
+        <link rel="stylesheet" type="text/css" href="css/dhtmlxcolorpicker.css" />
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+        <!--link rel="stylesheet/less" type="text/css" href="css/preboot.less">
+        <link rel="stylesheet/less" type="text/css" href="css/styles.less"-->
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-select.css"/>
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+         <script src="../assets/js/html5shiv.js"></script>
+         <![endif]-->
+        <!-- Fav and touch icons -->
+        <!--link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+            <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+                <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+                        <link rel="shortcut icon" href="../assets/ico/favicon.png"-->
+    </head>
+    <body>
+        <div class="container">
+            <div class="corner">
+                <div id="bodybg-color" class="cHolder"></div>
+                <div id="bodybg-color-cp" class="cp"></div>
+            </div>
+            <div id="cpc-bodybg" class="cpc" style="display:none">
+            </div>  
+            <!--div class="container" id="app">
+            </div-->      
+
+            <div style="color: black" class="jumbotron">
+                <span>Canvas Testing Console : </span>
+                <span id="console"></span>
+            </div>
+            <div id="content" class="clearfix">
+                <div class="col canvasContainer">
+                    <canvas id="myCanvas" width="640" height="640"></canvas>
+                </div>
+                <div class="interface">
+                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a href="#shape" data-toggle="tab">Shape/Color</a></li>
+                        <!--li class=""><a href="#animation" data-toggle="tab">Animation</a></li>
+                        <li class=""><a href="#data-tab" data-toggle="tab">Save/Load</a></li-->
+                    </ul>
+                    <div id="tab-content" class="tab-content">
+                        <div class="tab-pane active" id="shape">
+                            <form name="canvasProperties" action="">
+                                <div class="row">
+                                    <div class="col tiny-lab tall-row">Object</div>
+                                    <div class="col input-group">
+                                        <div class="btn-toolbar" role="toolbar">
+                                            <div class="btn-group" id="object_" data-toggle="buttons">
+                                                <label class="btn btn-default active">
+                                                    <input type="radio" name="object_" data="0" id="object_1"> 1
+                                                </label>
+                                                <label class="btn btn-default disabled">
+                                                    <input type="radio" name="object_" data="1" id="object_2"> 2
+                                                </label>
+                                                <label class="btn btn-default disabled">
+                                                    <input type="radio" name="object_" data="2" id="object_3"> 3
+                                                </label>
+                                                <label class="btn btn-default disabled">
+                                                    <input type="radio" name="object_" data="3" id="object_4"> 4
+                                                </label>
+                                            </div>
+                                            <div class="btn-group" class="oGroup" data-toggle="buttons">
+                                                <label class="btn btn-default">
+                                                    <input type="radio" name="object_" class="objectPlus"> +
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col lab">
+                                        Pedal Count&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <input type="text" name="k" id="k" size="1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col lab wrow">
+                                        Background Color&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <div id="bg-color" class="cHolder"></div>
+                                        <div id="bg-color-cp" class="cp"></div>
+                                    </div>
+                                    <div class="col" style="margin:11px 0 0 13px;">
+                                        Alpha: <input id="bgAlpha" name="bgAlpha" value="1.00" size="1"></input>
+                                    </div>
+                                </div>
+                                <div id="cpc-bg" class="row cpc" style="display:none">
+                                </div>  
+                                <div class="row">                            
+                                    <div class="col lab wrow">
+                                        Line Color&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <div id="line-color" class="cHolder"></div>
+                                        <div id="line-color-cp" class="cp"></div>
+                                    </div>                            
+                                    
+                                </div> 
+                                <div id="cpc-line" class="row cpc" style="display:none">
+                                </div>  
+                                
+                                <div class="row">
+                                    <div class="col lab">
+                                        Edit Shape&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <input type="checkbox" checked name="shapeEdit" id="shapeEdit">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col lab">
+                                        Highlight Edit Curve&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <input type="checkbox" name="shapeColor" id="shapeColor">
+                                    </div>
+                                </div>
+                                <div class="row last">
+                                    <!--div class="btn btn-default" id="linkButton">Get Link</div-->
+                                    <div class="btn btn-default" id="imageButton">Get Image</div>
+                                </div>                        
+                            </form>
+                        </div> <!-- Object Pane -->
+
+ 
+                    </div>
+                </div> <!-- /interface -->
+            </div> <!-- /content -->
+            <hr>            
+            <footer>
+                <p class="copy">Open Source - Kit </p>
+            </footer>
+        </div> <!-- /container -->
+        <script type="text/javascript" src="js/lib/jquery-1.11.1.min.js"></script>
+        <!--script type="text/javascript" src="js/lib/less-1.6.3.js"></script-->
+        <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>	
+        <script type="text/javascript" src="js/lib/pnglib.js"></script>          
+        <script type="text/javascript" src="js/lib/dhtmlxcommon.js"></script>
+        <script type="text/javascript" src="js/lib/dhtmlxcolorpicker.js"></script>
+        <script type="text/javascript" src="../lib/cKit.js"></script>
+        <script type="text/javascript" src="js/script.js"></script>          
+    </body>
+</html>

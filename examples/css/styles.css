@@ -1,0 +1,169 @@
+/*!
+ * Preboot v2
+ *
+ * Open sourced under MIT license by @mdo.
+ * Some variables and mixins from Bootstrap (Apache 2 license).
+ */
+html,
+body {
+  color: #eee;
+}
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+.interface {
+  width: 380px;
+  float: left;
+  color: #000;
+}
+.interface #tab-content {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  background-color: #dedede;
+  background-image: -moz-linear-gradient(top, #efeffa, #dedede);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#efeffa), to(#dedede));
+  background-image: -webkit-linear-gradient(top, #efeffa, #dedede);
+  background-image: -o-linear-gradient(top, #efeffa, #dedede);
+  background-image: linear-gradient(to bottom, #efeffa, #dedede);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffefeffa', endColorstr='#ffdedede', GradientType=0);
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li:hover > a {
+  background-color: #efeffa;
+  background-image: -moz-linear-gradient(top, #dedeea, #efeffa);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dedeea), to(#efeffa));
+  background-image: -webkit-linear-gradient(top, #dedeea, #efeffa);
+  background-image: -o-linear-gradient(top, #dedeea, #efeffa);
+  background-image: linear-gradient(to bottom, #dedeea, #efeffa);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdedeea', endColorstr='#ffefeffa', GradientType=0);
+}
+.nav-tabs > li > a {
+  background-color: #e2e2ea;
+  background-image: -moz-linear-gradient(top, #efefff, #e2e2ea);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#efefff), to(#e2e2ea));
+  background-image: -webkit-linear-gradient(top, #efefff, #e2e2ea);
+  background-image: -o-linear-gradient(top, #efefff, #e2e2ea);
+  background-image: linear-gradient(to bottom, #efefff, #e2e2ea);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffefefff', endColorstr='#ffe2e2ea', GradientType=0);
+  color: #555555;
+}
+.interface .row {
+  padding: 7px;
+}
+.interface .wrow {
+  margin-top: 14px;
+}
+.col {
+  float: left;
+}
+.col-6 {
+  width: 60%;
+}
+.col-5 {
+  width: 50%;
+}
+.col-4 {
+  width: 40%;
+}
+.col-3 {
+  width: 33%;
+}
+.tab-pane {
+  margin-left: 30px;
+  width: 320px;
+  padding: 10px 0 20px 10px;
+}
+form .lab {
+  margin-top: 5px;
+  width: 140px;
+}
+.small-lab {
+  width: 110px;
+}
+.tiny-lab {
+  width: 70px;
+}
+#imageButton {
+  margin-left: 20px;
+}
+.dhtmlxcolorpicker input.cs_Hex_MiniX,
+.dhtmlxcolorpicker input.cs_Input_MiniX {
+  height: 15px;
+  line-height: 12px;
+  /*font-size: 12px;*/
+}
+.dhtmlxcolorpicker .cs_ButtonOk,
+.dhtmlxcolorpicker .cs_ButtonCancel,
+.dhtmlxcolorpicker .cs_ButtonOk_Hover,
+.dhtmlxcolorpicker .cs_ButtonCancel_Hover {
+  line-height: 16px;
+}
+.cHolder {
+  border: 1px solid #ddd;
+  margin-right: 4px;
+  width: 45px;
+  height: 45px;
+}
+.form .row {
+  margin-bottom: 3px;
+}
+.canvasContainer {
+  /*border: 1px solid #000;*/
+  margin-right: 80px;
+}
+#myCanvas:active,
+#myCanvas:focus {
+  cursor: pointer;
+}
+.row {
+  border-bottom: 1px solid #fff;
+}
+.row.last {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+#tabs {
+  border-bottom: none;
+}
+#console {
+}
+.corner {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+}
+.corner row {
+  position: relative;
+}
+#cpc-bodybg {
+  position: absolute;
+  top: 40px;
+  left: 10px;
+}
+.butn {
+  cursor: pointer;
+  width: 28px;
+  height: 27px;
+}
+#btn-first {
+  background-image: url('../img/pan/first.png');
+}
+#btn-left {
+  background-image: url('../img/pan/left.png');
+}
+#btn-right {
+  background-image: url('../img/pan/right.png');
+}
+#btn-last {
+  background-image: url('../img/pan/last.png');
+}
+.tall-row {
+  margin-top: 6px;
+}

@@ -3,7 +3,7 @@
  */
 define(function (require) {
   'use strict';
-  
+
   var constants = require('constants');
   var Vector = require('Vector');
   var CPoint = require('CPoint');
@@ -37,16 +37,16 @@ define(function (require) {
     this.encoder = 11;
     this.delayTime = 0;
 
-    // TODO more types of objects, spiro is the only one atm. 
+    // TODO setup initList via external functions
     this.initList = ['flower'];
     this.curve = [];
     this.k = 6;
     this.pattern = null;
     this.bodybg ='020202';
     this.selectedObject = 0;
-    this.controlPointRadius = 7;
-    this.canvasWidth = 600;
-    this.canvasHeight = 600;
+    this.controlPointRadius = 6;
+    this.canvasWidth = 640;
+    this.canvasHeight = 640;
     this.midWidth = this.canvasWidth / 2;
     this.midHeight = this.canvasHeight / 2;
     this.inCurveEditMode = true;
@@ -66,7 +66,6 @@ define(function (require) {
         this.setState();
       }
       this.redraw();
-      // this.mode('animation');
     }
 
     this.initConstants = function () {
@@ -74,10 +73,10 @@ define(function (require) {
         this.k = 6;
       }
       if (this.dnexist(this.backgroundColor)) {
-        this.backgroundColor = '1e2f25';
+        this.backgroundColor = '010201';
       }
       if (this.dnexist(this.backgroundAlpha)) {
-        this.backgroundAlpha = 0.5;
+        this.backgroundAlpha = 1.0;
       } else {
         document.getElementById('bgAlpha').value = this.backgroundAlpha;
       }
@@ -113,7 +112,6 @@ define(function (require) {
     }
 
     this.redraw = function () {
-    
       this.context.save();
       this.context.setTransform(1, 0, 0, 1, 0, 0);
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -124,9 +122,7 @@ define(function (require) {
       this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       this.each(this.objList, function(item) {
         item.draw();
-      });
-      //$('#console').html('<p>objList.length::' + objList.length + '</p>');
-      
+      });      
     }
 
     this.update = function () {
@@ -134,13 +130,42 @@ define(function (require) {
       if (isNaN(kVal)) {
         return;
       }
-      this.objList[this.selectedObject] = new cKit.pedalFlower(kVal, 20, this.canvasHeight / 6 * 2.5, 'seperated');
+      this.objList[this.selectedObject] = new PedalFlower(this, kVal, 20, this.canvasHeight / 6 * 2.5, 'seperated');
       this.objTypes[this.selectedObject][1] = kVal;
       this.setState();
+      this.redraw();
+    }
+
+    this.setState = function() {
+      for( var i=0; i<this.objList.length; i++) {
+        // TODO Animation stuff
+        //this.objList[i].setState(this.keyFrames[this.segment].obj[i]);
+      }
+    }
+
+    this.getState = function() {
+      for( var i = 0; i<this.objList.length; i++){
+        this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
+      }
+      // TODO animation stuff
+      //this.keyFrames[this.segment].timing = $('#animation input#length').val();
     }
     this.initializeCanvas();
   }
 
+  cKit.prototype.addObject = function(){
+    this.objList.push(new PedalFlower(this, this.k, 20, 250, 'seperated'));
+    this.objTypes.push(['flower', this.k]);
+    for(var i=0; i<this.keyFrames.length; i++) {
+      this.keyFrames[i].obj[this.objList.length-1] = this.objList[this.objList.length-1].getState();
+      // TODO
+      // this.keyFrames[i].obj[this.objList.length-1].timing = $('#animation input#length').val();
+    }
+    this.objTypes.push(['flower', this.k]);
+    var ind = this.objList.length-1;
+    this.selectedObject = ind;
+    this.redraw();
+  }
 
   cKit.prototype.cpFormat = function(coord) {
     if(coord<10) {
@@ -154,7 +179,7 @@ define(function (require) {
   }
 
   cKit.prototype.getPosition = function(e) {
-    //this section is from http://www.quirksmode.org/js/events_properties.html
+    /* TODO Check for Safari Bug
     var targ;
     if (!e) {
       e = window.event;
@@ -167,12 +192,7 @@ define(function (require) {
     if (targ.nodeType === 3) {
       // defeat Safari bug
       targ = targ.parentNode;
-    }
-    // jQuery normalizes the pageX and pageY
-    // pageX,Y are the mouse positions relative to the document
-    // offset() returns the position of the element relative to the document
-    
-    // TODO
+    } */
     var rect = this.canvas.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
@@ -238,7 +258,7 @@ define(function (require) {
       for (i = 0; i < length; i++) {
         func(obj[i], i, obj);
       }
-    } /*else {
+    }/* else {
       var keys = _.keys(obj);
       for (i = 0, length = keys.length; i < length; i++) {
         func(obj[keys[i]], keys[i], obj);
@@ -335,40 +355,11 @@ define(function (require) {
   }
 
   cKit.prototype.bindEvents = function(){
-    /* TODO these three are the not the right kind of touchy... (buggy for touch devices) */
+    /* TODO (WIP for touch devices) */
     this.canvas.addEventListener('touchstart', this.startDrag, false);
     this.canvas.addEventListener('touchend', this.endDrag, false);
     this.canvas.addEventListener('touchmove', this.move, false);
-    /*
-    $('#shapeEdit').click( function() {
-      cKit.inCurveEditMode = !cKit.inCurveEditMode;
-      cKit.redraw();
-    });
-    $('#shapeColor').click( function() {
-      cKit.toggleCurveColor = !cKit.toggleCurveColor;
-      cKit.redraw();
-    });
-    $('#k').change( function() {
-      cKit.update();
-      return true;
-    });
-    $( '#myCanvas' ).mousedown(function(event){
-      event.preventDefault();
-    });
-    $('#bgAlpha').change(function(){
-      var newAlpha = parseFloat($(this).val());
-      if( dnexist(newAlpha) || newAlpha > 1 ) {
-        backgroundAlpha = 1.0;
-        $(this).val('1.0');
-      } else if( newAlpha < 0) {
-        backgroundAlpha = 0.0;
-        $(this).val('0.0');
-      } else {
-        backgroundAlpha = newAlpha;
-      }
-      redraw();
-    });
-    */
+    // Mouse Canvas Events
     this.canvas.addEventListener('mousedown', this.startDrag, false);
     this.canvas.addEventListener('mouseup', this.endDrag, false);
     this.canvas.addEventListener('mousemove', this.move, false);
@@ -398,16 +389,23 @@ define(function (require) {
     */
   }
 
-  cKit.prototype.injectColor = function(id, color) {
-    /*
-    var thisC = $('#' + id);
-    var theseC = new Array(decodeFromHex(color.substring(0, 2)), decodeFromHex(color.substring(2, 4)),decodeFromHex(color.substring(4, 6)) );
-    thisC.attr('style', 'background-color: #' + color); //rgb(' + theseC[0] + ',' + theseC[1] + ',' +  theseC[2]+ ')'); 
-    thisC.attr('color', color);
-    $('#' + id).html(gripImg(theseC[0],theseC[1] ,theseC[2]));
-    return false;
-    */
-  }
+/*--------------------------------Animation-------------------------------------*/
+  // TODO 
+  cKit.prototype.trigger = function() {
+    //$('footer p.copy').append(new Date().getFullYear());
+    cKit.initializeCanvas();
+    cKit.initColorPickers();
+    // $('.selectpicker').selectpicker();
+    if (this.keyFrames.length === 0) {
+      this.keyFrames = [{}];
+      this.keyFrames[0].obj = [];
+    }
+    for(var i = 0; i<this.objList.length;i++) {
+      this.keyFrames[0].obj[i] = this.objList[i].getState();
+    }
+    this.keyFrames[0].timing = 1.0;
+    this.setupGif();
+  }  
 
   cKit.prototype.debugConsole = function(text) {
     var HUD = document.getElementById('console')
