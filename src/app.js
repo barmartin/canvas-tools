@@ -7,7 +7,7 @@ define(function (require) {
   require('PedalFlower');
 
   var _globalInit = function() {
-    window.cKit = new cKit();
+    window.kit = new cKit();
     window.initInterface();
   };
 
@@ -16,5 +16,5 @@ define(function (require) {
   } else {
     window.addEventListener('load', _globalInit , false);
   }
-  return window.cKit;
+  return window.kit;
 });

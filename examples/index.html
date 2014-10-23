@@ -12,7 +12,6 @@
         <link rel="stylesheet" type="text/css" href="css/styles.css">
         <!--link rel="stylesheet/less" type="text/css" href="css/preboot.less">
         <link rel="stylesheet/less" type="text/css" href="css/styles.less"-->
-        <link rel="stylesheet" type="text/css" href="css/bootstrap-select.css"/>
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
          <script src="../assets/js/html5shiv.js"></script>
@@ -46,8 +45,8 @@
                 <div class="interface">
                     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a href="#shape" data-toggle="tab">Shape/Color</a></li>
-                        <!--li class=""><a href="#animation" data-toggle="tab">Animation</a></li>
-                        <li class=""><a href="#data-tab" data-toggle="tab">Save/Load</a></li-->
+                        <li class=""><a href="#animation" data-toggle="tab">Animation</a></li>
+                        <!--li class=""><a href="#data-tab" data-toggle="tab">Save/Load</a></li-->
                     </ul>
                     <div id="tab-content" class="tab-content">
                         <div class="tab-pane active" id="shape">
@@ -135,6 +134,79 @@
                                 </div>                        
                             </form>
                         </div> <!-- Object Pane -->
+
+                      <div class="tab-pane" id="animation">
+                            <form name="animation" action="">
+                                <div class="row">
+                                    <div class="col small-lab tall-row">Segment</div>
+                                    <div class="col butn" id="btn-first"></div>
+                                    <div class="col butn" id="btn-left"></div>
+                                    <div id="segmentId" class="col tall-row" style="margin:6px 11px 11px;">0</div>
+                                    <div class="col butn" id="btn-right"></div>
+                                    <div class="col butn" id="btn-last"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col tiny-lab tall-row">Object</div>
+                                    <div class="col input-group">
+                                        <div class="btn-group" id="object" data-toggle="buttons">
+                                            <label class="btn btn-default active">
+                                                <input type="radio" name="object" data="0" id="object1"> 1
+                                            </label>
+                                            <label class="btn btn-default disabled">
+                                                <input type="radio" name="object" data="1" id="object2"> 2
+                                            </label>
+                                            <label class="btn btn-default disabled">
+                                                <input type="radio" name="object" data="2" id="object3"> 3
+                                            </label>
+                                            <label class="btn btn-default disabled">
+                                                <input type="radio" name="object" data="3" id="object4"> 4
+                                            </label>
+                                            <!--label class="btn btn-default">
+                                                <input type="radio" name="point" id="rotation"> Rotation
+                                            </label-->
+                                        </div>
+                                        <div class="btn-group" class="oGroup" data-toggle="buttons">
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="object_" class="objectPlus"> +
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col small-lab">Length(sec)</div>
+                                    <input type="text" name="length" id="length" value="1.0" size="5"></input>
+                                </div>
+                                <div class="row">
+                                    <div class="col small-lab">Rotation</div>
+                                    <input type="text" name="rotation" id="rotation" value="0.0" size="5"></input>
+                                </div>
+                                <!--div class="row">
+                                    <div class="col small-lab">Animate</div>
+                                    <input type="checkbox" name="animate"></input>
+                                </div-->
+                                <div class="row">
+                                    <div class="col small-lab tall-row">Keyframes</div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-default">
+                                            <input type="radio" name="clear" id="clear-frame"> Clear Frame
+                                        </label>
+                                        <label class="btn btn-default">
+                                            <input type="radio" name="insert" id="insert-frame"> Insert Frame
+                                        </label>
+                                        <label class="btn btn-default">
+                                            <input type="radio" name="clear" id="delete-frame"> Delete Frame
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row last">
+                                    <div class="btn btn-default" id="stop">Stop</div>
+                                    <div class="btn btn-default" id="playSegment">Play Segment</div>
+                                    <div class="btn btn-default" id="playAll">Play All</div>
+                                    <div class="btn btn-default" style="display:none" id="makeGIF">Gif</div>
+                                </div>
+                            </form>
+                        </div><!-- animation tab -->
+
 
  
                     </div>
