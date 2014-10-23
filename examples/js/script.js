@@ -199,6 +199,20 @@ function initAnimationPanel(){
   $('#length').change(function() {
     kit.keyFrames[kit.segment].timing = parseFloat($(this).val());
   });
+  $('#makeGIF').click(function() {
+    kit.gifInit();
+    kit.loopInit();
+    kit.sceneLoop();
+  });
+  $('#load-data').click(function() {
+    var dataz = $.parseJSON( $('#data-json-text').val() );
+    kit.loadData(dataz, false);
+  });
+  $('#get-data').click(function() {
+    var daSettings = {'backgroundColor':kit.backgroundColor, 'backgroundAlpha':kit.backgroundAlpha, 'lineColor':kit.lineColor, 'positions':kit.positions};
+    $('#data-json-text').val(JSON.stringify([daSettings, kit.objTypes, kit.keyFrames]));
+    kit.setState();
+  });
 }
 
 // (Debug) Select default tab pane

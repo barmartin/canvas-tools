@@ -46,7 +46,7 @@
                     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a href="#shape" data-toggle="tab">Shape/Color</a></li>
                         <li class=""><a href="#animation" data-toggle="tab">Animation</a></li>
-                        <!--li class=""><a href="#data-tab" data-toggle="tab">Save/Load</a></li-->
+                        <li class=""><a href="#data-tab" data-toggle="tab">Save/Load</a></li>
                     </ul>
                     <div id="tab-content" class="tab-content">
                         <div class="tab-pane active" id="shape">
@@ -206,8 +206,15 @@
                                 </div>
                             </form>
                         </div><!-- animation tab -->
-
-
+                        <div class="tab-pane" id="data-tab">
+                            <div class="row">
+                                <textarea id="data-json-text" rows="8" cols="43"></textarea>
+                            </div>
+                            <div class="row last">
+                                    <div class="btn btn-default" id="load-data">Load</div>
+                                    <div class="btn btn-default" id="get-data">Get Load Script</div>
+                            </div>
+                        </div><!-- data tab -->
  
                     </div>
                 </div> <!-- /interface -->

@@ -165,7 +165,7 @@ define(function (require) {
     this.objTypes.push(['flower', this.k]);
     for(var i=0; i<this.keyFrames.length; i++) {
       this.keyFrames[i].obj[this.objList.length-1] = this.objList[this.objList.length-1].getState();
-      this.keyFrames[i].obj[this.objList.length-1].timing = document.getElementById(length).value;
+      this.keyFrames[i].obj[this.objList.length-1].timing = document.getElementById('length').value;
     }
     this.objTypes.push(['flower', this.k]);
     var ind = this.objList.length-1;
@@ -622,6 +622,45 @@ define(function (require) {
       });
     }
     setTimeout(function(){window.kit.segmentLoop()}, window.kit.frameDelay);
+  }
+
+  cKit.prototype.loadData = function(data, preinit) {
+    this.keyFrames = data[2];
+    this.objTypes = data[1];
+    //test = objTypes;
+    this.objList = [];
+    for(var i = 0; i < this.objTypes.length; i++) {
+      if(this.objTypes[i][0] === 'flower') {
+        this.objList.push( new PedalFlower(this, this.objTypes[i][1], 20, 250, 'seperated') );
+      } else if(this.objTypes[i][0] === 'polar') {
+        // Not implemented
+        //this.objList.push( new this.polarFlower(this.objTypes[i][1], 20, 250, 'seperated') );
+      }
+    }
+    //$('#object_ label, #object label').removeClass('active').addClass('disabled');
+    for(var it=1; it<this.objList.length+1; it++) {
+      //$('#object_'+it+', #object'+it).parent().removeClass('disabled');
+    }
+    this.selectedObject = 0;
+    // TODO
+    //$('#object_ label:nth-child(1), #object label:nth-child(1)').addClass('active');
+    //$('.oGroup label').removeClass('disabled').removeClass('active');
+    this.options = data[0];
+    this.currentSelector = 'bg-color';
+    this.backgroundColor = this.options.backgroundColor;
+    if(!this.preinit) {
+      // TODO
+      window.setColor('#'+this.backgroundColor);
+    }
+    this.backgroundAlpha = this.options.backgroundAlpha;
+    this.lineColor = this.options.lineColor;
+    this.currentSelector = 'line-color';
+    if(!this.preinit) {
+      // TODO
+      window.setColor('#'+this.lineColor);
+    }
+    this.segment = 0;
+    this.redraw();
   }
 
   cKit.prototype.debugConsole = function(text) {
