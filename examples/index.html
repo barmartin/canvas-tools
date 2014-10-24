@@ -2,9 +2,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Bezier Kaleidoscope</title>
+        <title>Canvas Kit</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Bezier Kaleidoscope">
+        <meta name="description" content="Canvas Kit">
         <meta name="author" content="Barry Martin">
         <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
         <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />  
@@ -55,24 +55,12 @@
                                     <div class="col tiny-lab tall-row">Object</div>
                                     <div class="col input-group">
                                         <div class="btn-toolbar" role="toolbar">
-                                            <div class="btn-group" id="object_" data-toggle="buttons">
-                                                <label class="btn btn-default active">
-                                                    <input type="radio" name="object_" data="0" id="object_1"> 1
-                                                </label>
-                                                <label class="btn btn-default disabled">
-                                                    <input type="radio" name="object_" data="1" id="object_2"> 2
-                                                </label>
-                                                <label class="btn btn-default disabled">
-                                                    <input type="radio" name="object_" data="2" id="object_3"> 3
-                                                </label>
-                                                <label class="btn btn-default disabled">
-                                                    <input type="radio" name="object_" data="3" id="object_4"> 4
-                                                </label>
-                                            </div>
-                                            <div class="btn-group" class="oGroup" data-toggle="buttons">
-                                                <label class="btn btn-default">
-                                                    <input type="radio" name="object_" class="objectPlus"> +
-                                                </label>
+                                            <div class="btn-group object" data-toggle="buttons">
+                                                <button type="button" class="btn btn-default" data="1">1</button>
+                                                <button type="button" class="btn btn-default" data="2">2</button>
+                                                <button type="button" class="btn btn-default" data="3">3</button>
+                                                <button type="button" class="btn btn-default" data="4">4</button>
+                                                <div class="btn btn-default addObject"> + </div>
                                             </div>
                                         </div>
                                     </div>
@@ -148,24 +136,13 @@
                                 <div class="row">
                                     <div class="col tiny-lab tall-row">Object</div>
                                     <div class="col input-group">
-                                        <div class="btn-group" id="object" data-toggle="buttons">
-                                            <label class="btn btn-default active">
-                                                <input type="radio" name="object" data="0" id="object1"> 1
-                                            </label>
-                                            <label class="btn btn-default disabled">
-                                                <input type="radio" name="object" data="1" id="object2"> 2
-                                            </label>
-                                            <label class="btn btn-default disabled">
-                                                <input type="radio" name="object" data="2" id="object3"> 3
-                                            </label>
-                                            <label class="btn btn-default disabled">
-                                                <input type="radio" name="object" data="3" id="object4"> 4
-                                            </label>
-                                            <!--label class="btn btn-default">
-                                                <input type="radio" name="point" id="rotation"> Rotation
-                                            </label-->
+                                        <div class="btn-group object" data-toggle="buttons">
+                                            <button type="button" class="btn btn-default" data="1">1</button>
+                                            <button type="button" class="btn btn-default" data="2">2</button>
+                                            <button type="button" class="btn btn-default" data="3">3</button>
+                                            <button type="button" class="btn btn-default" data="4">4</button>
+                                            <div class="btn btn-default addObject"> + </div>
                                         </div>
-                                       <div class="btn btn-default" id="addObject"> + </div>
                                     </div>
                                 </div>
                                 <div class="row">

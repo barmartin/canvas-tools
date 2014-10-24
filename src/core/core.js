@@ -146,9 +146,9 @@ define(function (require) {
           this.keyFrames[this.segment].obj[i].timing = this.keyFrames[this.segment-1].obj[i].timing;
         }
       } else {
-        for(var i=0; i<this.objList; i++) {
-          this.keyFrames[this.segment].obj[i].rotation = 0;
-          this.keyFrames[this.segment].obj[i].timing = 1.0;
+        for(var ind=0; ind<this.objList; ind++) {
+          this.keyFrames[this.segment].obj[ind].rotation = 0;
+          this.keyFrames[this.segment].obj[ind].timing = 1.0;
         }
       }
       this.setFrame();

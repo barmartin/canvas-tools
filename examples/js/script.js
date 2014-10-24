@@ -2,22 +2,24 @@ function initInterface() {
   initShapePanel();
   initAnimationPanel();
   initLoadEvents();
-
+  initKeyboard();
+  updateInterface();
   // for debuggin
   mode('animation');
 }
 
 function updateInterface(){
   // OBJECT
+  $('.object button').addClass('disabled').removeClass('active');
   for(var i=1; i<=kit.objList.length; i++) {
-    var itemButton = $('#object_ :nth-child('+i+'), #object :nth-child('+i+')');
+    var itemButton = $('.object button:nth-child('+i+')');
     itemButton.removeClass('disabled');
-    if(i===kit.selectedObject-1){
+    if(i===kit.selectedObject+1){
       itemButton.addClass('active');
     }
   }
   for(var index=kit.objList.length+1; index<=kit.constants.MAX_OBJECTS; index++) {
-    $('#object_ :nth-child('+index+'), #object :nth-child('+index+')').addClass('disabled');
+    $('.object button:nth-child('+index+')').addClass('disabled');
   }
 
   // ANIMATION
@@ -67,25 +69,22 @@ function initShapePanel() {
     }
     kit.redraw();
   });
-  for(var i=1; i<5; i++) {
-    $('#object'+i+', #object_'+i).click(function() {
-      kit.selectedObject = parseInt($(this).attr('data'));
-      $(this).parent().parent().children().removeClass('active');
-      $(this).parent().addClass('active');
-      kit.redraw();
-      updateInterface();
-      return false;
-    });
-  }
-  $('#addObject').click(function() {
+  $('.object button').click(function() {
+    var selected = parseInt($(this).attr('data'));
+    kit.selectedObject = selected-1;
+    $('.object button').removeClass('active');
+    $('.object [data="'+selected+'"]').addClass('active');
+    kit.redraw();
+    //updateInterface();
+    return false;
+  });
+  $('.addObject').click(function() {
     if(kit.objList.length>3) {
-      return;
+      return false;
     }
     kit.addObject();
-    $('#object_ label, #object label').removeClass('active');
     var ob = kit.objList.length;
-    var newShit = $('#object_ :nth-child('+ob+'), #object :nth-child('+ob+')');
-    newShit.removeClass('disabled').addClass('active');
+    $('.object [data="'+ob+'"]').removeClass('disabled').addClass('active');
     updateInterface();
     return false;
   });
@@ -115,6 +114,35 @@ function initShapePanel() {
     }); */
   initColorPickers();
 }
+function backwardFrame(){
+  if(kit.segment > 0) {
+    kit.segment--;
+    $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
+    $('#length').val(kit.keyFrames[kit.segment].timing);
+    for( var i=0; i<kit.objList.length; i++) {
+      kit.objList[i].setState(kit.keyFrames[kit.segment].obj[i]);
+    }
+    //if(kit.segment === 0) {
+    $('#segmentId').html(kit.segment);
+    //} else {
+    //  $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
+    //}  
+  }
+}
+
+function forwardFrame(){
+  kit.segment++;
+  $('#segmentId').html(kit.segment);//kit.segment-1 + '-' + kit.segment);
+  if(kit.segment >= kit.keyFrames.length) {
+    kit.initFrame();
+    $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
+    $('#length').val(kit.keyFrames[kit.segment].timing);
+  } else {
+    $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
+    kit.setState();
+    $('#length').val(kit.keyFrames[kit.segment].timing );
+  }
+}
 
 function initAnimationPanel(){
   $('#btn-first').click(function() {
@@ -125,43 +153,21 @@ function initAnimationPanel(){
     $('#segmentId').html(0);
   });
   $('#btn-left').click(function() {
-    if(kit.segment > 0) {
-      kit.segment--;
-      $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
-      $('#length').val(kit.keyFrames[kit.segment].timing);
-      for( var i=0; i<kit.objList.length; i++) {
-        kit.objList[i].setState(kit.keyFrames[kit.segment].obj[i]);
-      }
-      if(kit.segment === 0) {
-        $('#segmentId').html(kit.segment);
-      } else {
-        $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
-      }
-    }
+    backwardFrame();
   });
   $('#btn-right').click(function() {
-    kit.segment++;
-    $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
-    if(kit.segment >= kit.keyFrames.length) {
-      kit.initFrame();
-      $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
-      $('#length').val(kit.keyFrames[kit.segment].timing);
-    } else {
-      $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
-      kit.setState();
-      $('#length').val(kit.keyFrames[kit.segment].timing );
-    }
+    forwardFrame();
   });
   $('#btn-last').click(function() {
     kit.segment = kit.keyFrames.length-1;
     $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
     $('#length').val(kit.keyFrames[kit.segment].timing);
     kit.setState();
-    if(kit.segment === 0) {
+    //if(kit.segment === 0) {
       $('#segmentId').html(kit.segment);
-    } else {
-      $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
-    }
+    //} else {
+    //  $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
+    //}
   });
   $('#clear-frame').click(function() {
     if(kit.segment>0) {
@@ -312,6 +318,55 @@ function initColorPickers(){
   });
 }
 
+function initKeyboard(){
+  document.addEventListener("keydown", keyDownHandler, false);
+}
+
+function keyDownHandler(event){
+  var keyPressed = String.fromCharCode(event.keyCode);
+  if (keyPressed === '1') {   
+    selectObject(1);
+  } else if (keyPressed === '2') { 
+    selectObject(2);
+  } else if (keyPressed === '3') { 
+    selectObject(3);
+  } else if (keyPressed === '4') { 
+    selectObject(4);
+  // LEFT CURSOR
+  } else if (event.keyCode=='37'||keyPressed=='%') { 
+    // Back a frame
+    backwardFrame();
+  // RIGHT CURSOR
+  } else if (event.keyCode=='39'||keyPressed=="'") { 
+    forwardFrame();
+  // 65 A KEY
+  } else if (keyPressed == 'A') { 
+    // STOP
+    kit.sceneReset();
+    $(this).attr('disabled', true);
+    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+    $('#segmentId').html(0);
+  // 83 S KEY
+  } else if (keyPressed == 'S') { 
+    // START
+    kit.loopInit();
+    kit.sceneLoop();
+    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
+    $('#stop').attr('disabled', false);
+  }
+}
+
+function selectObject(object){
+  var val=parseFloat(object);
+  if(kit.selectedObject!==val-1&&val<=kit.objList.length
+    &&val<=kit.constants.MAX_OBJECTS&&val>=1){
+    $('.object button').removeClass('active');
+    $('.object [data="'+val+'"]').removeClass('disabled').addClass('active');
+    kit.selectedObject=val-1;
+    kit.redraw();
+  }
+}
+
 function setColor(color) {
   var kit = window.kit;
   if(currentSelector === 'bg-color') {
@@ -339,13 +394,12 @@ function setColor(color) {
 }
 
 function injectColor(id, color) {
-  /*var thisC = $('#' + id);
+  var thisC = $('#' + id);
   var theseC = new Array(kit.decodeFromHex(color.substring(0, 2)), kit.decodeFromHex(color.substring(2, 4)),kit.decodeFromHex(color.substring(4, 6)));
   thisC.attr('style', 'background-color: #' + color);
   thisC.attr('color', color);
   //$('#' + id).html(gripImg(theseC[0],theseC[1] ,theseC[2]));
   return false;
-  */
 }
 
 function setInputCells(){
