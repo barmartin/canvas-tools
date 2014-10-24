@@ -26,7 +26,7 @@ define(function (require) {
     this.setTime = 0;
     this.pauseTime = 200;
     //this.timeOut = 20;
-    this.frameDelay = 60;
+    this.frameDelay = 15;
     this.savedSettings = {};
     this.delta = -this.frameDelay;
     this.Vector = Vector;
@@ -161,13 +161,15 @@ define(function (require) {
   }
 
   cKit.prototype.addObject = function(){
+    if(this.objList.length >= constants.MAX_OBJECTS) {
+      return;
+    }
     this.objList.push(new PedalFlower(this, this.k, 20, 250, 'seperated'));
     this.objTypes.push(['flower', this.k]);
     for(var i=0; i<this.keyFrames.length; i++) {
       this.keyFrames[i].obj[this.objList.length-1] = this.objList[this.objList.length-1].getState();
       this.keyFrames[i].obj[this.objList.length-1].timing = document.getElementById('length').value;
     }
-    this.objTypes.push(['flower', this.k]);
     var ind = this.objList.length-1;
     this.selectedObject = ind;
     this.redraw();
@@ -451,9 +453,6 @@ define(function (require) {
     this.segment = 0;
     this.loopStartTime = this.msTime();
     this.segmentStartTime = this.loopStartTime;
-    // $(this).attr('disabled', true);
-    // $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    // $('#stop').attr('disabled', false);
   }
   cKit.prototype.sceneReset = function() {
     this.animationMode = false;
@@ -514,37 +513,40 @@ define(function (require) {
       //encoder.addFrame(context);
       setTimeout(function(){
           window.kit.sceneLoop();
-      }, 1);
+        }, 
+      1.0);
     }
     else {
       setTimeout(function(){
         window.kit.sceneLoop();
-      }, window.kit.frameDelay);
+      }, 
+      window.kit.frameDelay);
     }
   }
 
   cKit.prototype.updateSegment = function(delta){
     var keyTo = this.segment;
-    var kit = this;
     if(this.segment === this.keyFrames.length) {
       keyTo = 0;
     }
-    var sig = delta/(this.keyFrames[this.segment-1].timing*1000);
+    var sig = delta/(this.keyFrames[keyTo].timing*1000);
     var objIndex = 0;
-    for( var i=0; i<this.objList.length; i++){
+    var kit = this;
+    this.each(this.keyFrames[keyTo].obj, function(ob) {
       var index = 0;
       var newCps = [];
-      this.each( this.keyFrames[keyTo].obj[i].controlPoints, function(cp){
-        var newX = kit.keyFrames[kit.segment-1].obj[i].controlPoints[index].x*(1.0-sig)+cp.x*sig;
-        var newY = kit.keyFrames[kit.segment-1].obj[i].controlPoints[index].y*(1.0-sig)+cp.y*sig;
-        var newPoint = new CPoint(kit, newX, newY, kit.objList[i], index);
+      kit.each(ob.controlPoints, function(cp) {
+        var newX = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].x*(1.0-sig)+cp.x*sig;
+        var newY = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].y*(1.0-sig)+cp.y*sig;
+        // To-DO check????????
+        var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
         newCps.push(newPoint);
         index++;
       });
-      // TODO figure out why a copy is needed here
-      var newState = { controlPoints:newCps };
-      var fromRotation = this.keyFrames[this.segment-1].obj[i].rotation;
-      var toRotation = this.keyFrames[keyTo].obj[i].rotation;
+      var newState = {controlPoints:newCps};
+
+      var fromRotation = kit.keyFrames[kit.segment-1].obj[objIndex].rotation;
+      var toRotation = kit.keyFrames[keyTo].obj[objIndex].rotation;
       var del = toRotation-fromRotation;
       if( Math.abs(del) > 180 ) {
         if(del<0) {
@@ -554,9 +556,10 @@ define(function (require) {
         }
       }
       newState.rotation = (fromRotation*(1-sig)+toRotation*sig)%360;
-      this.objList[objIndex].setState(newState);
-      this.objIndex++;
-    }
+
+      kit.objList[objIndex].setState(newState);
+      objIndex++;
+    });
   }
 
   cKit.prototype.segmentLoop = function() {
@@ -625,9 +628,10 @@ define(function (require) {
   }
 
   cKit.prototype.loadData = function(data, preinit) {
+    this.objList = [];
+    this.objTypes = [];
     this.keyFrames = data[2];
     this.objTypes = data[1];
-    //test = objTypes;
     this.objList = [];
     for(var i = 0; i < this.objTypes.length; i++) {
       if(this.objTypes[i][0] === 'flower') {
@@ -660,23 +664,24 @@ define(function (require) {
       window.setColor('#'+this.lineColor);
     }
     this.segment = 0;
+    this.setState();
     this.redraw();
   }
 
   cKit.prototype.debugConsole = function(text) {
     var HUD = document.getElementById('console')
     if(HUD.firstChild) {
-        HUD.removeChild(HUD.firstChild);
+      HUD.removeChild(HUD.firstChild);
     }
     HUD.appendChild( document.createTextNode(text) );
   }
 
   cKit.prototype.addEventHandler = function(oNode, evt, oFunc, bCaptures) {
-      if (this.exists(oNode.attachEvent)) {
-        oNode.attachEvent('on'+evt, oFunc);
-      } else {
-        oNode.addEventListener(evt, oFunc, bCaptures);
-      }
+    if (this.exists(oNode.attachEvent)) {
+      oNode.attachEvent('on'+evt, oFunc);
+    } else {
+      oNode.addEventListener(evt, oFunc, bCaptures);
+    }
   }
 
   cKit.prototype.setUpClickEvent = function(e) {
