@@ -82,7 +82,7 @@ define(function (require) {
         document.getElementById('bgAlpha').value = this.backgroundAlpha;
       }
       if (this.dnexist(this.lineColor)) {
-        this.lineColor = '9cf4c7';
+        this.lineColor = '9fb4f4';
       }
       if (this.exists(this.positions)) {
         if(this.positions.length!==24) {return;}
@@ -140,6 +140,17 @@ define(function (require) {
     this.initFrame = function() {
       this.keyFrames[this.segment] = {};
       this.keyFrames[this.segment].obj = [];
+      if(this.segment>0) {
+        for(var i=0; i<this.objList; i++) {
+          this.keyFrames[this.segment].obj[i].rotation = this.keyFrames[this.segment-1].obj[i].rotation;
+          this.keyFrames[this.segment].obj[i].timing = this.keyFrames[this.segment-1].obj[i].timing;
+        }
+      } else {
+        for(var i=0; i<this.objList; i++) {
+          this.keyFrames[this.segment].obj[i].rotation = 0;
+          this.keyFrames[this.segment].obj[i].timing = 1.0;
+        }
+      }
       this.setFrame();
     }
 
@@ -666,6 +677,7 @@ define(function (require) {
     this.segment = 0;
     this.setState();
     this.redraw();
+    window.updateInterface();
   }
 
   cKit.prototype.debugConsole = function(text) {

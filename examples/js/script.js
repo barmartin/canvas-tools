@@ -1,12 +1,40 @@
 function initInterface() {
   initShapePanel();
-  initAnimationPanel()
+  initAnimationPanel();
+  initLoadEvents();
 
   // for debuggin
   mode('animation');
 }
 
-function initShapePanel(){
+function updateInterface(){
+  // OBJECT
+  for(var i=1; i<=kit.objList.length; i++) {
+    var itemButton = $('#object_ :nth-child('+i+'), #object :nth-child('+i+')');
+    itemButton.removeClass('disabled');
+    if(i===kit.selectedObject-1){
+      itemButton.addClass('active');
+    }
+  }
+  for(var index=kit.objList.length+1; index<=kit.constants.MAX_OBJECTS; index++) {
+    $('#object_ :nth-child('+index+'), #object :nth-child('+index+')').addClass('disabled');
+  }
+
+  // ANIMATION
+  $('#segmentId').html(kit.segment);
+  if(kit.animationMode===true) {
+    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
+    $('#stop').attr('disabled', false);
+  } else {
+    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+    $('#stop').attr('disabled', true);
+  }
+  $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
+  $('#length').val(kit.keyFrames[kit.segment].timing);
+
+}
+
+function initShapePanel() {
   $('#shapeEdit').click( function() {
     kit.inCurveEditMode = !kit.inCurveEditMode;
     kit.redraw();
@@ -44,12 +72,12 @@ function initShapePanel(){
       kit.selectedObject = parseInt($(this).attr('data'));
       $(this).parent().parent().children().removeClass('active');
       $(this).parent().addClass('active');
-      setInputCells();
       kit.redraw();
+      updateInterface();
       return false;
     });
   }
-  $('.objectPlus').click(function() {
+  $('#addObject').click(function() {
     if(kit.objList.length>3) {
       return;
     }
@@ -58,7 +86,7 @@ function initShapePanel(){
     var ob = kit.objList.length;
     var newShit = $('#object_ :nth-child('+ob+'), #object :nth-child('+ob+')');
     newShit.removeClass('disabled').addClass('active');
-    setInputCells();
+    updateInterface();
     return false;
   });
 
@@ -204,6 +232,9 @@ function initAnimationPanel(){
     kit.loopInit();
     kit.sceneLoop();
   });
+}
+
+function initLoadEvents() {
   $('#load-data').click(function() {
     var dataz = $.parseJSON( $('#data-json-text').val() );
     kit.loadData(dataz, false);
@@ -212,6 +243,10 @@ function initAnimationPanel(){
     var daSettings = {'backgroundColor':kit.backgroundColor, 'backgroundAlpha':kit.backgroundAlpha, 'lineColor':kit.lineColor, 'positions':kit.positions};
     $('#data-json-text').val(JSON.stringify([daSettings, kit.objTypes, kit.keyFrames]));
     kit.setState();
+  });
+  $('#load-sample').click(function() {
+    var dataz = sampleJSON;
+    kit.loadData(dataz, false);
   });
 }
 
@@ -277,41 +312,40 @@ function initColorPickers(){
   });
 }
 
-
-
 function setColor(color) {
   var kit = window.kit;
-  if(currentSelector == 'bg-color') {
+  if(currentSelector === 'bg-color') {
     $(currentSelector).attr('style', 'background-color:' + color + ';');
     $(currentSelector+' img').hide();
     injectColor(currentSelector, color.substring(1));
     $(currentSelector+'+ img').show();
     kit.backgroundColor = color.substring(1);
     kit.redraw();
-  } else if(currentSelector == 'line-color') {
+  } else if(currentSelector === 'line-color') {
     $(currentSelector).attr('style', 'background-color:' + color + ';');
     $(currentSelector+' img').hide();
     injectColor(currentSelector, color.substring(1));
     $(currentSelector+'+ img').show();
     kit.lineColor = color.substring(1);
     kit.redraw();
-  } else if( currentSelector == 'bodybg-color') {
+  } else if( currentSelector === 'bodybg-color') {
     $(currentSelector).attr('style', 'background-color:' + color + ';');
     $(currentSelector+' img').hide();
     injectColor(currentSelector, color.substring(1));
     $(currentSelector+'+ img').show();
     $('body, html').attr('style', 'background-color:'+color);
   }
-  $(".cpc").hide();
+  $('.cpc').hide();
 }
 
 function injectColor(id, color) {
-  var thisC = $('#' + id);
-  var theseC = new Array(decodeFromHex(color.substring(0, 2)), decodeFromHex(color.substring(2, 4)),decodeFromHex(color.substring(4, 6)));
+  /*var thisC = $('#' + id);
+  var theseC = new Array(kit.decodeFromHex(color.substring(0, 2)), kit.decodeFromHex(color.substring(2, 4)),kit.decodeFromHex(color.substring(4, 6)));
   thisC.attr('style', 'background-color: #' + color);
   thisC.attr('color', color);
   //$('#' + id).html(gripImg(theseC[0],theseC[1] ,theseC[2]));
   return false;
+  */
 }
 
 function setInputCells(){
@@ -320,3 +354,10 @@ function setInputCells(){
   $('#animation input#length').val(1.0);//kit.keyFrames[kit.segment].timing);
   $('#shape #k').val(6);//kit.objTypes[kit.selectedObject][1]);
 }
+
+var sampleJSON = [{'backgroundColor':'010201','backgroundAlpha':1,'lineColor':'9fb4f4'},[['flower','8'],['flower','16'],['flower','4']],
+[{'obj':[{'controlPoints':[{'x':296.4525272085046,'y':263.1513718271603},{'x':233.5,'y':124},{'x':290.5,'y':186},{'x':320,'y':70}],'rotation':0},
+{'controlPoints':[{'x':310,'y':302.6794919243112},{'x':272.5,'y':189},{'x':281.5,'y':251},{'x':320,'y':185}],'rotation':0},{'controlPoints':[
+{'x':317.73615371546566,'y':317.73615371546566},{'x':236.5,'y':117},{'x':217.5,'y':58},{'x':320,'y':48}],'rotation':0}],'timing':1}]];
+
+
