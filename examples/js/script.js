@@ -31,9 +31,12 @@ function updateInterface(){
     $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
     $('#stop').attr('disabled', true);
   }
+  updateObject();
+}
+
+function updateObject() {
   $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
   $('#length').val(kit.keyFrames[kit.segment].timing);
-
 }
 
 function initShapePanel() {
@@ -46,10 +49,6 @@ function initShapePanel() {
     kit.redraw();
   });
   $('#k').change( function() {
-    kit.update();
-    return true;
-  });
-  $('#k').blur( function() {
     kit.update();
     return true;
   });
@@ -75,7 +74,7 @@ function initShapePanel() {
     $('.object button').removeClass('active');
     $('.object [data="'+selected+'"]').addClass('active');
     kit.redraw();
-    //updateInterface();
+    updateObject();
     return false;
   });
   $('.addObject').click(function() {
@@ -222,6 +221,12 @@ function initAnimationPanel(){
     $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
     $('#segmentId').html(0);
   });
+  $('#rotation, #length, #k').focus(function() {
+    kit.fieldFocus = true;
+  });
+  $('#rotation, #length, #k').blur(function() {
+    kit.fieldFocus = false;
+  });
   $('#rotation').change(function() {
     var rotation = parseFloat($(this).val());
     kit.objList[kit.selectedObject].rotation = rotation;
@@ -242,7 +247,7 @@ function initAnimationPanel(){
 
 function initLoadEvents() {
   $('#load-data').click(function() {
-    var dataz = $.parseJSON( $('#data-json-text').val() );
+    var dataz = $.parseJSON($('#data-json-text').val());
     kit.loadData(dataz, false);
   });
   $('#get-data').click(function() {
@@ -251,7 +256,7 @@ function initLoadEvents() {
     kit.setState();
   });
   $('#load-sample').click(function() {
-    var dataz = sampleJSON;
+    var dataz = $.parseJSON(sampleJSON);
     kit.loadData(dataz, false);
   });
 }
@@ -319,10 +324,13 @@ function initColorPickers(){
 }
 
 function initKeyboard(){
-  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keydown", keyDownHandler);
 }
 
 function keyDownHandler(event){
+  if(kit.fieldFocus==true){
+    return false;
+  }
   var keyPressed = String.fromCharCode(event.keyCode);
   if (keyPressed === '1') {   
     selectObject(1);
@@ -354,6 +362,7 @@ function keyDownHandler(event){
     $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
     $('#stop').attr('disabled', false);
   }
+  return false;
 }
 
 function selectObject(object){
@@ -409,9 +418,7 @@ function setInputCells(){
   $('#shape #k').val(6);//kit.objTypes[kit.selectedObject][1]);
 }
 
-var sampleJSON = [{'backgroundColor':'010201','backgroundAlpha':1,'lineColor':'9fb4f4'},[['flower','8'],['flower','16'],['flower','4']],
-[{'obj':[{'controlPoints':[{'x':296.4525272085046,'y':263.1513718271603},{'x':233.5,'y':124},{'x':290.5,'y':186},{'x':320,'y':70}],'rotation':0},
-{'controlPoints':[{'x':310,'y':302.6794919243112},{'x':272.5,'y':189},{'x':281.5,'y':251},{'x':320,'y':185}],'rotation':0},{'controlPoints':[
-{'x':317.73615371546566,'y':317.73615371546566},{'x':236.5,'y':117},{'x':217.5,'y':58},{'x':320,'y':48}],'rotation':0}],'timing':1}]];
-
-
+var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"},[["flower","8"],["flower","16"],["flower","4"]], \
+[{"obj":[{"controlPoints":[{"x":296.4525272085046,"y":263.1513718271603},{"x":233.5,"y":124},{"x":290.5,"y":186},{"x":320,"y":70}],"rotation":0}, \
+{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":272.5,"y":189},{"x":281.5,"y":251},{"x":320,"y":185}],"rotation":0},{"controlPoints":[ \
+{"x":317.73615371546566,"y":317.73615371546566},{"x":236.5,"y":117},{"x":217.5,"y":58},{"x":320,"y":48}],"rotation":0}],"timing":1}]]'; 

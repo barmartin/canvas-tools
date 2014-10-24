@@ -49,8 +49,11 @@ define(function (require) {
     this.canvasHeight = 640;
     this.midWidth = this.canvasWidth / 2;
     this.midHeight = this.canvasHeight / 2;
+    
     this.inCurveEditMode = true;
     this.toggleCurveColor = false;
+    this.fieldFocus = false;
+
     this.objList = [];
     this.objTypes = [];
 
@@ -638,7 +641,8 @@ define(function (require) {
     setTimeout(function(){window.kit.segmentLoop()}, window.kit.frameDelay);
   }
 
-  cKit.prototype.loadData = function(data, preinit) {
+  cKit.prototype.loadData = function(jsonData, preinit) {
+    var data = this.clone(jsonData);
     this.objList = [];
     this.objTypes = [];
     this.keyFrames = data[2];
