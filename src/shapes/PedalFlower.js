@@ -133,17 +133,20 @@ define(function(require) {
     var index = 0;
     var flower = this;
     var kit = this.kit;
+    kit.context.save();
+    kit.context.beginPath();
     kit.each( this.allPedals, function(pedal) {
-      if ( index === 0 && kit.toggleCurveColor ) {
+      /* if ( index === 0 && kit.toggleCurveColor ) {
         kit.context.strokeStyle = '#00ff00';
-      }
+      } */
       kit.context.lineWidth = 1;
-      kit.context.beginPath();
+      //kit.context.beginPath();
       if(flower.rotation === 0) {
         kit.context.moveTo( pedal[0].x, pedal[0].y );
         kit.context.bezierCurveTo(pedal[1].x, pedal[1].y, pedal[2].x, pedal[2].y, pedal[3].x, pedal[3].y);
-        kit.context.stroke();
         kit.context.bezierCurveTo(pedal[4].x, pedal[4].y, pedal[5].x, pedal[5].y, pedal[6].x, pedal[6].y);
+        kit.context.moveTo( pedal[6].x, pedal[6].y );
+        kit.context.lineTo(pedal[0].x, pedal[0].y);
       } else {
         var rotated = [];
         for( var i = 0; i < pedal.length; i++) {
@@ -151,20 +154,35 @@ define(function(require) {
         }
         kit.context.moveTo( rotated[0].x, rotated[0].y );
         kit.context.bezierCurveTo(rotated[1].x, rotated[1].y, rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y);
-        kit.context.stroke();
         kit.context.bezierCurveTo(rotated[4].x, rotated[4].y, rotated[5].x, rotated[5].y, rotated[6].x, rotated[6].y);
+        kit.context.moveTo( rotated[6].x, rotated[6].y );
+        kit.context.lineTo(rotated[0].x, rotated[0].y);
       }
-      kit.context.closePath();
-      kit.context.stroke();
-      kit.context.strokeStyle = '#' + kit.lineColor;
+      //kit.context.closePath();
+      if(index===0){
+        //kit.context.clip();
+        //kit.context.drawImage(kit.backgroundImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
+      }
+      // kit.context.stroke();
+      // kit.context.strokeStyle = '#' + kit.lineColor;
       index++;
     });
-    var cPs = this.controlPoints;
-    if( kit.indexOf( kit.objList, this) === kit.selectedObject) {
-      kit.each(this.controlPoints, function(controlPoint) {
-        controlPoint.draw(cPs);
-      });
+
+    kit.context.closePath();
+    if(kit.curveImageExists) {
+      kit.context.clip();
+      kit.context.drawImage(kit.curveImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
+    } else {
+      kit.context.stroke();
     }
+    kit.context.restore();
+  }
+
+  PedalFlower.prototype.drawControlPoints = function(){
+    var cps = this.controlPoints;
+    this.kit.each(cps, function(controlPoint) {
+      controlPoint.draw(cps);
+    });
   }
 
   PedalFlower.prototype.getState = function() {

@@ -8,8 +8,9 @@ define(function(require) {
     this.x = x;
     this.y = y;
     this.index = index;
-    //this.objPoint = objPoint;
     this.inDrag = false;
+
+    // TODO Review need for cPoints reference
     this.draw = function(cPoints) {
       if (!this.kit.inCurveEditMode) {
           return;

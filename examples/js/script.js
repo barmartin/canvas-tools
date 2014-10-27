@@ -221,10 +221,10 @@ function initAnimationPanel(){
     $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
     $('#segmentId').html(0);
   });
-  $('#rotation, #length, #k').focus(function() {
+  $('.form-field').focus(function() {
     kit.fieldFocus = true;
   });
-  $('#rotation, #length, #k').blur(function() {
+  $('.form-field').blur(function() {
     kit.fieldFocus = false;
   });
   $('#rotation').change(function() {
@@ -256,9 +256,15 @@ function initLoadEvents() {
     kit.setState();
   });
   $('#load-sample').click(function() {
+    loadSample();
     var dataz = $.parseJSON(sampleJSON);
     kit.loadData(dataz, false);
+    updateInterface();
   });
+}
+
+function getSampleJSON(){
+  return $.parseJSON(sampleJSON);
 }
 
 // (Debug) Select default tab pane

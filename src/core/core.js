@@ -49,13 +49,18 @@ define(function (require) {
     this.canvasHeight = 640;
     this.midWidth = this.canvasWidth / 2;
     this.midHeight = this.canvasHeight / 2;
-    
+
     this.inCurveEditMode = true;
     this.toggleCurveColor = false;
     this.fieldFocus = false;
 
     this.objList = [];
     this.objTypes = [];
+
+    // TESTING
+    this.debugMode = true;
+    this.backgroundImageExists = false;
+    this.curveImageExists = false;
 
     this.initializeCanvas = function () {
       this.initConstants();
@@ -68,8 +73,23 @@ define(function (require) {
       } else {
         this.setState();
       }
-      this.redraw();
       this.initFrame();
+
+      if(this.debugMode===true){
+        var dataz = window.getSampleJSON();
+        if(0===0) {
+          this.loadData(dataz, false);
+          // Source: http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset
+          this.addCurveImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg');
+          // TODO Lookup Source
+          // this.addCurveImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg');
+          // Source: http://lucysbasement.tumblr.com/post/100007359383
+          // this.addBackGroundImage('http://33.media.tumblr.com/9383f1a92b139f8e2aab5c7d52528e4d/tumblr_ndg4fznxkO1syynngo1_500.jpg');
+          // Source: http://serescosmicos.tumblr.com/post/94587874401
+          this.addBackGroundImage('http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg');
+        }
+      }
+      this.redraw();
     }
 
     this.initConstants = function () {
@@ -116,17 +136,34 @@ define(function (require) {
     }
 
     this.redraw = function () {
+      // Clear the canvas
       this.context.save();
       this.context.setTransform(1, 0, 0, 1, 0, 0);
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.context.restore();
+
+      // Reset stroke style in case of highlighted shape
       this.context.strokeStyle = '#' + this.lineColor;
-      var rgb = this.toRGB(this.backgroundColor);
-      this.context.fillStyle = 'rgba('+rgb[0]+', ' + rgb[1] + ', ' + rgb[2] + ', ' + this.backgroundAlpha + ')';
-      this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+      if(this.backgroundImageExists){
+        // TODO resize background
+        this.context.drawImage(this.backgroundImage, 0, 0, this.canvasWidth, this.canvasHeight);
+      } else {
+        var rgb = this.toRGB(this.backgroundColor);
+        this.context.fillStyle = 'rgba('+rgb[0]+', ' + rgb[1] + ', ' + rgb[2] + ', ' + this.backgroundAlpha + ')';
+        this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+      }
+
+      var kit = this;
       this.each(this.objList, function(item) {
         item.draw();
-      });      
+      });    
+      // Always draw active control points on top
+      this.each(this.objList, function(item) {
+        if( kit.indexOf( kit.objList, item) === kit.selectedObject) {
+          item.drawControlPoints();
+        }
+      }); 
     }
 
     this.update = function () {
@@ -198,6 +235,24 @@ define(function (require) {
     } else { 
       return Math.floor(coord).toString();
     }
+  }
+
+  cKit.prototype.addCurveImage = function(src){
+    this.curveImage = new Image();
+    this.curveImage.onload = function() {
+      window.kit.curveImageExists = true;
+      window.kit.redraw();
+    }
+    this.curveImage.src = src;
+  }
+
+  cKit.prototype.addBackGroundImage = function(src){
+    this.backgroundImage = new Image();
+    this.backgroundImage.onload = function() {
+      window.kit.backgroundImageExists = true;
+      window.kit.redraw();
+    }
+    this.backgroundImage.src = src;
   }
 
   cKit.prototype.getPosition = function(e) {
@@ -681,7 +736,7 @@ define(function (require) {
     this.segment = 0;
     this.setState();
     this.redraw();
-    window.updateInterface();
+    // window.updateInterface(this);
   }
 
   cKit.prototype.debugConsole = function(text) {
