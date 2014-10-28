@@ -26,7 +26,6 @@ define(function (require) {
     this.pauseTime = 200;
     //this.timeOut = 20;
     this.frameDelay = 15;
-    this.savedSettings = {};
     this.delta = -this.frameDelay;
     this.Vector = Vector;
 
@@ -41,6 +40,14 @@ define(function (require) {
     this.curve = [];
     this.pattern = null;
     this.bodybg ='020202';
+
+    // TODO
+    this.backgroundColor = '010201';
+    this.lineColor = '9fb4f4';
+    this.backgroundAlpha = 1.0;
+    document.getElementById('bgAlpha').value = this.backgroundAlpha;
+    // ?
+
     this.selectedObject = 0;
     this.controlPointRadius = 6;
     this.canvasWidth = 640;
@@ -57,7 +64,7 @@ define(function (require) {
     this.objTypes = [];
 
     // TESTING
-    this.debugMode = true;
+    this.debugMode = false;
     this.resourceList = {};
     this.backgroundImageExists = false;
     this.fillImageExists = false;
@@ -90,6 +97,7 @@ define(function (require) {
     }
 
     this.initConstants = function () {
+      /*
       if (this.dnexist(this.backgroundColor)) {
         this.backgroundColor = '010201';
       }
@@ -100,7 +108,8 @@ define(function (require) {
       }
       if (this.dnexist(this.lineColor)) {
         this.lineColor = '9fb4f4';
-      }
+      } */
+
       if (this.exists(this.positions)) {
         if(this.positions.length!==24) {return;}
         this.curve.push(this.validateInt(this.positions.substring(0, 3)));
@@ -201,9 +210,6 @@ define(function (require) {
       this.keyFrames[this.segment].timing = parseFloat(document.getElementById('length').value);
     }
 
-    // init
-    this.initializeCanvas();
-
     this.clearScene = function(){
       this.objList = [];
       this.objTypes = [];
@@ -218,8 +224,11 @@ define(function (require) {
       this.objTypes.push(['flower', constants.DEFAULT_RAYS]);
       this.initFrame();
       this.redraw();
+      // init
+      this.initializeCanvas();
       window.updateInterface();
     }
+    this.initializeCanvas();
   }
 
   cKit.prototype.addObject = function(){
@@ -383,7 +392,6 @@ define(function (require) {
   // EVENT BINDING
   // TODO kit is a hack, need to fix Global access
   cKit.prototype.startDrag = function(event) {
-    // alert('!1!');
     // TODO getPosition must be Global for now, localize?
     var kit = window.kit;
     kit.position = kit.getPosition( event );
@@ -468,14 +476,11 @@ define(function (require) {
   }
 
   cKit.prototype.setupGif = function(){
-    /*
-    this.encoder = new GIFEncoder();
     this.encoder.setRepeat(0);
     this.encoder.setDelay(this.frameDelay);
-    */
   }
+  /*
   cKit.prototype.gripImg = function(r, g, b){
-    /*
     var p = new PNGlib(paletteWidth, paletteHeight, 256); // construcor takes height, weight and color-depth    
     for (var i = 0; i < paletteWidth; i++) {
       for (var j = 0; j < paletteHeight; j++) {
@@ -486,8 +491,7 @@ define(function (require) {
       }
     }
     return '<img src="data:image/png;base64,'+p.getBase64()+'">';
-    */
-  }
+  }*/
 
 // ANIMATION
   // TODO 
@@ -509,30 +513,31 @@ define(function (require) {
 
 // TODO
   cKit.prototype.gifInit = function() {
-    /*
-    alert('wtf');
-    encoder.start();
-    sceneMode = constants.SCENE_GIF;
-    encoder.setSize(canvasWidth, canvasHeight);
-    savedSettings = {'inCurveEditMode': inCurveEditMode, 'toggleCurveColor': toggleCurveColor};
-    inCurveEditMode = false;
-    toggleCurveColor = false;
-    redraw();
-      */
+    this.encoder.setRepeat(10);
+    this.encoder.setDelay(this.frameDelay);
+    this.encoder.setSize(this.canvasWidth, this.canvasHeight); 
+    this.encoder.start();
+    // TODO check
+    /*this.encoder.on('finished', function(blob) {
+      window.open(URL.createObjectURL(blob));
+    }); */
+    this.sceneMode = constants.SCENE_GIF;
+    this.loopInit();
+    this.redraw();
   }
 
   cKit.prototype.gifComplete = function() {
-    /*
-    encoder.finish();
-    var binary_gif = encoder.stream().getData(); //notice this is different from the as3gif package!
-    var data_url = 'data:image/gif;base64,'+encode64(binary_gif);
+    //this.encoder.render();
+    this.encoder.finish();
+    var binary_gif = this.encoder.stream().getData(); //notice this is different from the as3gif package!
+    var data_url = 'data:image/gif;base64,'+window.encode64(binary_gif);
     //window.open(data_url);
-    document.location.href = data_url;
-    sceneMode = constants.SCENE_NORMAL;
-    sceneReset();
-    inCurveEditMode = savedSettings.inCurveEditMode;
-    toggleCurveColor = savedSettings.toggleCurveColor;
-    */
+    //document.location.href = data_url;
+    window.open(data_url, '_blank');
+    this.sceneMode = constants.SCENE_NORMAL;
+    this.sceneReset();
+    this.inCurveEditMode = this.settingShelf.inCurveEditMode;
+    this.toggleCurveColor = this.settingShelf.toggleCurveColor;
   }
 
   cKit.prototype.loopInit = function() {
@@ -540,9 +545,8 @@ define(function (require) {
     this.segment = 0;
     this.loopStartTime = this.msTime();
     this.segmentStartTime = this.loopStartTime;
-    this.settingShelf.inCurveEditMode = this.inCurveEditMode;
+    this.settingShelf = {'inCurveEditMode': this.inCurveEditMode, 'toggleCurveColor': this.toggleCurveColor};
     this.inCurveEditMode = false;
-    this.settingShelf.toggleCurveColor = this.toggleCurveColor;
     this.toggleCurveColor = false;
   }
 
@@ -562,14 +566,10 @@ define(function (require) {
   }
 
   cKit.prototype.sceneLoop = function() {
-    //alert('delta/segment ' + delta + '/' + segment);
     if(!this.animationMode){
-      // TODO trigger interface changes
-      //$(this).prop('disabled', true);
-      //$('#playSegment, #playAll').prop('disabled', false);
       this.segment=0;
-      //$('#segmentId').html(0);
       this.setState();
+      window.updateInterface();
       return;
     }
     if (this.sceneMode === constants.SCENE_GIF) {
@@ -577,14 +577,14 @@ define(function (require) {
     } else {
       this.delta = this.msTime()-this.segmentStartTime;
     }
-    if(this.segment === 0 && this.delta >= this.pauseTime){
+    if(this.segment === 0 && this.delta >= this.pauseTime) {
       this.segment = 1;
       this.delta = 0;
       this.segmentStartTime = this.msTime();
     } else if(this.segment !== 0){
-      // needs easing
-      if( this.delta > this.keyFrames[this.segment-1].timing*1000 ){
-        if(this.segment < this.keyFrames.length){
+      // TODO EASING modes
+      if( this.delta > this.keyFrames[this.segment-1].timing*1000 ) {
+        if(this.segment < this.keyFrames.length) {
           this.setState();
           this.segment++;
           if(this.sceneMode === this.GIF) {
@@ -593,7 +593,7 @@ define(function (require) {
               this.segmentStartTime = this.msTime();
           }
         } else {
-          if( this.sceneMode === constants.SCENE_GIF ){
+          if( this.sceneMode === constants.SCENE_GIF ) {
             this.gifComplete();
             return;
           }
@@ -606,15 +606,14 @@ define(function (require) {
         this.updateSegment(this.delta);
       }
     }
-    if( this.sceneMode === constants.SCENE_GIF){
+    if( this.sceneMode === constants.SCENE_GIF) {
       // TODO
-      //encoder.addFrame(context);
+      this.encoder.addFrame(this.context);
       setTimeout(function(){
           window.kit.sceneLoop();
         }, 
-      1.0);
-    }
-    else {
+      0.01);
+    } else {
       setTimeout(function(){
         window.kit.sceneLoop();
       }, 
@@ -622,7 +621,7 @@ define(function (require) {
     }
   }
 
-  cKit.prototype.updateSegment = function(delta){
+  cKit.prototype.updateSegment = function(delta) {
     var keyTo = this.segment;
     if(this.segment === this.keyFrames.length) {
       keyTo = 0;
@@ -641,7 +640,9 @@ define(function (require) {
         newCps.push(newPoint);
         index++;
       });
-      var newState = {controlPoints:newCps};
+      var newState = {
+        controlPoints:newCps
+      }
 
       var fromRotation = kit.keyFrames[kit.segment-1].obj[objIndex].rotation;
       var toRotation = kit.keyFrames[keyTo].obj[objIndex].rotation;
@@ -662,10 +663,8 @@ define(function (require) {
 
   cKit.prototype.segmentLoop = function() {
     if(!this.animationMode || this.segment === 0) {
-      // TODO interface updates
-      // $('#stop').prop('disabled', true);
-      // $('#playSegment, #playAll').prop('disabled', false);
       this.setState();
+      window.updateInterface();
       return;
     }
     var delta = this.msTime()-this.loopStartTime-this.pauseTime;
@@ -699,7 +698,6 @@ define(function (require) {
         kit.each(ob.controlPoints, function(cp) {
           var newX = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].x*(1.0-sig)+cp.x*sig;
           var newY = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].y*(1.0-sig)+cp.y*sig;
-          // To-DO check????????
           var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
           newCps.push(newPoint);
           index++;
@@ -738,20 +736,14 @@ define(function (require) {
         this.objList.push(new PedalFlower(this, this.objTypes[i][1], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
       } else if(this.objTypes[i][0] === 'polar') {
         // Not implemented
-        //this.objList.push( new this.polarFlower(this.objTypes[i][1], 20, 250, 'seperated') );
       }
     }
-    //$('#object_ label, #object label').removeClass('active').addClass('disabled');
-    for(var it=1; it<this.objList.length+1; it++) {
-      //$('#object_'+it+', #object'+it).parent().removeClass('disabled');
-    }
     this.selectedObject = 0;
-    // TODO
-    //$('#object_ label:nth-child(1), #object label:nth-child(1)').addClass('active');
-    //$('.oGroup label').removeClass('disabled').removeClass('active');
     this.options = data[0];
     this.currentSelector = 'bg-color';
     this.backgroundColor = this.options.backgroundColor;
+    this.backgroundAlpha = this.options.backgroundAlpha;
+    this.lineColor = this.options.lineColor;
     if(typeof this.resourceList.backgroundImageSource === 'string'){
       this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
     }
@@ -759,19 +751,17 @@ define(function (require) {
       this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImageLabel, this.resourceList.fillImagePage)
     }
     if(!this.preinit) {
-      // TODO
       window.setColor('#'+this.backgroundColor);
     }
-    this.backgroundAlpha = this.options.backgroundAlpha;
-    this.lineColor = this.options.lineColor;
     this.currentSelector = 'line-color';
     if(!this.preinit) {
-      // TODO
       window.setColor('#'+this.lineColor);
     }
     this.segment = 0;
     this.setState();
     this.redraw();
+    // While in debug mode loadData auto fires before object global reference set
+    // TODO
     // window.updateInterface(this);
   }
 
@@ -791,6 +781,8 @@ define(function (require) {
     }
   }
 
+  // TODO
+  /*
   cKit.prototype.setUpClickEvent = function(e) {
     this.addEventHandler(document.getElementById('clickLink'), 'click', this.onLinkClicked, false);
   }
@@ -802,7 +794,7 @@ define(function (require) {
     } else {
       // oNode.removeEventListener(sEvt, fnHandler, true);
     }
-  }
+  } */
 
   for (var kit in cKit.prototype) {
     if(typeof cKit.prototype[kit] === 'function') {

@@ -3,6 +3,8 @@ function initInterface() {
   initAnimationPanel();
   initLoadEvents();
   initKeyboard();
+  kit.encoder = new GIFEncoder();
+  //new GIF({workers: 2, quality: 1});
   updateInterface();
   // for debuggin
   mode('animation');
@@ -244,8 +246,8 @@ function initAnimationPanel(){
     kit.keyFrames[kit.segment].timing = parseFloat($(this).val());
   });
   $('#makeGIF').click(function() {
+    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
     kit.gifInit();
-    kit.loopInit();
     kit.sceneLoop();
   });
 }
