@@ -31,6 +31,17 @@ function updateInterface(){
     $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
     $('#stop').attr('disabled', true);
   }
+
+  // RESOURCES
+  if(typeof kit.resourceList !== 'undefined'){
+    $('#backgroundImageLabel').val(kit.resourceList.backgroundImageLabel);
+    $('#backgroundImageSource').val(kit.resourceList.backgroundImageSource)
+    $('#backgroundImagePage').val(kit.resourceList.backgroundImagePage)
+    $('#fillImageLabel').val(kit.resourceList.fillImageLabel)
+    $('#fillImageSource').val(kit.resourceList.fillImageSource)
+    $('#fillImagePage').val(kit.resourceList.fillImagePage)
+  }
+
   updateObject();
 }
 
@@ -210,16 +221,10 @@ function initAnimationPanel(){
     kit.segmentLoop();
   });
   $('#playAll').click(function() {
-    kit.loopInit();
-    kit.sceneLoop();
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    $('#stop').attr('disabled', false);
+    playAll();
   });
   $('#stop').click(function() {
-    kit.sceneReset();
-    $(this).attr('disabled', true);
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
-    $('#segmentId').html(0);
+    stopScene();
   });
   $('.form-field').focus(function() {
     kit.fieldFocus = true;
@@ -245,21 +250,73 @@ function initAnimationPanel(){
   });
 }
 
+function stopScene(){
+  kit.stopScene();
+  $(this).attr('disabled', true);
+  $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+  $('#segmentId').html(0);
+}
+
+function playAll(){
+  kit.loopInit();
+  kit.sceneLoop();
+  $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
+  $('#stop').attr('disabled', false);
+}
+
 function initLoadEvents() {
   $('#load-data').click(function() {
     var dataz = $.parseJSON($('#data-json-text').val());
     kit.loadData(dataz, false);
+    updateInterface();
   });
   $('#get-data').click(function() {
     var daSettings = {'backgroundColor':kit.backgroundColor, 'backgroundAlpha':kit.backgroundAlpha, 'lineColor':kit.lineColor, 'positions':kit.positions};
-    $('#data-json-text').val(JSON.stringify([daSettings, kit.objTypes, kit.keyFrames]));
+    $('#data-json-text').val(JSON.stringify([daSettings, kit.resourceList, kit.objTypes, kit.keyFrames]));
     kit.setState();
   });
   $('#load-sample').click(function() {
-    loadSample();
     var dataz = $.parseJSON(sampleJSON);
     kit.loadData(dataz, false);
     updateInterface();
+  });
+  $('#clear-scene').click(function() {
+    kit.clearScene();
+  });
+
+  // IMAGE RESOURCES
+  $('#backgroundImageSource, #fillImageSource').focus(function() {
+    kit.fieldFocus = true;
+  });
+  $('#backgroundImageSource').blur(function() {
+    kit.fieldFocus = false;
+    kit.backgroundImageSource = $(this).val();
+    kit.backgroundImageExists = false;
+    kit.backgroundImage = new Image();
+    kit.backgroundImage.onload = function () {
+      kit.backgroundImageExists = true;
+      kit.redraw();
+    };
+    kit.backgroundImage.src = $(this).val();
+    kit.redraw();
+  });
+  $('#backgroundImageLabel').change(function(){
+    kit.backgroundImageLabel = $(this).val();
+  });
+  $('#backgroundImagePage').change(function(){
+    kit.backgroundImagePage = $(this).val();
+  });
+  $('#fillImageSource').blur(function() {
+    kit.fieldFocus = false;
+    kit.fillImageSource = $(this).val();
+    kit.fillImageExists = false;
+    kit.fillImage = new Image();
+    kit.fillImage.onload = function () {
+      kit.fillImageExists = true;
+      kit.redraw();
+    };
+    kit.fillImage.src = $(this).val();
+    kit.redraw();
   });
 }
 
@@ -277,6 +334,8 @@ function mode(type){
     $('#tabs li:nth-child(3) a')[0].click();
   }
 }
+
+
 
 /*--------------------------------Color Picker Init-------------------------------------*/
 var currentSelector;
@@ -356,7 +415,7 @@ function keyDownHandler(event){
   // 65 A KEY
   } else if (keyPressed == 'A') { 
     // STOP
-    kit.sceneReset();
+    kit.stopScene();
     $(this).attr('disabled', true);
     $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
     $('#segmentId').html(0);
@@ -424,7 +483,16 @@ function setInputCells(){
   $('#shape #k').val(6);//kit.objTypes[kit.selectedObject][1]);
 }
 
-var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"},[["flower","8"],["flower","16"],["flower","4"]], \
-[{"obj":[{"controlPoints":[{"x":296.4525272085046,"y":263.1513718271603},{"x":233.5,"y":124},{"x":290.5,"y":186},{"x":320,"y":70}],"rotation":0}, \
-{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":272.5,"y":189},{"x":281.5,"y":251},{"x":320,"y":185}],"rotation":0},{"controlPoints":[ \
-{"x":317.73615371546566,"y":317.73615371546566},{"x":236.5,"y":117},{"x":217.5,"y":58},{"x":320,"y":48}],"rotation":0}],"timing":1}]]'; 
+var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"}, \
+{"backgroundImageSource":"http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg", \
+"backgroundImageLabel":"Ray Scope","backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
+"fillImageSource":"http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg","fillImageLabel":"Dark Mountain", \
+"fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"},[["flower",6],["flower",6]], \
+[{"obj":[{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":408,"y":131},{"x":280,"y":70},{"x":320,"y":70}],"rotation":0}, \
+{"controlPoints":[{"x":282.2044976220715,"y":254.5362695838375},{"x":191,"y":180},{"x":611,"y":148},{"x":320,"y":21}],"rotation":0}], \
+"timing":1},{"obj":[{"controlPoints":[{"x":149.16308946834707,"y":24.10179115107843},{"x":476,"y":533},{"x":205,"y":249},{"x":320,"y":41}], "rotation":0}, \
+{"controlPoints":[{"x":299.3844718719117,"y":284.29285785728575},{"x":232,"y":130},{"x":277,"y":605},{"x":320,"y":21}],"rotation":0}],"timing":1}, \
+{"obj":[{"controlPoints":[{"x":153.89385923452443,"y":32.29572474500833},{"x":622,"y":35},{"x":205,"y":249},{"x":320,"y":591}],"rotation":0}, \
+{"controlPoints":[{"x":263.7305589151625,"y":222.5384691275578},{"x":278,"y":48},{"x":277,"y":605},{"x":320,"y":56}],"rotation":0}],"timing":1}, \
+{"obj":[{"controlPoints":[{"x":153.89385923452443,"y":32.29572474500833},{"x":622,"y":35},{"x":205,"y":249},{"x":320,"y":591}],"rotation":0}, \
+{"controlPoints":[{"x":263.7305589151625,"y":222.5384691275578},{"x":278,"y":48},{"x":575,"y":96},{"x":320,"y":56}],"rotation":0}],"timing":1}]]';

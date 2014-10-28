@@ -3,7 +3,6 @@
  */
 define(function (require) {
   'use strict';
-
   var constants = require('constants');
   var Vector = require('Vector');
   var CPoint = require('CPoint');
@@ -40,7 +39,6 @@ define(function (require) {
     // TODO setup initList via external functions
     this.initList = ['flower'];
     this.curve = [];
-    this.k = 6;
     this.pattern = null;
     this.bodybg ='020202';
     this.selectedObject = 0;
@@ -53,21 +51,23 @@ define(function (require) {
     this.inCurveEditMode = true;
     this.toggleCurveColor = false;
     this.fieldFocus = false;
+    this.settingShelf = {};
 
     this.objList = [];
     this.objTypes = [];
 
     // TESTING
     this.debugMode = true;
+    this.resourceList = {};
     this.backgroundImageExists = false;
-    this.curveImageExists = false;
+    this.fillImageExists = false;
 
     this.initializeCanvas = function () {
       this.initConstants();
       this.bindEvents();
       this.context = this.canvas.getContext('2d');
       var kInputField = document.getElementById('k');
-      kInputField.value = this.k;
+      kInputField.value = constants.DEFAULT_RAYS;
       if (this.objList.length===0) {
         this.build();
       } else {
@@ -75,27 +75,21 @@ define(function (require) {
       }
       this.initFrame();
 
-      if(this.debugMode===true){
+      if(this.debugMode===true) {
         var dataz = window.getSampleJSON();
         if(0===0) {
           this.loadData(dataz, false);
-          // Source: http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset
-          this.addCurveImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg');
-          // TODO Lookup Source
-          // this.addCurveImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg');
-          // Source: http://lucysbasement.tumblr.com/post/100007359383
-          // this.addBackGroundImage('http://33.media.tumblr.com/9383f1a92b139f8e2aab5c7d52528e4d/tumblr_ndg4fznxkO1syynngo1_500.jpg');
-          // Source: http://serescosmicos.tumblr.com/post/94587874401
-          this.addBackGroundImage('http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg');
+          // Source: 
+          //this.addFillImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg', 'Color Wheel Ray', 'http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset');
+          this.addBackGroundImage('http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg', 'Ray Scope', 'http://serescosmicos.tumblr.com/post/94587874401');
+          this.addFillImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg', 'Dark Mountain', 'http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd');
+          // this.addBackGroundImage('http://33.media.tumblr.com/9383f1a92b139f8e2aab5c7d52528e4d/tumblr_ndg4fznxkO1syynngo1_500.jpg', '', 'http://lucysbasement.tumblr.com/post/100007359383');
         }
       }
       this.redraw();
     }
 
     this.initConstants = function () {
-      if (this.dnexist(this.k)) {
-        this.k = 6;
-      }
       if (this.dnexist(this.backgroundColor)) {
         this.backgroundColor = '010201';
       }
@@ -129,8 +123,8 @@ define(function (require) {
         if (kit.initList[i] === 'polar') {
           //kit.polarFlower(250, kit.k);
         } else if (kit.initList[i] === 'flower') {
-          kit.objList.push(new PedalFlower(kit, kit.k, 20, 250, 'seperated'));
-          kit.objTypes.push(['flower', kit.k]);
+          kit.objList.push(new PedalFlower(kit, constants.DEFAULT_RAYS, kit.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, kit.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
+          kit.objTypes.push(['flower', constants.DEFAULT_RAYS]);
         }
       });
     }
@@ -171,7 +165,7 @@ define(function (require) {
       if (isNaN(kVal)) {
         return;
       }
-      this.objList[this.selectedObject] = new PedalFlower(this, kVal, 20, this.canvasHeight / 6 * 2.5, 'seperated');
+      this.objList[this.selectedObject] = new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR);
       this.objTypes[this.selectedObject][1] = kVal;
       this.setState();
       this.redraw();
@@ -209,6 +203,23 @@ define(function (require) {
 
     // init
     this.initializeCanvas();
+
+    this.clearScene = function(){
+      this.objList = [];
+      this.objTypes = [];
+      this.resourceList = {};
+      this.backgroundImageExists = false;
+      this.fillImageExists = false;
+
+      this.keyFrames = [];
+      this.segment = 0;
+      document.getElementById('k').value = constants.DEFAULT_RAYS;
+      this.objList.push(new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));//, 'seperated');
+      this.objTypes.push(['flower', constants.DEFAULT_RAYS]);
+      this.initFrame();
+      this.redraw();
+      window.updateInterface();
+    }
   }
 
   cKit.prototype.addObject = function(){
@@ -237,23 +248,28 @@ define(function (require) {
     }
   }
 
-  cKit.prototype.addCurveImage = function(src){
-    this.curveImage = new Image();
-    this.curveImage.onload = function() {
-      window.kit.curveImageExists = true;
+  cKit.prototype.addFillImage = function (src, label, page) {
+    this.fillImage = new Image();
+    this.fillImage.onload = function () {
+      window.kit.fillImageExists = true;
       window.kit.redraw();
-    }
-    this.curveImage.src = src;
-  }
-
-  cKit.prototype.addBackGroundImage = function(src){
+    };
+    this.fillImage.src = src;
+    this.resourceList.fillImageSource = src;
+    this.resourceList.fillImageLabel = label;
+    this.resourceList.fillImagePage = page;
+  };
+  cKit.prototype.addBackGroundImage = function (src, label, page) {
     this.backgroundImage = new Image();
-    this.backgroundImage.onload = function() {
+    this.backgroundImage.onload = function () {
       window.kit.backgroundImageExists = true;
       window.kit.redraw();
-    }
+    };
     this.backgroundImage.src = src;
-  }
+    this.resourceList.backgroundImageSource = src;
+    this.resourceList.backgroundImageLabel = label;
+    this.resourceList.backgroundImagePage = page;
+  };
 
   cKit.prototype.getPosition = function(e) {
     /* TODO Check for Safari Bug
@@ -504,6 +520,7 @@ define(function (require) {
     redraw();
       */
   }
+
   cKit.prototype.gifComplete = function() {
     /*
     encoder.finish();
@@ -517,12 +534,24 @@ define(function (require) {
     toggleCurveColor = savedSettings.toggleCurveColor;
     */
   }
+
   cKit.prototype.loopInit = function() {
     this.animationMode = true;
     this.segment = 0;
     this.loopStartTime = this.msTime();
     this.segmentStartTime = this.loopStartTime;
+    this.settingShelf.inCurveEditMode = this.inCurveEditMode;
+    this.inCurveEditMode = false;
+    this.settingShelf.toggleCurveColor = this.toggleCurveColor;
+    this.toggleCurveColor = false;
   }
+
+  cKit.prototype.stopScene = function() {
+    this.inCurveEditMode = this.settingShelf.inCurveEditMode;
+    this.toggleCurveColor = this.settingShelf.toggleCurveColor;
+    this.sceneReset();
+  }
+
   cKit.prototype.sceneReset = function() {
     this.animationMode = false;
     for( var i=0; i<this.objList.length; i++){
@@ -696,16 +725,17 @@ define(function (require) {
     setTimeout(function(){window.kit.segmentLoop()}, window.kit.frameDelay);
   }
 
-  cKit.prototype.loadData = function(jsonData, preinit) {
-    var data = this.clone(jsonData);
+  cKit.prototype.loadData = function(data, preinit) {
     this.objList = [];
     this.objTypes = [];
-    this.keyFrames = data[2];
-    this.objTypes = data[1];
+    this.resourceList = data[1];
+    this.objTypes = data[2];
+    this.keyFrames = data[3];
+
     this.objList = [];
     for(var i = 0; i < this.objTypes.length; i++) {
       if(this.objTypes[i][0] === 'flower') {
-        this.objList.push( new PedalFlower(this, this.objTypes[i][1], 20, 250, 'seperated') );
+        this.objList.push(new PedalFlower(this, this.objTypes[i][1], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
       } else if(this.objTypes[i][0] === 'polar') {
         // Not implemented
         //this.objList.push( new this.polarFlower(this.objTypes[i][1], 20, 250, 'seperated') );
@@ -722,6 +752,12 @@ define(function (require) {
     this.options = data[0];
     this.currentSelector = 'bg-color';
     this.backgroundColor = this.options.backgroundColor;
+    if(typeof this.resourceList.backgroundImageSource === 'string'){
+      this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
+    }
+    if(typeof this.resourceList.fillImageSource === 'string'){
+      this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImageLabel, this.resourceList.fillImagePage)
+    }
     if(!this.preinit) {
       // TODO
       window.setColor('#'+this.backgroundColor);

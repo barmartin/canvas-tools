@@ -169,9 +169,9 @@ define(function(require) {
     });
 
     kit.context.closePath();
-    if(kit.curveImageExists) {
+    if(kit.fillImageExists) {
       kit.context.clip();
-      kit.context.drawImage(kit.curveImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
+      kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
     } else {
       kit.context.stroke();
     }

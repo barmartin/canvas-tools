@@ -15,7 +15,10 @@ define(function(require) {
     TWOPIDIV360: 2*Math.PI/360,
 
     // SCENE SETTINGS
-    MAX_OBJECTS: 4
+    MAX_OBJECTS: 4,
+    DEFAULT_RAYS: 6,
+    DEFAULT_INNER_RADIUS_SCALAR: 17,
+    DEFAULT_OUTER_RADIUS_SCALAR: 2.2
   };
 
 });
