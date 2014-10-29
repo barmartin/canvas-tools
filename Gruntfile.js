@@ -43,6 +43,7 @@ module.exports = function(grunt) {
           paths: {
             'app': 'src/app',
             'core': 'src/core/core',
+            'util': 'src/core/util',
             'constants': 'src/core/constants',
             'CPoint': 'src/elements/CPoint',
             'Vector': 'src/elements/Vector',

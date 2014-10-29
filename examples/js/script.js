@@ -4,7 +4,6 @@ function initInterface() {
   initLoadEvents();
   initKeyboard();
   kit.encoder = new GIFEncoder();
-  //new GIF({workers: 2, quality: 1});
   updateInterface();
   // for debuggin
   mode('animation');
@@ -62,7 +61,7 @@ function initShapePanel() {
     kit.redraw();
   });
   $('#k').change( function() {
-    kit.update();
+    kit._update();
     return true;
   });
   $('#myCanvas').mousedown(function(event) {
@@ -109,21 +108,6 @@ function initShapePanel() {
       kit.inCurveEditMode = highlightMode;
       kit.redraw();
     });
-
-    /* Disabled now that there are multiple objects in the scene.
-    $('#linkButton').click(function(){
-      var x1,y1,x2,y2,x3,y3,x4,y4;
-      var cpList = kit.objList[0].controlPoints;
-      x1=kit.cpFormat(cpList[0].x);y1=kit.cpFormat(cpList[0].y);
-      x2=kit.cpFormat(cpList[1].x);y2=kit.cpFormat(cpList[1].y);
-      x3=kit.cpFormat(cpList[2].x);y3=kit.cpFormat(cpList[2].y);
-      x4=kit.cpFormat(cpList[3].x);y4=kit.cpFormat(cpList[3].y);
-      var cpString = x1;
-      cpString = cpString.concat(y1,x2,y2,x3,y3,x4,y4);
-      var urlString = '#f/' + kit.k + '/' + kit.backgroundColor + kit.encodeToHex(kit.backgroundAlpha)+'/' + kit.lineColor +
-              '/' + cpString;
-      window.location = urlString;
-    }); */
   initColorPickers();
 }
 function backwardFrame(){
@@ -134,11 +118,7 @@ function backwardFrame(){
     for( var i=0; i<kit.objList.length; i++) {
       kit.objList[i].setState(kit.keyFrames[kit.segment].obj[i]);
     }
-    //if(kit.segment === 0) {
     $('#segmentId').html(kit.segment);
-    //} else {
-    //  $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
-    //}  
   }
 }
 
@@ -175,11 +155,7 @@ function initAnimationPanel(){
     $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
     $('#length').val(kit.keyFrames[kit.segment].timing);
     kit.setState();
-    //if(kit.segment === 0) {
-      $('#segmentId').html(kit.segment);
-    //} else {
-    //  $('#segmentId').html(kit.segment-1 + '-' + kit.segment);
-    //}
+    $('#segmentId').html(kit.segment);
   });
   $('#clear-frame').click(function() {
     if(kit.segment>0) {
@@ -337,9 +313,7 @@ function mode(type){
   }
 }
 
-
-
-/*--------------------------------Color Picker Init-------------------------------------*/
+// COLOR PICKER CODE
 var currentSelector;
 window.dhx_globalImgPath='img/cp/';
 var paletteWidth = 45;
@@ -390,6 +364,42 @@ function initColorPickers(){
   });
 }
 
+function setColor(color) {
+  var kit = window.kit;
+  if(currentSelector === 'bg-color') {
+    $(currentSelector).attr('style', 'background-color:' + color + ';');
+    $(currentSelector+' img').hide();
+    injectColor(currentSelector, color.substring(1));
+    $(currentSelector+'+ img').show();
+    kit.backgroundColor = color.substring(1);
+    kit.redraw();
+  } else if(currentSelector === 'line-color') {
+    $(currentSelector).attr('style', 'background-color:' + color + ';');
+    $(currentSelector+' img').hide();
+    injectColor(currentSelector, color.substring(1));
+    $(currentSelector+'+ img').show();
+    kit.lineColor = color.substring(1);
+    kit.redraw();
+  } else if( currentSelector === 'bodybg-color') {
+    $(currentSelector).attr('style', 'background-color:' + color + ';');
+    $(currentSelector+' img').hide();
+    injectColor(currentSelector, color.substring(1));
+    $(currentSelector+'+ img').show();
+    $('body, html').attr('style', 'background-color:'+color);
+  }
+  $('.cpc').hide();
+}
+
+function injectColor(id, color) {
+  var thisC = $('#' + id);
+  var theseC = new Array(kit._u.decodeFromHex(color.substring(0, 2)), kit._u.decodeFromHex(color.substring(2, 4)),kit._u.decodeFromHex(color.substring(4, 6)));
+  thisC.attr('style', 'background-color: #' + color);
+  thisC.attr('color', color);
+  //$('#' + id).html(gripImg(theseC[0],theseC[1] ,theseC[2]));
+  return false;
+}
+
+// KEYBOARD HANDLING
 function initKeyboard(){
   document.addEventListener("keydown", keyDownHandler);
 }
@@ -443,40 +453,11 @@ function selectObject(object){
   }
 }
 
-function setColor(color) {
-  var kit = window.kit;
-  if(currentSelector === 'bg-color') {
-    $(currentSelector).attr('style', 'background-color:' + color + ';');
-    $(currentSelector+' img').hide();
-    injectColor(currentSelector, color.substring(1));
-    $(currentSelector+'+ img').show();
-    kit.backgroundColor = color.substring(1);
-    kit.redraw();
-  } else if(currentSelector === 'line-color') {
-    $(currentSelector).attr('style', 'background-color:' + color + ';');
-    $(currentSelector+' img').hide();
-    injectColor(currentSelector, color.substring(1));
-    $(currentSelector+'+ img').show();
-    kit.lineColor = color.substring(1);
-    kit.redraw();
-  } else if( currentSelector === 'bodybg-color') {
-    $(currentSelector).attr('style', 'background-color:' + color + ';');
-    $(currentSelector+' img').hide();
-    injectColor(currentSelector, color.substring(1));
-    $(currentSelector+'+ img').show();
-    $('body, html').attr('style', 'background-color:'+color);
-  }
-  $('.cpc').hide();
-}
-
-function injectColor(id, color) {
-  var thisC = $('#' + id);
-  var theseC = new Array(kit.decodeFromHex(color.substring(0, 2)), kit.decodeFromHex(color.substring(2, 4)),kit.decodeFromHex(color.substring(4, 6)));
-  thisC.attr('style', 'background-color: #' + color);
-  thisC.attr('color', color);
-  //$('#' + id).html(gripImg(theseC[0],theseC[1] ,theseC[2]));
-  return false;
-}
+// LEGACY CODE
+/* 
+Array.prototype.insert = function (index, item) {
+  this.splice(index, 0, item);
+};
 
 function setInputCells(){
   // TODO
@@ -484,6 +465,21 @@ function setInputCells(){
   $('#animation input#length').val(1.0);//kit.keyFrames[kit.segment].timing);
   $('#shape #k').val(6);//kit.objTypes[kit.selectedObject][1]);
 }
+
+/* Disabled now that there are multiple objects in the scene.
+$('#linkButton').click(function(){
+  var x1,y1,x2,y2,x3,y3,x4,y4;
+  var cpList = kit.objList[0].controlPoints;
+  x1=kit.cpFormat(cpList[0].x);y1=kit.cpFormat(cpList[0].y);
+  x2=kit.cpFormat(cpList[1].x);y2=kit.cpFormat(cpList[1].y);
+  x3=kit.cpFormat(cpList[2].x);y3=kit.cpFormat(cpList[2].y);
+  x4=kit.cpFormat(cpList[3].x);y4=kit.cpFormat(cpList[3].y);
+  var cpString = x1;
+  cpString = cpString.concat(y1,x2,y2,x3,y3,x4,y4);
+  var urlString = '#f/' + kit.k + '/' + kit.backgroundColor + kit.encodeToHex(kit.backgroundAlpha)+'/' + kit.lineColor +
+          '/' + cpString;
+  window.location = urlString;
+}); */
 
 var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"}, \
 {"backgroundImageSource":"http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg", \

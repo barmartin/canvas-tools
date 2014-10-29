@@ -7,11 +7,16 @@ define(function (require) {
   var Vector = require('Vector');
   var CPoint = require('CPoint');
   var PedalFlower = require('PedalFlower');
+  var _u = require('util');
 
   var cKit = function () {
+    // Make accessable by external script
     this.constants = constants;
+    this._u = _u;
+
     this.canvas = document.getElementById('myCanvas');
     this.context = '';
+
     // EVENTS
     this.canvasMode = 'static';
 
@@ -25,14 +30,15 @@ define(function (require) {
     this.setTime = 0;
     this.pauseTime = 200;
     //this.timeOut = 20;
-    this.frameDelay = 15;
+    this.frameDelay = 60;
+    this.gifFramerate = 200;
     this.delta = -this.frameDelay;
     this.Vector = Vector;
 
     this.sceneMode = constants.SCENE_NORMAL;
 
     // GIF
-    this.encoder = 11;
+    this.encoder = '';
     this.delayTime = 0;
 
     // TODO setup initList via external functions
@@ -46,7 +52,7 @@ define(function (require) {
     this.lineColor = '9fb4f4';
     this.backgroundAlpha = 1.0;
     document.getElementById('bgAlpha').value = this.backgroundAlpha;
-    // ?
+    // SETUP ID to all interface elements and setter methods in package
 
     this.selectedObject = 0;
     this.controlPointRadius = 6;
@@ -64,7 +70,7 @@ define(function (require) {
     this.objTypes = [];
 
     // TESTING
-    this.debugMode = false;
+    this.debugMode = true;
     this.resourceList = {};
     this.backgroundImageExists = false;
     this.fillImageExists = false;
@@ -97,20 +103,7 @@ define(function (require) {
     }
 
     this.initConstants = function () {
-      /*
-      if (this.dnexist(this.backgroundColor)) {
-        this.backgroundColor = '010201';
-      }
-      if (this.dnexist(this.backgroundAlpha)) {
-        this.backgroundAlpha = 1.0;
-      } else {
-        document.getElementById('bgAlpha').value = this.backgroundAlpha;
-      }
-      if (this.dnexist(this.lineColor)) {
-        this.lineColor = '9fb4f4';
-      } */
-
-      if (this.exists(this.positions)) {
+      if (_u.exists(this.positions)) {
         if(this.positions.length!==24) {return;}
         this.curve.push(this.validateInt(this.positions.substring(0, 3)));
         this.curve.push(this.validateInt(this.positions.substring(3, 6)));
@@ -128,7 +121,7 @@ define(function (require) {
 
     this.build = function () {
       var kit = this;
-      this.each(this.range(0, this.initList.length), function(i) {
+      _u.each(_u.range(0, this.initList.length), function(i) {
         if (kit.initList[i] === 'polar') {
           //kit.polarFlower(250, kit.k);
         } else if (kit.initList[i] === 'flower') {
@@ -152,18 +145,18 @@ define(function (require) {
         // TODO resize background
         this.context.drawImage(this.backgroundImage, 0, 0, this.canvasWidth, this.canvasHeight);
       } else {
-        var rgb = this.toRGB(this.backgroundColor);
+        var rgb = _u.toRGB(this.backgroundColor);
         this.context.fillStyle = 'rgba('+rgb[0]+', ' + rgb[1] + ', ' + rgb[2] + ', ' + this.backgroundAlpha + ')';
         this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       }
 
       var kit = this;
-      this.each(this.objList, function(item) {
+      _u.each(this.objList, function(item) {
         item.draw();
       });    
       // Always draw active control points on top
-      this.each(this.objList, function(item) {
-        if( kit.indexOf( kit.objList, item) === kit.selectedObject) {
+      _u.each(this.objList, function(item) {
+        if(_u.indexOf(kit.objList, item) === kit.selectedObject) {
           item.drawControlPoints();
         }
       }); 
@@ -246,17 +239,6 @@ define(function (require) {
     this.redraw();
   }
 
-  cKit.prototype.cpFormat = function(coord) {
-    if(coord<10) {
-      return '00' + Math.floor(coord);
-    }
-    if(coord<100) {
-      return '0' + Math.floor(coord);
-    } else { 
-      return Math.floor(coord).toString();
-    }
-  }
-
   cKit.prototype.addFillImage = function (src, label, page) {
     this.fillImage = new Image();
     this.fillImage.onload = function () {
@@ -280,115 +262,6 @@ define(function (require) {
     this.resourceList.backgroundImagePage = page;
   };
 
-  cKit.prototype.getPosition = function(e) {
-    /* TODO Check for Safari Bug
-    var targ;
-    if (!e) {
-      e = window.event;
-    }
-    if (e.target) {
-      targ = e.target;
-    } else if (e.srcElement) {
-      targ = e.srcElement;
-    } 
-    if (targ.nodeType === 3) {
-      // defeat Safari bug
-      targ = targ.parentNode;
-    } */
-    var rect = this.canvas.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
-  }
-
-  // TODO check if this is still being used
-  Array.prototype.insert = function (index, item) {
-    this.splice(index, 0, item);
-  };
-
-  cKit.prototype.clone = function(obj) {
-      if (obj == null || 'object' !== typeof obj) {
-        return obj;
-      }
-      var copy = obj.constructor();
-      for (var attr in obj) {
-        if (obj.hasOwnProperty(attr)) { 
-          copy[attr] = obj[attr];
-        }
-      }
-      return copy;
-  }
-
-  cKit.prototype.dnexist = function(item) {
-    return typeof item === 'undefined';
-  }
-
-  cKit.prototype.exists = function(item) {
-    return typeof item !== 'undefined';
-  }
-
-  cKit.prototype.encodeToHex = function(floatString) {
-    return parseInt(255*floatString).toString(16);
-  }
-
-  cKit.prototype.decodeFromHex = function(str) {
-    return parseInt(str, 16);
-  }
-
-  /* To-Do: Int or Default */
-  cKit.prototype.validateInt = function(obj) {
-    return parseInt(obj);
-  }
-
-  cKit.prototype.toRGB = function(str) {
-    return [this.decodeFromHex(str.substring(0,2)), this.decodeFromHex(str.substring(2,4)), this.decodeFromHex(str.substring(4,6))];
-  }
-
-  cKit.prototype.msTime = function() {
-    return new Date().getTime();
-  }
-
-  //  This is underscore's each algorithm
-  cKit.prototype.each = function(obj, func) {
-    if (obj == null) {
-      return obj;
-    }
-    var i, length = obj.length;
-    //console.log('length:' + length + ','+'+length: '+length);
-    if (length === +length) {
-      for (i = 0; i < length; i++) {
-        func(obj[i], i, obj);
-      }
-    }/* else {
-      var keys = _.keys(obj);
-      for (i = 0, length = keys.length; i < length; i++) {
-        func(obj[keys[i]], keys[i], obj);
-      }
-    } */
-    return obj;
-  };
-
-  // TODO
-  cKit.prototype.range = function(st, end) {
-    var r = [];
-    for(var i=st; i<end; i++) {
-      r.push(i);
-    }
-    return r;
-  }
-
-  cKit.prototype.indexOf = function(obj, item) {
-    for(var i=0; i<obj.length; i++) {
-      if(obj[i]===item) {
-        //console.log('indexOf returning:' + i);
-        return i;
-      }
-    }
-    console.log('Item not Found, IndexOf (likely bug)');
-    return -1;
-  }
-
   // EVENT BINDING
   // TODO kit is a hack, need to fix Global access
   cKit.prototype.startDrag = function(event) {
@@ -397,7 +270,7 @@ define(function (require) {
     kit.position = kit.getPosition( event );
     kit.debugConsole('startDrag x:' + kit.position.x + ' y:' + kit.position.y);
     var clickPoint = kit.Vector.rotate( kit.midWidth, kit.midHeight, kit.position, -kit.objList[kit.selectedObject].rotation*kit.constants.TWOPIDIV360 );
-    kit.each(kit.objList[kit.selectedObject].controlPoints, function( thisPoint ){
+    _u.each(kit.objList[kit.selectedObject].controlPoints, function( thisPoint ){
       if( thisPoint.mouseInside( clickPoint ) ){
         thisPoint.inDrag = true;
         kit.canvasMode = 'cpDrag';
@@ -407,7 +280,7 @@ define(function (require) {
     });
   }
 
-  cKit.prototype.endDrag = function(event){
+  cKit.prototype.endDrag = function(event){ 
     // alert('end');
     var kit = window.kit;
     kit.canvasMode = 'static';
@@ -431,19 +304,19 @@ define(function (require) {
       return;
     }
     kit.position = kit.getPosition( event );
-    kit.each( kit.objList, function( object ){
+    _u.each( kit.objList, function( object ){
       // TODO use Index of control point variable rather than iterable
       var index = 0;
-      kit.each( object.controlPoints, function( thisPoint ){
+      _u.each( object.controlPoints, function( thisPoint ){
         // Only drag one control point at a time 
         if( thisPoint.inDrag ) {
           var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -kit.objList[0].rotation*kit.constants.TWOPIDIV360 );
           var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
           newPoint.inDrag = true;
           object.updatePedal( index, newPoint );
-          kit.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::'+ kit.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
+          kit.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::'+ _u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
           //$('#console').html('<p>newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::')
-          //+ cKit.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
+          //+ c_u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
           kit.redraw();
           return;
         } 
@@ -543,7 +416,7 @@ define(function (require) {
   cKit.prototype.loopInit = function() {
     this.animationMode = true;
     this.segment = 0;
-    this.loopStartTime = this.msTime();
+    this.loopStartTime = _u.msTime();
     this.segmentStartTime = this.loopStartTime;
     this.settingShelf = {'inCurveEditMode': this.inCurveEditMode, 'toggleCurveColor': this.toggleCurveColor};
     this.inCurveEditMode = false;
@@ -573,14 +446,14 @@ define(function (require) {
       return;
     }
     if (this.sceneMode === constants.SCENE_GIF) {
-      this.delta += this.frameDelay;
+      this.delta += this.gifFramerate;
     } else {
-      this.delta = this.msTime()-this.segmentStartTime;
+      this.delta = _u.msTime()-this.segmentStartTime;
     }
     if(this.segment === 0 && this.delta >= this.pauseTime) {
       this.segment = 1;
       this.delta = 0;
-      this.segmentStartTime = this.msTime();
+      this.segmentStartTime = _u.msTime();
     } else if(this.segment !== 0){
       // TODO EASING modes
       if( this.delta > this.keyFrames[this.segment-1].timing*1000 ) {
@@ -590,7 +463,7 @@ define(function (require) {
           if(this.sceneMode === this.GIF) {
               this.delta = 0;
           } else {
-              this.segmentStartTime = this.msTime();
+              this.segmentStartTime = _u.msTime();
           }
         } else {
           if( this.sceneMode === constants.SCENE_GIF ) {
@@ -600,7 +473,7 @@ define(function (require) {
           this.segment = 0;
           this.setState();
           // This is a hack on delta for segment = 1
-          this.segmentStartTime = this.msTime();
+          this.segmentStartTime = _u.msTime();
         }
       } else {
         this.updateSegment(this.delta);
@@ -629,10 +502,10 @@ define(function (require) {
     var sig = delta/(this.keyFrames[keyTo].timing*1000);
     var objIndex = 0;
     var kit = this;
-    this.each(this.keyFrames[keyTo].obj, function(ob) {
+    _u.each(this.keyFrames[keyTo].obj, function(ob) {
       var index = 0;
       var newCps = [];
-      kit.each(ob.controlPoints, function(cp) {
+      _u.each(ob.controlPoints, function(cp) {
         var newX = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].x*(1.0-sig)+cp.x*sig;
         var newY = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].y*(1.0-sig)+cp.y*sig;
         // To-DO check????????
@@ -667,7 +540,7 @@ define(function (require) {
       window.updateInterface();
       return;
     }
-    var delta = this.msTime()-this.loopStartTime-this.pauseTime;
+    var delta = _u.msTime()-this.loopStartTime-this.pauseTime;
     // before pause
     if( delta < 0) {
       if(this.setTime !== 0) {
@@ -679,7 +552,7 @@ define(function (require) {
     // after segment end
     } else if( delta > this.keyFrames[this.segment].timing*1000 ){
       if( delta > this.keyFrames[this.segment].timing*1000 + this.pauseTime ){
-        this.loopStartTime = this.msTime();
+        this.loopStartTime = _u.msTime();
         this.segment--;
         this.setState();
         this.segment++;
@@ -692,10 +565,10 @@ define(function (require) {
       var sig = delta/(this.keyFrames[this.segment].timing*1000);
       var objIndex = 0;
       var kit = this;
-      this.each(this.keyFrames[this.segment].obj, function(ob) {
+      _u.each(this.keyFrames[this.segment].obj, function(ob) {
         var index = 0;
         var newCps = [];
-        kit.each(ob.controlPoints, function(cp) {
+        _u.each(ob.controlPoints, function(cp) {
           var newX = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].x*(1.0-sig)+cp.x*sig;
           var newY = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].y*(1.0-sig)+cp.y*sig;
           var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
@@ -765,21 +638,7 @@ define(function (require) {
     // window.updateInterface(this);
   }
 
-  cKit.prototype.debugConsole = function(text) {
-    var HUD = document.getElementById('console')
-    if(HUD.firstChild) {
-      HUD.removeChild(HUD.firstChild);
-    }
-    HUD.appendChild( document.createTextNode(text) );
-  }
 
-  cKit.prototype.addEventHandler = function(oNode, evt, oFunc, bCaptures) {
-    if (this.exists(oNode.attachEvent)) {
-      oNode.attachEvent('on'+evt, oFunc);
-    } else {
-      oNode.addEventListener(evt, oFunc, bCaptures);
-    }
-  }
 
   // TODO
   /*

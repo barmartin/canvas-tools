@@ -2,6 +2,8 @@ define(function(require) {
   'use strict';
   var constants = require('constants');
   var CPoint = require('CPoint');
+  var Vector = require('Vector');
+  var u = require('util');
 
   var PedalFlower = function(kit, pedals, innerRadius, outerRadius, type) {
     // Parent
@@ -20,17 +22,17 @@ define(function(require) {
     /* Setup curve that is the to be reflected/rotated/modified */
     var cp, cp2, cp3, cp4;
     if (this.kit.curve.length === 8) {
-      cp = this.kit.Vector.create(kit.curve[0], this.kit.curve[1]);
-      cp2 = this.kit.Vector.create(kit.curve[2], this.kit.curve[3]);
-      cp3 = this.kit.Vector.create(kit.curve[4], this.kit.curve[5]);
-      cp4 = this.kit.Vector.create(kit.curve[6], this.kit.curve[7]);
+      cp = Vector.create(kit.curve[0], this.kit.curve[1]);
+      cp2 = Vector.create(kit.curve[2], this.kit.curve[3]);
+      cp3 = Vector.create(kit.curve[4], this.kit.curve[5]);
+      cp4 = Vector.create(kit.curve[6], this.kit.curve[7]);
     } else {
-      cp = this.kit.Vector.getPoint(this.kit.midWidth, this.kit.midHeight, this.innerRadius, this.firstInnerAngle);
+      cp = Vector.getPoint(this.kit.midWidth, this.kit.midHeight, this.innerRadius, this.firstInnerAngle);
       var secondCPRadius = (this.outerRadius - this.innerRadius) / 2 + this.innerRadius;
-      cp2 = this.kit.Vector.getPoint(this.kit.midWidth, this.kit.midHeight, secondCPRadius, this.firstInnerAngle);
-      cp3 = this.kit.Vector.getPoint(this.kit.midWidth, this.kit.midHeight, this.outerRadius, this.thisAngle);
+      cp2 = Vector.getPoint(this.kit.midWidth, this.kit.midHeight, secondCPRadius, this.firstInnerAngle);
+      cp3 = Vector.getPoint(this.kit.midWidth, this.kit.midHeight, this.outerRadius, this.thisAngle);
       cp3.x = cp3.x - 40;
-      cp4 = this.kit.Vector.getPoint(this.kit.midWidth, this.kit.midHeight, this.outerRadius, this.thisAngle);
+      cp4 = Vector.getPoint(this.kit.midWidth, this.kit.midHeight, this.outerRadius, this.thisAngle);
     }
     /* getPoint() is a Radial point P(angle, radius) */
     this.firstPedal.push(cp);
@@ -42,9 +44,9 @@ define(function(require) {
     this.controlPoints.push(new CPoint(kit, cp4.x, cp4.y, this, 3));
     this.firstPedal.push(cp4);
     /* Reflect Curve about the y axis to create the first pedal */
-    this.firstPedal.push(this.kit.Vector.create(-1 * (cp3.x - this.kit.midWidth) + this.kit.midWidth, cp3.y));
-    this.firstPedal.push(this.kit.Vector.create(-1 * (cp2.x - this.kit.midWidth) + this.kit.midWidth, cp2.y));
-    this.firstPedal.push(this.kit.Vector.create(-1 * (cp.x - this.kit.midWidth) + this.kit.midWidth, cp.y));
+    this.firstPedal.push(Vector.create(-1 * (cp3.x - this.kit.midWidth) + this.kit.midWidth, cp3.y));
+    this.firstPedal.push(Vector.create(-1 * (cp2.x - this.kit.midWidth) + this.kit.midWidth, cp2.y));
+    this.firstPedal.push(Vector.create(-1 * (cp.x - this.kit.midWidth) + this.kit.midWidth, cp.y));
     /* Use first pedal as a template for the rest of the pedals */
     this.createPedals();
   }
@@ -57,8 +59,8 @@ define(function(require) {
       this.thisAngle = i * this.increment;
       var newPedal = [];
       var thisAngle = this.thisAngle;
-      kit.each(this.firstPedal, function(point) {
-        var thisPoint = kit.Vector.rotate(kit.midWidth, kit.midHeight, point, thisAngle);
+      u.each(this.firstPedal, function(point) {
+        var thisPoint = Vector.rotate(kit.midWidth, kit.midHeight, point, thisAngle);
         //controlPoints.push( new CPoint( thisPoint.x, thisPoint.y ) );
         newPedal.push(thisPoint);
       });
@@ -67,7 +69,7 @@ define(function(require) {
   }
 
   PedalFlower.prototype.updatePedal = function(index, newPoint) {
-    var newCoords = this.kit.Vector.create(newPoint.x, newPoint.y);
+    var newCoords = Vector.create(newPoint.x, newPoint.y);
     if (newCoords.x < 10) {
       newCoords.x = 10;
     }
@@ -86,8 +88,8 @@ define(function(require) {
       this.firstPedal[ 3 ].x = newCoords.x;
       this.firstPedal[ index ].y = newPoint.y;
     } else if (index === 0) {
-      this.innerRadius = this.kit.Vector.distance( this.kit.Vector.create(this.kit.midWidth, this.kit.midHeight), this.kit.Vector.create(newPoint.x, newPoint.y) );
-      newCoords = this.kit.Vector.getPoint( this.kit.midWidth, this.kit.midHeight, this.innerRadius, this.firstInnerAngle );
+      this.innerRadius = Vector.distance( Vector.create(this.kit.midWidth, this.kit.midHeight), Vector.create(newPoint.x, newPoint.y) );
+      newCoords = Vector.getPoint( this.kit.midWidth, this.kit.midHeight, this.innerRadius, this.firstInnerAngle );
       this.firstPedal[ 0 ].x = newCoords.x;
       this.firstPedal[ 0 ].y = newCoords.y;
       this.firstPedal[ 6 ].x = 2 * this.kit.canvasWidth / 2 - newCoords.x;
@@ -135,7 +137,7 @@ define(function(require) {
     var kit = this.kit;
     kit.context.save();
     kit.context.beginPath();
-    kit.each( this.allPedals, function(pedal) {
+    u.each( this.allPedals, function(pedal) {
       /* if ( index === 0 && kit.toggleCurveColor ) {
         kit.context.strokeStyle = '#00ff00';
       } */
@@ -150,7 +152,7 @@ define(function(require) {
       } else {
         var rotated = [];
         for( var i = 0; i < pedal.length; i++) {
-          rotated.push(kit.Vector.rotate(kit.midWidth, kit.midHeight, pedal[i], flower.rotation*constants.TWOPIDIV360));
+          rotated.push(Vector.rotate(kit.midWidth, kit.midHeight, pedal[i], flower.rotation*constants.TWOPIDIV360));
         }
         kit.context.moveTo( rotated[0].x, rotated[0].y );
         kit.context.bezierCurveTo(rotated[1].x, rotated[1].y, rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y);
@@ -180,16 +182,15 @@ define(function(require) {
 
   PedalFlower.prototype.drawControlPoints = function(){
     var cps = this.controlPoints;
-    this.kit.each(cps, function(controlPoint) {
+    u.each(cps, function(controlPoint) {
       controlPoint.draw(cps);
     });
   }
 
   PedalFlower.prototype.getState = function() {
     var cps = [];
-    var kit = this.kit;
-    kit.each(this.controlPoints, function(point){
-      cps.push( kit.Vector.create(point.x, point.y) );
+    u.each(this.controlPoints, function(point){
+      cps.push( Vector.create(point.x, point.y) );
     });
     return { 'controlPoints': cps,
              'rotation': this.rotation };
@@ -198,8 +199,9 @@ define(function(require) {
   PedalFlower.prototype.setState = function(state) {
     var kit = this.kit;
     this.rotation = state.rotation;
+    // TODO check this
     kit.index = 0;
-    kit.each(this.controlPoints, function(cp) {
+    u.each(this.controlPoints, function(cp) {
       cp.x = state.controlPoints[kit.index].x;
       cp.y = state.controlPoints[kit.index].y;
       kit.index++;      
