@@ -61,7 +61,7 @@ function initShapePanel() {
     kit.redraw();
   });
   $('#k').change( function() {
-    kit._update();
+    kit.update();
     return true;
   });
   $('#myCanvas').mousedown(function(event) {
