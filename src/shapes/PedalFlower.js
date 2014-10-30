@@ -174,6 +174,10 @@ define(function(require) {
     if(kit.fillImageExists) {
       kit.context.clip();
       kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
+      if(kit.toggleCurveColor===true){
+        kit.context.lineWidth = 3;
+        kit.context.stroke();
+      }
     } else {
       kit.context.stroke();
     }

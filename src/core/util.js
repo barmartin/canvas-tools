@@ -16,7 +16,7 @@ define(function(require) {
       }
     },
 
-    getPosition: function(e) {
+    getPosition: function(e, canvas) {
       /* TODO Check for Safari Bug
       var targ;
       if (!e) {
@@ -31,7 +31,7 @@ define(function(require) {
         // defeat Safari bug
         targ = targ.parentNode;
       } */
-      var rect = this.canvas.getBoundingClientRect();
+      var rect = canvas.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top

@@ -6,7 +6,7 @@ function initInterface() {
   kit.encoder = new GIFEncoder();
   updateInterface();
   // for debuggin
-  mode('animation');
+  //mode('animation');
 }
 
 function updateInterface(){
@@ -253,12 +253,12 @@ function initLoadEvents() {
     $('#data-json-text').val(JSON.stringify([daSettings, kit.resourceList, kit.objTypes, kit.keyFrames]));
     kit.setState();
   });
-  $('#load-sample').click(function() {
+  $('.load-sample').click(function() {
     var dataz = $.parseJSON(sampleJSON);
     kit.loadData(dataz, false);
     updateInterface();
   });
-  $('#clear-scene').click(function() {
+  $('.clear-scene').click(function() {
     kit.clearScene();
   });
 

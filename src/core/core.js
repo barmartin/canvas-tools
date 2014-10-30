@@ -10,7 +10,7 @@ define(function (require) {
   var _u = require('util');
 
   var cKit = function () {
-    // Make accessable by external script
+    // Make these libs accessable by external script
     this.constants = constants;
     this._u = _u;
 
@@ -64,13 +64,13 @@ define(function (require) {
     this.inCurveEditMode = true;
     this.toggleCurveColor = false;
     this.fieldFocus = false;
-    this.settingShelf = {};
+    this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'inCurveEditMode': this.inCurveEditMode};
 
     this.objList = [];
     this.objTypes = [];
 
     // TESTING
-    this.debugMode = true;
+    this.debugMode = false;
     this.resourceList = {};
     this.backgroundImageExists = false;
     this.fillImageExists = false;
@@ -267,8 +267,8 @@ define(function (require) {
   cKit.prototype.startDrag = function(event) {
     // TODO getPosition must be Global for now, localize?
     var kit = window.kit;
-    kit.position = kit.getPosition( event );
-    kit.debugConsole('startDrag x:' + kit.position.x + ' y:' + kit.position.y);
+    kit.position = _u.getPosition(event, kit.canvas);
+    _u.debugConsole('startDrag x:' + kit.position.x + ' y:' + kit.position.y);
     var clickPoint = kit.Vector.rotate( kit.midWidth, kit.midHeight, kit.position, -kit.objList[kit.selectedObject].rotation*kit.constants.TWOPIDIV360 );
     _u.each(kit.objList[kit.selectedObject].controlPoints, function( thisPoint ){
       if( thisPoint.mouseInside( clickPoint ) ){
@@ -284,10 +284,10 @@ define(function (require) {
     // alert('end');
     var kit = window.kit;
     kit.canvasMode = 'static';
-    kit.position = kit.getPosition( event );
-    kit.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
-    window.each( kit.objList, function( object ){
-      window.each( object.controlPoints, function( thisPoint ){
+    kit.position = _u.getPosition(event, kit.canvas);
+    _u.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
+    _u.each( kit.objList, function( object ){
+      _u.each( object.controlPoints, function( thisPoint ){
         if( thisPoint.inDrag === true ){
           thisPoint.inDrag = false;
           kit.redraw();
@@ -303,7 +303,7 @@ define(function (require) {
     if ( kit.canvasMode !== 'cpDrag' ) {
       return;
     }
-    kit.position = kit.getPosition( event );
+    kit.position = _u.getPosition(event, kit.canvas);
     _u.each( kit.objList, function( object ){
       // TODO use Index of control point variable rather than iterable
       var index = 0;
@@ -314,7 +314,7 @@ define(function (require) {
           var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
           newPoint.inDrag = true;
           object.updatePedal( index, newPoint );
-          kit.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::'+ _u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
+          _u.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::'+ _u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
           //$('#console').html('<p>newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::')
           //+ c_u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
           kit.redraw();
@@ -323,7 +323,7 @@ define(function (require) {
         index++;
       });
     });
-    kit.debugConsole('mousemove x:' + kit.position.x + ' y:' + kit.position.y);
+    _u.debugConsole('mousemove x:' + kit.position.x + ' y:' + kit.position.y);
     //$('#console').html('<p>mousemove x:' + position.x + ' y:' + position.y + '<p>');    
   }
 
@@ -408,9 +408,7 @@ define(function (require) {
     //document.location.href = data_url;
     window.open(data_url, '_blank');
     this.sceneMode = constants.SCENE_NORMAL;
-    this.sceneReset();
-    this.inCurveEditMode = this.settingShelf.inCurveEditMode;
-    this.toggleCurveColor = this.settingShelf.toggleCurveColor;
+    this.stopScene();
   }
 
   cKit.prototype.loopInit = function() {
@@ -431,17 +429,20 @@ define(function (require) {
 
   cKit.prototype.sceneReset = function() {
     this.animationMode = false;
-    for( var i=0; i<this.objList.length; i++){
-      this.objList[i].setState(this.keyFrames[0].obj[i]);
-    }
     this.segment=0;
+    this.setState();
     this.redraw();
   }
 
+  cKit.prototype.setState = function() {
+    for( var i=0; i<this.objList.length; i++){
+      this.objList[i].setState(this.keyFrames[this.segment].obj[i]);
+    }
+  }
+
   cKit.prototype.sceneLoop = function() {
-    if(!this.animationMode){
-      this.segment=0;
-      this.setState();
+    if(!this.animationMode||this.keyFrames.length<2){
+      this.stopScene();
       window.updateInterface();
       return;
     }

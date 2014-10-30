@@ -42,6 +42,16 @@
                         <div class="tab-pane active" id="shape">
                             <form name="canvasProperties" action="">
                                 <div class="row">
+                                    <div class="col-xs-6">
+                                        <span class="large-lab clearfix">Load Sample Scene</span>
+                                        <span class="btn btn-default load-sample">Load Sample</span>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <span class="large-lab clearfix">Clear Scene</span>
+                                        <span class="btn btn-default clear-scene">Clear Scene</span>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col tiny-lab tall-row">Object</div>
                                     <div class="col input-group">
                                         <div class="btn-toolbar" role="toolbar">
@@ -147,7 +157,7 @@
                                     <div class="col small-lab">Animate</div>
                                     <input type="checkbox" name="animate"></input>
                                 </div-->
-                                <div class="row">
+                                <!--div class="row">
                                     <div class="col small-lab tall-row">Keyframes</div>
                                     <div class="btn-group" data-toggle="buttons">
                                         <label class="btn btn-default">
@@ -160,28 +170,48 @@
                                             <input type="radio" name="clear" id="delete-frame"> Delete Frame
                                         </label>
                                     </div>
-                                </div>
-                                <div class="row last">
+                                </div-->
+                                <div class="row">
                                     <div class="btn btn-default" id="stop">Stop</div>
                                     <div class="btn btn-default" id="playSegment">Play Segment</div>
                                     <div class="btn btn-default" id="playAll">Play All</div>
+                                </div>
+                                <div class="row last">
+                                    <span class="large-lab">GIF functionality is WIP</span> <span class="col large-lab"><i>Firefox & server local image fills only</i></span>
+                                    <div class="clearfix"></div>
                                     <div class="btn btn-default" id="makeGIF">Gif</div>
                                 </div>
                             </form>
                         </div><!-- animation tab -->
                         <div class="tab-pane" id="data-tab">
                             <div class="row">
+                                <!--div class="col-md-6">
+                                    <span class="large-lab">Load Sample Scene</div>
+                                    <div class="clearfix"></div>        
+                                    <div class="btn btn-default" class="load-sample">Load Sample</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="large-lab">Clear Scene</div>
+                                    <div class="clearfix"></div>
+                                    <div class="btn btn-default" class="clear-scene">Clear Scene</div>
+                                </div-->
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <span class="large-lab clearfix">Load Sample Scene</span>
+                                    <span class="btn btn-default load-sample">Load Sample</span>
+                                </div>
+                                <div class="col-xs-6">
+                                    <span class="large-lab clearfix">Clear Scene</span>
+                                    <span class="btn btn-default clear-scene">Clear Scene</span>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <textarea class="form-field" id="data-json-text" rows="8" cols="43"></textarea>
                             </div>
                             <div class="row">
                                 <div class="btn btn-default" id="load-data">Load</div>
                                 <div class="btn btn-default" id="get-data">Get Load Script</div>
-                            </div>
-                            <div class="row">
-                                <div class="col large-lab">Sample Scene/Clear Scene</div>
-                                <div class="clearfix"></div>
-                                <div class="btn btn-default" id="load-sample">Load Sample</div>
-                                <div class="btn btn-default" id="clear-scene">Clear Scene</div>
                             </div>
                             <div class="row">
                                 <div class="col medium-lab">Background Image Source</div>
