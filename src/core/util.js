@@ -3,19 +3,6 @@ define(function(require) {
   // var constants = require('constants');
   /* Util Helper */
   return {
-
-    // TODO check if used
-    cpFormat: function(coord) {
-      if(coord<10) {
-        return '00' + Math.floor(coord);
-      }
-      if(coord<100) {
-        return '0' + Math.floor(coord);
-      } else { 
-        return Math.floor(coord).toString();
-      }
-    },
-
     getPosition: function(e, canvas) {
       /* TODO Check for Safari Bug
       var targ;
@@ -38,6 +25,7 @@ define(function(require) {
       };
     },
 
+    // SHALLOW CLONE
     clone: function(obj) {
         if (obj == null || 'object' !== typeof obj) {
           return obj;
@@ -120,13 +108,24 @@ define(function(require) {
       return -1;
     },
 
-
     debugConsole: function(text) {
       var HUD = document.getElementById('console')
       if(HUD.firstChild) {
         HUD.removeChild(HUD.firstChild);
       }
       HUD.appendChild( document.createTextNode(text) );
+    }
+    
+    /*,
+    cpFormat: function(coord) {
+      if(coord<10) {
+        return '00' + Math.floor(coord);
+      }
+      if(coord<100) {
+        return '0' + Math.floor(coord);
+      } else { 
+        return Math.floor(coord).toString();
+      }
     },
 
     addEventHandler: function(oNode, evt, oFunc, bCaptures) {
@@ -135,6 +134,19 @@ define(function(require) {
       } else {
         oNode.addEventListener(evt, oFunc, bCaptures);
       }
-    }
+    }*/
+    // NOT BEING USED
+    /*,
+    function reverseString(oldString) {
+      if(typeof oldString === 'undefined') {
+        return;
+      }
+      var newString = "";
+      for(i=oldString.length; i>=0; i--) {
+        newString += oldString.substring(i-1, i);
+      }
+      return newString;
+    } 
+    */
   }
 });

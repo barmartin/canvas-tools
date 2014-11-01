@@ -70,7 +70,7 @@ define(function (require) {
     this.objTypes = [];
 
     // TESTING
-    this.debugMode = false;
+    this.debugMode = true;
     this.resourceList = {};
     this.backgroundImageExists = false;
     this.fillImageExists = false;
@@ -167,10 +167,12 @@ define(function (require) {
       if (isNaN(kVal)) {
         return;
       }
-      this.objList[this.selectedObject] = new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR);
-      this.objTypes[this.selectedObject][1] = kVal;
-      this.setState();
-      this.redraw();
+      if(this.objList[this.selectedObject] instanceof PedalFlower) {
+        this.objList[this.selectedObject] = new PedalFlower(this, kVal, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR);
+        this.objTypes[this.selectedObject][1] = kVal;
+        this.setState();
+        this.redraw();
+      }
     }
 
     this.initFrame = function() {
@@ -212,13 +214,10 @@ define(function (require) {
 
       this.keyFrames = [];
       this.segment = 0;
-      document.getElementById('k').value = constants.DEFAULT_RAYS;
       this.objList.push(new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));//, 'seperated');
       this.objTypes.push(['flower', constants.DEFAULT_RAYS]);
       this.initFrame();
       this.redraw();
-      // init
-      this.initializeCanvas();
       window.updateInterface();
     }
     this.initializeCanvas();
@@ -419,6 +418,7 @@ define(function (require) {
     this.settingShelf = {'inCurveEditMode': this.inCurveEditMode, 'toggleCurveColor': this.toggleCurveColor};
     this.inCurveEditMode = false;
     this.toggleCurveColor = false;
+    window.updateInterface();
   }
 
   cKit.prototype.stopScene = function() {

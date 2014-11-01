@@ -43,6 +43,12 @@ function updateInterface(){
     $('#fillImagePage').val(kit.resourceList.fillImagePage)
   }
 
+  if(kit.objList[kit.selectedObject] instanceof PedalFlower) {
+    document.getElementById('k').value = kit.objList[kit.selectedObject].pedalCount;
+  }
+  $('#shapeEdit').prop("checked", kit.inCurveEditMode);
+  $('#shapeColor').prop("checked", kit.toggleCurveColor);
+
   updateObject();
 }
 
@@ -53,12 +59,22 @@ function updateObject() {
 
 function initShapePanel() {
   $('#shapeEdit').click( function() {
-    kit.inCurveEditMode = !kit.inCurveEditMode;
+    if(this.checked) {
+      kit.inCurveEditMode = true;
+    } else {
+      kit.inCurveEditMode = false;
+    }
     kit.redraw();
+    //return true;
   });
   $('#shapeColor').click( function() {
-    kit.toggleCurveColor = !kit.toggleCurveColor;
+    if(this.checked) {
+      kit.toggleCurveColor = true;
+    } else {
+      kit.toggleCurveColor = false;
+    }
     kit.redraw();
+    return true;
   });
   $('#k').change( function() {
     kit.update();
