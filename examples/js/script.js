@@ -173,7 +173,7 @@ function initAnimationPanel(){
     kit.setState();
     $('#segmentId').html(kit.segment);
   });
-  $('#clear-frame').click(function() {
+  /*$('#clear-frame').click(function() {
     if(kit.segment>0) {
       kit.keyFrames[kit.segment] = kit.keyFrames[kit.segment-1];
     }
@@ -195,7 +195,7 @@ function initAnimationPanel(){
     } else {
       kit.segment--;
     }
-  });
+  });*/
   $('#playSegment').click(function() {
     kit.animationMode = true;
     if(kit.segment === 0) {
@@ -499,8 +499,8 @@ $('#linkButton').click(function(){
 
 var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"}, \
 {"backgroundImageSource":"http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg", \
-"backgroundImageLabel":"Ray Scope","backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
-"fillImageSource":"http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg","fillImageLabel":"Dark Mountain", \
+"backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
+"fillImageSource":"http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg", \
 "fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"},[["flower",6],["flower",6]], \
 [{"obj":[{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":408,"y":131},{"x":280,"y":70},{"x":320,"y":70}],"rotation":0}, \
 {"controlPoints":[{"x":282.2044976220715,"y":254.5362695838375},{"x":191,"y":180},{"x":611,"y":148},{"x":320,"y":21}],"rotation":0}], \

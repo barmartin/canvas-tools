@@ -90,14 +90,12 @@ define(function (require) {
 
       if(this.debugMode===true) {
         var dataz = window.getSampleJSON();
-        if(0===0) {
-          this.loadData(dataz, false);
-          // Source: 
-          //this.addFillImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg', 'Color Wheel Ray', 'http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset');
-          this.addBackGroundImage('http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg', 'Ray Scope', 'http://serescosmicos.tumblr.com/post/94587874401');
-          this.addFillImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg', 'Dark Mountain', 'http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd');
-          // this.addBackGroundImage('http://33.media.tumblr.com/9383f1a92b139f8e2aab5c7d52528e4d/tumblr_ndg4fznxkO1syynngo1_500.jpg', '', 'http://lucysbasement.tumblr.com/post/100007359383');
-        }
+        // Temporary testing code
+        this.loadData(dataz, false);
+        // this.addFillImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg', 'Color Wheel Ray', 'http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset');
+        // this.addBackGroundImage('http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg', 'Ray Scope', 'http://serescosmicos.tumblr.com/post/94587874401');
+        // this.addFillImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg', 'Dark Mountain', 'http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd');
+        // this.addBackGroundImage('http://33.media.tumblr.com/9383f1a92b139f8e2aab5c7d52528e4d/tumblr_ndg4fznxkO1syynngo1_500.jpg', '', 'http://lucysbasement.tumblr.com/post/100007359383');
       }
       this.redraw();
     }
@@ -227,8 +225,8 @@ define(function (require) {
     if(this.objList.length >= constants.MAX_OBJECTS) {
       return;
     }
-    this.objList.push(new PedalFlower(this, this.k, 20, 250, 'seperated'));
-    this.objTypes.push(['flower', this.k]);
+    this.objList.push(new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
+    this.objTypes.push(['flower', constants.DEFAULT_RAYS]);
     for(var i=0; i<this.keyFrames.length; i++) {
       this.keyFrames[i].obj[this.objList.length-1] = this.objList[this.objList.length-1].getState();
       this.keyFrames[i].obj[this.objList.length-1].timing = document.getElementById('length').value;
