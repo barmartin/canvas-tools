@@ -11,7 +11,7 @@ S: starts animation<br/>
 A: stops animation<br/>
 1-4 selects one of up to four objects in the scene.<br/>
 
-<a href="http://barmartin.github.io/canvas-tools/">Demo Here</a>
+<a href="http://thebarry.github.io/canvas-tools/" target="_blank">Demo Here</a>
 
 <h4>More features soon</h4>
 Animating Text<br/>
