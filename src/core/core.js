@@ -344,11 +344,6 @@ define(function (require) {
     var val = document.getElementById('rotation').value;
     this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val);
   }
-
-  cKit.prototype.setupGif = function(){
-    this.encoder.setRepeat(0);
-    this.encoder.setDelay(this.frameDelay);
-  }
   /*
   cKit.prototype.gripImg = function(r, g, b){
     var p = new PNGlib(paletteWidth, paletteHeight, 256); // construcor takes height, weight and color-depth    
@@ -383,8 +378,8 @@ define(function (require) {
 
 // TODO
   cKit.prototype.gifInit = function() {
-    this.encoder.setRepeat(10);
-    this.encoder.setDelay(this.frameDelay);
+    this.encoder.setRepeat(-1);
+    this.encoder.setDelay(this.gifFramerate);
     this.encoder.setSize(this.canvasWidth, this.canvasHeight); 
     this.encoder.start();
     // TODO check

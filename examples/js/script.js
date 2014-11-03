@@ -498,10 +498,11 @@ $('#linkButton').click(function(){
 }); */
 
 var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"}, \
-{"backgroundImageSource":"http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg", \
+{"backgroundImageSource":"img/radials.jpg", \
 "backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
-"fillImageSource":"http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg", \
-"fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"},[["flower",6],["flower",6]], \
+"fillImageSource":"img/darkmountain.jpg", \
+"fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"},\
+[["flower",6],["flower",6]], \
 [{"obj":[{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":408,"y":131},{"x":280,"y":70},{"x":320,"y":70}],"rotation":0}, \
 {"controlPoints":[{"x":282.2044976220715,"y":254.5362695838375},{"x":191,"y":180},{"x":611,"y":148},{"x":320,"y":21}],"rotation":0}], \
 "timing":1},{"obj":[{"controlPoints":[{"x":149.16308946834707,"y":24.10179115107843},{"x":476,"y":533},{"x":205,"y":249},{"x":320,"y":41}], "rotation":0}, \
