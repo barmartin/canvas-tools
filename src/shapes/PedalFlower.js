@@ -6,8 +6,10 @@ define(function(require) {
   var u = require('util');
 
   var PedalFlower = function(kit, pedals, innerRadius, outerRadius, type) {
-    // Parent
+    // Reference to parent package
     this.kit = kit;
+
+    // Instantiation Variables
     this.rotation = 0;
     this.pedalCount = pedals;
     this.increment = 2 * Math.PI / pedals;
@@ -15,10 +17,12 @@ define(function(require) {
     this.innerRadius = innerRadius;
     this.outerRadius = outerRadius;
 
+    // 
     this.allPedals = [];
     this.firstPedal = [];
     this.controlPoints = [];
     this.thisAngle = 0;
+
     /* Setup curve that is the to be reflected/rotated/modified */
     var cp, cp2, cp3, cp4;
     if (this.kit.curve.length === 8) {
@@ -47,7 +51,11 @@ define(function(require) {
     this.firstPedal.push(Vector.create(-1 * (cp3.x - this.kit.midWidth) + this.kit.midWidth, cp3.y));
     this.firstPedal.push(Vector.create(-1 * (cp2.x - this.kit.midWidth) + this.kit.midWidth, cp2.y));
     this.firstPedal.push(Vector.create(-1 * (cp.x - this.kit.midWidth) + this.kit.midWidth, cp.y));
-    /* Use first pedal as a template for the rest of the pedals */
+
+    /* 
+     * Use first pedal as a template for the rest of the pedals 
+     * First Pedal is drawn at each radial based on pedalCount rotation
+     */
     this.createPedals();
   }
 
@@ -61,13 +69,18 @@ define(function(require) {
       var thisAngle = this.thisAngle;
       u.each(this.firstPedal, function(point) {
         var thisPoint = Vector.rotate(kit.midWidth, kit.midHeight, point, thisAngle);
-        //controlPoints.push( new CPoint( thisPoint.x, thisPoint.y ) );
         newPedal.push(thisPoint);
       });
       this.allPedals.push(newPedal);
     }
   }
 
+  /*
+   * Update the first pedal based on a control point change.
+   * Recreate all the other pedals based on first pedal.
+   * Could make this more efficient with modifications instead 
+   * of recreating the whole flower. (TODO)
+   */
   PedalFlower.prototype.updatePedal = function(index, newPoint) {
     var newCoords = Vector.create(newPoint.x, newPoint.y);
     if (newCoords.x < 10) {
@@ -108,6 +121,11 @@ define(function(require) {
     this.controlPoints[index].y = newCoords.y;
   }
 
+  /*
+   * Modify flower for a set of control points
+   * Called before createPedals
+   * Used when loading a keyframe 
+   */
   PedalFlower.prototype.updateFirstPedal = function(){
     //this.firstPedal = [];
     this.firstPedal[0].x=this.controlPoints[0].x;

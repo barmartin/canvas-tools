@@ -160,10 +160,10 @@ function initAnimationPanel(){
     kit.setState();
     $('#segmentId').html(0);
   });
-  $('#btn-left').click(function() {
+  $('#btn-prev').click(function() {
     backwardFrame();
   });
-  $('#btn-right').click(function() {
+  $('#btn-next').click(function() {
     forwardFrame();
   });
   $('#btn-last').click(function() {

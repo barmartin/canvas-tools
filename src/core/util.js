@@ -27,12 +27,12 @@ define(function(require) {
 
     // SHALLOW CLONE
     clone: function(obj) {
-        if (obj == null || 'object' !== typeof obj) {
+        if(obj == null || 'object' !== typeof obj) {
           return obj;
         }
         var copy = obj.constructor();
-        for (var attr in obj) {
-          if (obj.hasOwnProperty(attr)) { 
+        for(var attr in obj) {
+          if(obj.hasOwnProperty(attr)) { 
             copy[attr] = obj[attr];
           }
         }
@@ -115,7 +115,8 @@ define(function(require) {
       }
       HUD.appendChild( document.createTextNode(text) );
     }
-    
+
+    // NOT BEING USED
     /*,
     cpFormat: function(coord) {
       if(coord<10) {
@@ -134,9 +135,9 @@ define(function(require) {
       } else {
         oNode.addEventListener(evt, oFunc, bCaptures);
       }
-    }*/
-    // NOT BEING USED
-    /*,
+    }
+
+    ,
     function reverseString(oldString) {
       if(typeof oldString === 'undefined') {
         return;

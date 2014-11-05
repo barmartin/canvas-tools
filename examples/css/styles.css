@@ -149,17 +149,17 @@ form .lab {
 }
 .butn {
   cursor: pointer;
-  width: 28px;
-  height: 27px;
+  width: 33px;
+  height: 43px;
 }
 #btn-first {
   background-image: url('../img/pan/first.png');
 }
-#btn-left {
-  background-image: url('../img/pan/left.png');
+#btn-prev {
+  background-image: url('../img/pan/prev.png');
 }
-#btn-right {
-  background-image: url('../img/pan/right.png');
+#btn-next {
+  background-image: url('../img/pan/next.png');
 }
 #btn-last {
   background-image: url('../img/pan/last.png');
