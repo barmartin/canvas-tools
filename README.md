@@ -19,4 +19,5 @@ Image Scaling<br/>
 Tranforms<br/>
 GIF Encoding (WIP)<br/>
 Shaders <br/>
-Object & Keyframe removal
+Object & Keyframe removal <br/>
+Shims

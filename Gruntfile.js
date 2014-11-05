@@ -11,9 +11,21 @@ module.exports = function(grunt) {
         src: ['src/**/*.js']
       }
     },
+    less: {
+      development: {
+        options: {
+          compress: false,
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          'examples/css/styles.css': 'examples/css/styles.less'
+        }
+      }
+    },
     watch: {
       main: {
-        files: ['src/**/*.js'],
+        files: ['src/**/*.js', 'examples/css/styles.less'],
         tasks: ['jshint', 'requirejs'],
         options: {}
       }
@@ -79,7 +91,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.registerTask('default', ['jshint', 'requirejs']);
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.registerTask('default', ['jshint', 'requirejs', 'less']);
 };
