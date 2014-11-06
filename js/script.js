@@ -9,7 +9,7 @@ function initInterface() {
   //mode('animation');
 }
 
-function updateInterface(){
+function updateInterface() {
   // OBJECT
   $('.object button').addClass('disabled').removeClass('active');
   for(var i=1; i<=kit.objList.length; i++) {
@@ -34,27 +34,33 @@ function updateInterface(){
   }
 
   // RESOURCES
-  if(typeof kit.resourceList !== 'undefined'){
+  if(typeof kit.resourceList !== 'undefined') {
     $('#backgroundImageLabel').val(kit.resourceList.backgroundImageLabel);
     $('#backgroundImageSource').val(kit.resourceList.backgroundImageSource)
     $('#backgroundImagePage').val(kit.resourceList.backgroundImagePage)
     $('#fillImageLabel').val(kit.resourceList.fillImageLabel)
     $('#fillImageSource').val(kit.resourceList.fillImageSource)
     $('#fillImagePage').val(kit.resourceList.fillImagePage)
-  }
-
-  if(kit.objList[kit.selectedObject] instanceof PedalFlower) {
-    document.getElementById('k').value = kit.objList[kit.selectedObject].pedalCount;
+  } else {
+    $('#backgroundImageLabel').val('');
+    $('#backgroundImageSource').val('')
+    $('#backgroundImagePage').val('')
+    $('#fillImageLabel').val('')
+    $('#fillImageSource').val('')
+    $('#fillImagePage').val('')
   }
   $('#shapeEdit').prop("checked", kit.inCurveEditMode);
   $('#shapeColor').prop("checked", kit.toggleCurveColor);
-
   updateObject();
 }
 
 function updateObject() {
   $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
   $('#length').val(kit.keyFrames[kit.segment].timing);
+  if(kit.objList[kit.selectedObject] instanceof PetalFlower) {
+    document.getElementById('k').value = kit.objList[kit.selectedObject].petalCount;
+    document.getElementById('radialScalar').value = kit.objList[kit.selectedObject].radialAccent;
+  }
 }
 
 function initShapePanel() {
@@ -77,9 +83,13 @@ function initShapePanel() {
     return true;
   });
   $('#k').change( function() {
-    kit.update();
+    kit.updatePetalCount();
     return true;
   });
+  $('#radialScalar').change( function() {
+    kit.accentRadial();
+    return true;
+  });  
   $('#myCanvas').mousedown(function(event) {
     event.preventDefault();
   });
@@ -103,6 +113,7 @@ function initShapePanel() {
     $('.object [data="'+selected+'"]').addClass('active');
     kit.redraw();
     updateObject();
+    updateInterface();
     return false;
   });
   $('.addObject').click(function() {
@@ -126,7 +137,7 @@ function initShapePanel() {
     });
   initColorPickers();
 }
-function backwardFrame(){
+function backwardFrame() {
   if(kit.segment > 0) {
     kit.segment--;
     $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
@@ -138,7 +149,7 @@ function backwardFrame(){
   }
 }
 
-function forwardFrame(){
+function forwardFrame() {
   kit.segment++;
   $('#segmentId').html(kit.segment);//kit.segment-1 + '-' + kit.segment);
   if(kit.segment >= kit.keyFrames.length) {
@@ -152,7 +163,7 @@ function forwardFrame(){
   }
 }
 
-function initAnimationPanel(){
+function initAnimationPanel() {
   $('#btn-first').click(function() {
     kit.segment = 0;
     $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
@@ -160,10 +171,10 @@ function initAnimationPanel(){
     kit.setState();
     $('#segmentId').html(0);
   });
-  $('#btn-left').click(function() {
+  $('#btn-prev').click(function() {
     backwardFrame();
   });
-  $('#btn-right').click(function() {
+  $('#btn-next').click(function() {
     forwardFrame();
   });
   $('#btn-last').click(function() {
@@ -230,8 +241,8 @@ function initAnimationPanel(){
     var rotation = parseFloat($(this).val());
     kit.objList[kit.selectedObject].rotation = rotation;
     kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation = rotation;
-    kit.objList[kit.selectedObject].allPedals = [];
-    kit.objList[kit.selectedObject].createPedals();
+    kit.objList[kit.selectedObject].allPetals = [];
+    kit.objList[kit.selectedObject].createPetals();
     kit.redraw();
   });
   $('#length').change(function() {
@@ -244,14 +255,14 @@ function initAnimationPanel(){
   });
 }
 
-function stopScene(){
+function stopScene() {
   kit.stopScene();
   $(this).attr('disabled', true);
   $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
   $('#segmentId').html(0);
 }
 
-function playAll(){
+function playAll() {
   kit.loopInit();
   kit.sceneLoop();
   $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
@@ -294,10 +305,10 @@ function initLoadEvents() {
     kit.backgroundImage.src = $(this).val();
     kit.redraw();
   });
-  $('#backgroundImageLabel').change(function(){
+  $('#backgroundImageLabel').change(function() {
     kit.backgroundImageLabel = $(this).val();
   });
-  $('#backgroundImagePage').change(function(){
+  $('#backgroundImagePage').change(function() {
     kit.backgroundImagePage = $(this).val();
   });
   $('#fillImageSource').blur(function() {
@@ -314,17 +325,17 @@ function initLoadEvents() {
   });
 }
 
-function getSampleJSON(){
+function getSampleJSON() {
   return $.parseJSON(sampleJSON);
 }
 
 // (Debug) Select default tab pane
-function mode(type){
-  if(type === 'shape'){
+function mode(type) {
+  if(type === 'shape') {
     $('#tabs li:nth-child(1) a')[0].click();
-  } else if(type==='animation'){
+  } else if(type==='animation') {
     $('#tabs li:nth-child(2) a')[0].click();
-  } else if(type==='data'){
+  } else if(type==='data') {
     $('#tabs li:nth-child(3) a')[0].click();
   }
 }
@@ -335,7 +346,7 @@ window.dhx_globalImgPath='img/cp/';
 var paletteWidth = 45;
 var paletteHeight = 45;
 
-function initColorPickers(){
+function initColorPickers() {
   var kit = window.kit;
   var x = new dhtmlXColorPicker('cpc-line', false, false, false, false);
   var y = new dhtmlXColorPicker('cpc-bodybg', false, false, false, false);
@@ -416,12 +427,12 @@ function injectColor(id, color) {
 }
 
 // KEYBOARD HANDLING
-function initKeyboard(){
+function initKeyboard() {
   document.addEventListener("keydown", keyDownHandler);
 }
 
-function keyDownHandler(event){
-  if(kit.fieldFocus==true){
+function keyDownHandler(event) {
+  if(kit.fieldFocus==true) {
     return false;
   }
   var keyPressed = String.fromCharCode(event.keyCode);
@@ -458,10 +469,10 @@ function keyDownHandler(event){
   return false;
 }
 
-function selectObject(object){
+function selectObject(object) {
   var val=parseFloat(object);
   if(kit.selectedObject!==val-1&&val<=kit.objList.length
-    &&val<=kit.constants.MAX_OBJECTS&&val>=1){
+    &&val<=kit.constants.MAX_OBJECTS&&val>=1) {
     $('.object button').removeClass('active');
     $('.object [data="'+val+'"]').removeClass('disabled').addClass('active');
     kit.selectedObject=val-1;
@@ -502,7 +513,7 @@ var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"
 "backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
 "fillImageSource":"img/darkmountain.jpg", \
 "fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"},\
-[["flower",6],["flower",6]], \
+[["flower", 6, 1],["flower", 6, 1]], \
 [{"obj":[{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":408,"y":131},{"x":280,"y":70},{"x":320,"y":70}],"rotation":0}, \
 {"controlPoints":[{"x":282.2044976220715,"y":254.5362695838375},{"x":191,"y":180},{"x":611,"y":148},{"x":320,"y":21}],"rotation":0}], \
 "timing":1},{"obj":[{"controlPoints":[{"x":149.16308946834707,"y":24.10179115107843},{"x":476,"y":533},{"x":205,"y":249},{"x":320,"y":41}], "rotation":0}, \

@@ -17,4 +17,7 @@ A: stops animation<br/>
 Animating Text<br/>
 Image Scaling<br/>
 Tranforms<br/>
-GIF Encoding (WIP)
+GIF Encoding (WIP)<br/>
+Shaders <br/>
+Object & Keyframe removal <br/>
+Shims
