@@ -206,7 +206,7 @@ define(function(require) {
   PetalFlower.prototype.updateRadialPoint = function() {
     this.increment = 2 * Math.PI / this.petalCount;
     // rotate?
-    this.firstInnerAngle = -0.5 * this.increment;
+    this.firstInnerAngle = -0.5 * this.increment * this.radialAccent;
     var kit = this.kit;
     var flower = this;
     u.each(kit.keyFrames[kit.selectedObject].obj, function(keyFrame){
@@ -223,13 +223,14 @@ define(function(require) {
    * scale should be between 0 and petalCount
    */
   PetalFlower.prototype.accentRadialPoint = function(scale) {
+    this.radialAccent = scale;
     this.increment = 2 * Math.PI / this.petalCount;
     // rotate?
     this.firstInnerAngle = -0.5 * this.increment * scale;
     var kit = this.kit;
     var flower = this;
-    u.each(kit.keyFrames[kit.selectedObject].obj, function(keyFrame){
-      var point = keyFrame.controlPoints[0];
+    u.each(kit.keyFrames, function(keyFrame){
+      var point = keyFrame.obj[kit.selectedObject].controlPoints[0];
       var radius = Vector.distance(flower.center, Vector.create(point.x, point.y));
       var newPosition = Vector.getPolarPoint(flower.center, radius, flower.firstInnerAngle);
       point.x = newPosition.x;

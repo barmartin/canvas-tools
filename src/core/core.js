@@ -330,7 +330,7 @@ define(function (require) {
       _u.each( object.controlPoints, function( thisPoint ){
         // Only drag one control point at a time 
         if( thisPoint.inDrag ) {
-          var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -kit.objList[0].rotation*kit.constants.TWOPIDIV360 );
+          var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -object.rotation*kit.constants.TWOPIDIV360 );
           var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
           newPoint.inDrag = true;
           object.updatePetal( index, newPoint );
