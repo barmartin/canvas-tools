@@ -209,8 +209,8 @@ define(function(require) {
     this.firstInnerAngle = -0.5 * this.increment * this.radialAccent;
     var kit = this.kit;
     var flower = this;
-    u.each(kit.keyFrames[kit.selectedObject].obj, function(keyFrame){
-      var point = keyFrame.controlPoints[0];
+    u.each(kit.keyFrames, function(keyFrame){
+      var point = keyFrame.obj[kit.selectedObject].controlPoints[0];
       var radius = Vector.distance(flower.center, Vector.create(point.x, point.y));
       var newPosition = Vector.getPolarPoint(flower.center, radius, flower.firstInnerAngle);
       point.x = newPosition.x;
