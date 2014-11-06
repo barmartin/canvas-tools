@@ -14,6 +14,7 @@
       <link rel="stylesheet/less" type="text/css" href="css/styles.less"-->
     </head>
     <body>
+   <body>
         <div class="container">
             <div class="corner">
                 <div id="bodybg-color" class="cHolder"></div>
@@ -67,10 +68,21 @@
                                 </div>
                                 <div class="row">
                                     <div class="col lab">
-                                        Pedal Count&nbsp;
+                                        Petal Count&nbsp;
                                     </div>
                                     <div class="col">
                                         <input class="form-field" type="text" id="k" size="1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col lab">
+                                        Radial Accent &nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <input class="form-field" type="text" id="radialScalar" size="2" value="1">
+                                    </div>
+                                    <div class="col lab">
+                                        &nbsp; 0 < Accent < Petals
                                     </div>
                                 </div>
                                 <div class="row">
@@ -128,9 +140,9 @@
                                 <div class="row">
                                     <div class="col small-lab tall-row">Segment</div>
                                     <div class="col butn" id="btn-first"></div>
-                                    <div class="col butn" id="btn-left"></div>
+                                    <div class="col butn" id="btn-prev"></div>
                                     <div id="segmentId" class="col tall-row" style="margin:6px 11px 11px;">0</div>
-                                    <div class="col butn" id="btn-right"></div>
+                                    <div class="col butn" id="btn-next"></div>
                                     <div class="col butn" id="btn-last"></div>
                                 </div>
                                 <div class="row">
@@ -236,7 +248,7 @@
             </div> <!-- /content -->
             <hr>            
             <footer>
-                <p class="copy">Open Source - Kit </p>
+                <a href="https://github.com/thebarry/canvas-tools/">Canvas Kit - Github Page </a>
             </footer>
         </div> <!-- /container -->
         <script type="text/javascript" src="js/lib/jquery-1.11.1.min.js"></script>
