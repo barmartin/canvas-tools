@@ -17,14 +17,14 @@ define(function(require) {
       }
       var realPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, this, parentObject.rotation*constants.TWOPIDIV360);
       if (this.inDrag) {
-        if (index === 1) {
+        if (this.index === 1) {
           var _anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[0], parentObject.rotation*constants.TWOPIDIV360);
           kit.context.beginPath();
           kit.context.moveTo(realPoint.x, realPoint.y);
           kit.context.lineTo(_anchorPoint.x, _anchorPoint.y);
           kit.context.stroke();
         }
-        else if (index === 2) {
+        else if (this.index === 2) {
           var anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[3], parentObject.rotation*constants.TWOPIDIV360);
           kit.context.beginPath();
           kit.context.moveTo(realPoint.x, realPoint.y);
@@ -45,10 +45,10 @@ define(function(require) {
         kit.context.fill();
       }
       kit.context.stroke();
-    };
+    }
     this.mouseInside = function(point) {
-      return this.kit.controlPointRadius + 2 > this.kit.Vector.distance(point, this);
-    };
+      return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > this.kit.Vector.distance(point, this);
+    }
   }
   return CPoint;
 });

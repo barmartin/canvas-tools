@@ -55,9 +55,13 @@ define(function(require) {
       return parseInt(str, 16);
     },
 
-    /* To-Do: Int or Default */
+    // TODO: Int or Default 
     validateInt: function(obj) {
       return parseInt(obj);
+    },
+    // TODO validation
+    validateFloat: function(obj) {
+      return parseFloat(obj);
     },
 
     toRGB: function(str) {

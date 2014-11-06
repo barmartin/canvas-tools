@@ -25,6 +25,13 @@ define(function(require) {
       var nP =  this.create( thisX, thisY );
       return nP;
     },
+    // TODO replace getPoint calls
+    getPolarPoint : function(center, radius, angle) {
+      var thisX = center.x + radius * Math.sin( angle );
+      var thisY = center.y - radius * Math.cos( angle );
+      var nP =  this.create( thisX, thisY );
+      return nP;
+    },
     rotate : function(centerX, centerY, point, thisAngle) {
       var cosTheta = Math.cos( thisAngle );
       var sinTheta = Math.sin( thisAngle );

@@ -6,7 +6,7 @@ define(function (require) {
   var constants = require('constants');
   var Vector = require('Vector');
   var CPoint = require('CPoint');
-  var PedalFlower = require('PedalFlower');
+  var PetalFlower = require('PetalFlower');
   var _u = require('util');
 
   var cKit = function () {
@@ -54,12 +54,13 @@ define(function (require) {
     document.getElementById('bgAlpha').value = this.backgroundAlpha;
     // SETUP ID to all interface elements and setter methods in package
 
-    this.selectedObject = 0;
+    // CANVAS SETTINGS
     this.controlPointRadius = 6;
     this.canvasWidth = 640;
     this.canvasHeight = 640;
     this.midWidth = this.canvasWidth / 2;
     this.midHeight = this.canvasHeight / 2;
+    this.center = Vector.create(this.midWidth, this.midHeight);
 
     this.inCurveEditMode = true;
     this.toggleCurveColor = false;
@@ -68,6 +69,7 @@ define(function (require) {
 
     this.objList = [];
     this.objTypes = [];
+    this.selectedObject = 0;
 
     // TESTING
     this.debugMode = true;
@@ -123,8 +125,9 @@ define(function (require) {
         if (kit.initList[i] === 'polar') {
           //kit.polarFlower(250, kit.k);
         } else if (kit.initList[i] === 'flower') {
-          kit.objList.push(new PedalFlower(kit, constants.DEFAULT_RAYS, kit.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, kit.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
-          kit.objTypes.push(['flower', constants.DEFAULT_RAYS]);
+          kit.objList.push(new PetalFlower(kit, constants.DEFAULT_RAYS, 1, kit.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
+                                           kit.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, kit.center));
+          kit.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
         }
       });
     }
@@ -160,14 +163,31 @@ define(function (require) {
       }); 
     }
 
-    this.update = function () {
+
+    this.updatePetalCount = function () {
       var kVal = document.getElementById('k').value;
       if (isNaN(kVal)) {
         return;
       }
-      if(this.objList[this.selectedObject] instanceof PedalFlower) {
-        this.objList[this.selectedObject] = new PedalFlower(this, kVal, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR);
+      if(this.objList[this.selectedObject] instanceof PetalFlower) {
+        this.objList[this.selectedObject] = new PetalFlower(this, kVal, 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR,
+                                                            this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center);
         this.objTypes[this.selectedObject][1] = kVal;
+        this.objList[this.selectedObject].updateRadialPoint();
+        this.setState();
+        this.redraw();
+      }
+    }
+    this.accentRadial = function() {
+      var radialScalar = document.getElementById('radialScalar').value;
+      if (isNaN(radialScalar)) {
+        return;
+      }
+      radialScalar = _u.validateFloat(radialScalar);
+      this.objTypes[this.selectedObject][2] = radialScalar;
+      var thisObject = this.objList[this.selectedObject];
+      if(radialScalar > 0&&radialScalar < thisObject.petalCount) {
+        thisObject.accentRadialPoint(radialScalar);
         this.setState();
         this.redraw();
       }
@@ -191,13 +211,13 @@ define(function (require) {
     }
 
     this.setState = function() {
-      for( var i=0; i<this.objList.length; i++) {
+      for(var i=0; i<this.objList.length; i++) {
         this.objList[i].setState(this.keyFrames[this.segment].obj[i]);
       }
     }
 
     this.getState = function() {
-      for( var i = 0; i<this.objList.length; i++){
+      for(var i = 0; i<this.objList.length; i++){
         this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
       }
       this.keyFrames[this.segment].timing = parseFloat(document.getElementById('length').value);
@@ -212,8 +232,10 @@ define(function (require) {
 
       this.keyFrames = [];
       this.segment = 0;
-      this.objList.push(new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));//, 'seperated');
-      this.objTypes.push(['flower', constants.DEFAULT_RAYS]);
+      this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
+                                        this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+      this.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
+      this.selectedObject = 0;
       this.initFrame();
       this.redraw();
       window.updateInterface();
@@ -225,8 +247,9 @@ define(function (require) {
     if(this.objList.length >= constants.MAX_OBJECTS) {
       return;
     }
-    this.objList.push(new PedalFlower(this, constants.DEFAULT_RAYS, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
-    this.objTypes.push(['flower', constants.DEFAULT_RAYS]);
+    this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
+                                      this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+    this.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
     for(var i=0; i<this.keyFrames.length; i++) {
       this.keyFrames[i].obj[this.objList.length-1] = this.objList[this.objList.length-1].getState();
       this.keyFrames[i].obj[this.objList.length-1].timing = document.getElementById('length').value;
@@ -310,7 +333,7 @@ define(function (require) {
           var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -kit.objList[0].rotation*kit.constants.TWOPIDIV360 );
           var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
           newPoint.inDrag = true;
-          object.updatePedal( index, newPoint );
+          object.updatePetal( index, newPoint );
           _u.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::'+ _u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
           //$('#console').html('<p>newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::')
           //+ c_u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
@@ -600,9 +623,10 @@ define(function (require) {
     this.objList = [];
     for(var i = 0; i < this.objTypes.length; i++) {
       if(this.objTypes[i][0] === 'flower') {
-        this.objList.push(new PedalFlower(this, this.objTypes[i][1], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR));
+        this.objList.push(new PetalFlower(this, this.objTypes[i][1], 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
+                                          this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
       } else if(this.objTypes[i][0] === 'polar') {
-        // Not implemented
+        // TODO
       }
     }
     this.selectedObject = 0;
@@ -611,6 +635,8 @@ define(function (require) {
     this.backgroundColor = this.options.backgroundColor;
     this.backgroundAlpha = this.options.backgroundAlpha;
     this.lineColor = this.options.lineColor;
+    this.backgroundImageExists = false;
+    this.fillImageExists = false;
     if(typeof this.resourceList.backgroundImageSource === 'string'){
       this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
     }
@@ -631,23 +657,6 @@ define(function (require) {
     // TODO
     // window.updateInterface(this);
   }
-
-
-
-  // TODO
-  /*
-  cKit.prototype.setUpClickEvent = function(e) {
-    this.addEventHandler(document.getElementById('clickLink'), 'click', this.onLinkClicked, false);
-  }
-
-  cKit.prototype.removeEventHandler = function(oNode, evt, oFunc, bCaptures){
-    if (cKit.exists(window.event)) {
-      // TODO
-      // oNode.detachEvent('on' + sEvt, oFunc);
-    } else {
-      // oNode.removeEventListener(sEvt, fnHandler, true);
-    }
-  } */
 
   for (var kit in cKit.prototype) {
     if(typeof cKit.prototype[kit] === 'function') {

@@ -4,7 +4,7 @@ define(function (require) {
   require('constants');
   require('Vector');
   require('CPoint');
-  require('PedalFlower');
+  require('PetalFlower');
 
   var _globalInit = function() {
     window.kit = new cKit();
