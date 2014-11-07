@@ -157,6 +157,7 @@ define(function(require) {
     kit.context.save();
     kit.context.beginPath();
     u.each( this.allPetals, function(Petal) {
+      // TODO manage these settings 
       /* if ( index === 0 && kit.toggleCurveColor ) {
         kit.context.strokeStyle = '#00ff00';
       } */
