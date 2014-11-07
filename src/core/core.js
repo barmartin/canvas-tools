@@ -77,7 +77,7 @@ define(function (require) {
     this.backgroundImageExists = false;
     this.fillImageExists = false;
 
-    this.initializeCanvas = function () {
+    this.initializeCanvas = function() {
       this.initConstants();
       this.bindEvents();
       this.context = this.canvas.getContext('2d');
@@ -102,7 +102,7 @@ define(function (require) {
       this.redraw();
     }
 
-    this.initConstants = function () {
+    this.initConstants = function() {
       if (_u.exists(this.positions)) {
         if(this.positions.length!==24) {return;}
         this.curve.push(this.validateInt(this.positions.substring(0, 3)));
@@ -119,7 +119,7 @@ define(function (require) {
       }
     }
 
-    this.build = function () {
+    this.build = function() {
       var kit = this;
       _u.each(_u.range(0, this.initList.length), function(i) {
         if (kit.initList[i] === 'polar') {
@@ -132,7 +132,7 @@ define(function (require) {
       });
     }
 
-    this.redraw = function () {
+    this.redraw = function() {
       // Clear the canvas
       this.context.save();
       this.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -164,7 +164,7 @@ define(function (require) {
     }
 
 
-    this.updatePetalCount = function () {
+    this.updatePetalCount = function() {
       var kVal = document.getElementById('k').value;
       if (isNaN(kVal)) {
         return;
@@ -256,6 +256,49 @@ define(function (require) {
     }
     var ind = this.objList.length-1;
     this.selectedObject = ind;
+    this.redraw();
+  }
+
+  cKit.prototype.removeObject = function(){
+    if(this.objList.length<2) {
+      return;
+    }
+    _u.removeArrayEntry(this.objList, this.selectedObject);
+    _u.removeArrayEntry(this.objTypes, this.selectedObject);
+    var kit = this;
+    _u.each(this.keyFrames, function(keyFrame) {
+      _u.removeArrayEntry(keyFrame.obj, kit.selectedObject);
+    });
+    if(this.selectedObject===this.objList.length) {
+      this.selectedObject--;
+    }
+    this.redraw();
+    window.updateInterface();
+  }
+
+  cKit.prototype.removeSegment = function(){
+    if(this.keyFrames.length<2) {
+      return;
+    }
+    _u.removeArrayEntry(this.keyFrames, this.segment);
+    if(this.segment===this.keyFrames.length) {
+      this.segment--;
+    }
+    window.updateInterface();
+    this.setState();
+    this.redraw();
+  }
+
+  cKit.prototype.removeLast = function(){
+    if(this.keyFrames.length<2) {
+      return;
+    }
+    _u.removeArrayEntry(this.keyFrames, this.keyFrames.length-1);
+    if(this.segment===this.keyFrames.length) {
+      this.segment--;
+    }
+    window.updateInterface();
+    this.setState();
     this.redraw();
   }
 
@@ -359,6 +402,9 @@ define(function (require) {
     //this.animationEvents();
   }
 
+  /*
+   * Used to store the canvas configuration to the current frame
+   */
   cKit.prototype.setFrame = function(){
     for( var i = 0; i<this.objList.length; i++){
         this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
@@ -450,6 +496,10 @@ define(function (require) {
     this.redraw();
   }
 
+  /*
+   * Used to set the canvas state with the keyframe
+   *
+   */
   cKit.prototype.setState = function() {
     for( var i=0; i<this.objList.length; i++){
       this.objList[i].setState(this.keyFrames[this.segment].obj[i]);
@@ -473,7 +523,7 @@ define(function (require) {
       this.segmentStartTime = _u.msTime();
     } else if(this.segment !== 0){
       // TODO EASING modes
-      if( this.delta > this.keyFrames[this.segment-1].timing*1000 ) {
+      if(this.delta > this.keyFrames[this.segment-1].timing*1000) {
         if(this.segment < this.keyFrames.length) {
           this.setState();
           this.segment++;
@@ -496,7 +546,7 @@ define(function (require) {
         this.updateSegment(this.delta);
       }
     }
-    if( this.sceneMode === constants.SCENE_GIF) {
+    if(this.sceneMode === constants.SCENE_GIF) {
       // TODO
       this.encoder.addFrame(this.context);
       setTimeout(function(){
@@ -537,7 +587,7 @@ define(function (require) {
       var fromRotation = kit.keyFrames[kit.segment-1].obj[objIndex].rotation;
       var toRotation = kit.keyFrames[keyTo].obj[objIndex].rotation;
       var del = toRotation-fromRotation;
-      if( Math.abs(del) > 180 ) {
+      if(Math.abs(del) > 180) {
         if(del<0) {
           toRotation+=360;
         } else {
@@ -567,8 +617,8 @@ define(function (require) {
         this.setTime = 0;
       }
     // after segment end
-    } else if( delta > this.keyFrames[this.segment].timing*1000 ){
-      if( delta > this.keyFrames[this.segment].timing*1000 + this.pauseTime ){
+    } else if(delta > this.keyFrames[this.segment].timing*1000) {
+      if(delta > this.keyFrames[this.segment].timing*1000 + this.pauseTime) {
         this.loopStartTime = _u.msTime();
         this.segment--;
         this.setState();

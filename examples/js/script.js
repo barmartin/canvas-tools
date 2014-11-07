@@ -127,14 +127,23 @@ function initShapePanel() {
     return false;
   });
 
-    $('#imageButton').click(function() {
-      var highlightMode = kit.inCurveEditMode;
-      kit.inCurveEditMode = false;
-      kit.redraw();
-      window.open(kit.canvas.toDataURL('image/png'));
-      kit.inCurveEditMode = highlightMode;
-      kit.redraw();
-    });
+  $('#imageButton').click(function() {
+    var highlightMode = kit.inCurveEditMode;
+    kit.inCurveEditMode = false;
+    kit.redraw();
+    window.open(kit.canvas.toDataURL('image/png'));
+    kit.inCurveEditMode = highlightMode;
+    kit.redraw();
+  });
+  $('#removeObject').click(function() {
+    kit.removeObject();
+  });
+  $('#removeSegment').click(function() {
+    kit.removeSegment();
+  });
+  $('#removeLast').click(function() {
+    kit.removeLast();
+  });
   initColorPickers();
 }
 function backwardFrame() {

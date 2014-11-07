@@ -112,6 +112,10 @@ define(function(require) {
       return -1;
     },
 
+    removeArrayEntry: function(arr, index){
+      arr.splice(index, 1);
+    },
+
     debugConsole: function(text) {
       var HUD = document.getElementById('console')
       if(HUD.firstChild) {
