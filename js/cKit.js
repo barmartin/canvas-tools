@@ -1,4 +1,4 @@
-/*! cKit.js v0.2.0 November 07, 2014 */
+/*! cKit.js v0.2.1 November 07, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -15,15 +15,11 @@ var constants = function (require) {
         'lighter': 'lighter',
         'darker': 'darker',
         'xor': 'xor',
-        'copy': 'copy',
         'source-atop': 'atop',
-        'source-in': 'in',
         'source-out': 'out',
         'source-over': 'over',
         'destination-atop': 'bottom',
-        'destination-in': 'bottom-intersection',
-        'destination-out': 'bottom-out',
-        'destination-over': 'bottom-over'
+        'destination-out': 'bottom-out'
       }
     };
   }({});
@@ -376,7 +372,7 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
         kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
         if (kit.toggleCurveColor === true) {
           kit.context.globalCompositeOperation = 'source-over';
-          kit.context.lineWidth = 2;
+          kit.context.lineWidth = 1.9;
           kit.context.stroke();
         }
       } else {

@@ -141,7 +141,7 @@ function initShapePanel() {
   });
   $('#sourceMode').html(dropdownHTML).change(function() {
     var key = kit._u.getKeys(kit.constants.SOURCE_MODES)[this.value];
-    kit.sourceMode = kit.constants.SOURCE_MODES[key];
+    kit.sourceMode = key;
     kit.redraw();
   });
 
