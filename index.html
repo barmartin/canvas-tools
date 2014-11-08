@@ -14,7 +14,6 @@
       <link rel="stylesheet/less" type="text/css" href="css/styles.less"-->
     </head>
     <body>
-   <body>
         <div class="container">
             <div class="corner">
                 <div id="bodybg-color" class="cHolder"></div>
@@ -111,6 +110,11 @@
                                     </div>                            
                                     
                                 </div> 
+                                <div class="row">
+                                    <div class="lab"> Composition Mode </div>
+                                    <select class="form-control" id="sourceMode">
+                                    </select>
+                                </div>
                                 <div id="cpc-line" class="row cpc" style="display:none">
                                 </div>  
                                 
@@ -130,12 +134,12 @@
                                         <input type="checkbox" name="shapeColor" id="shapeColor">
                                     </div>
                                 </div>
-                                <div class="row last">
-                                    <!--div class="btn btn-default" id="linkButton">Get Link</div-->
+                                <div class="row">
+                                    <div class="btn btn-default" id="removeObject">Remove Object</div>
                                     <div class="btn btn-default" id="imageButton">Get Image</div>
                                 </div>                        
                             </form>
-                        </div> <!-- Object Pane -->
+                        </div> <!-- /Object Tab -->
 
                       <div class="tab-pane" id="animation">
                             <form name="animation" action="">
@@ -190,13 +194,17 @@
                                     <div class="btn btn-default" id="playSegment">Play Segment</div>
                                     <div class="btn btn-default" id="playAll">Play All</div>
                                 </div>
+                                <div class="row">
+                                    <div class="btn btn-default" id="removeSegment">Remove Keyframe</div>
+                                    <div class="btn btn-default" id="removeLast">Remove Last Keyframe</div>
+                                </div>
                                 <div class="row last">
                                     <span class="large-lab">GIF functionality is WIP</span> <span class="col large-lab"><i>Firefox & server local image fills only</i></span>
                                     <div class="clearfix"></div>
                                     <div class="btn btn-default" id="makeGIF">Gif</div>
                                 </div>
                             </form>
-                        </div><!-- animation tab -->
+                        </div><!-- /Animation Tab -->
                         <div class="tab-pane" id="data-tab">
                             <div class="row">
                                 <!--div class="col-md-6">
@@ -243,7 +251,7 @@
                                 <div class="col medium-lab">Fill Image Page (optional)</div>
                                 <input class="form-field" type="text" name="fillImagePage" id="fillImagePage" placeholder="http://example.com" value="" size="40"></input>
                             </div>
-                        </div><!-- data tab -->
+                        </div><!-- /Data Tab -->
  
                     </div>
                 </div> <!-- /interface -->

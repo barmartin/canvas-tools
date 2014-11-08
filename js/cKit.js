@@ -1,4 +1,4 @@
-/*! cKit.js v0.1.10 November 06, 2014 */
+/*! cKit.js v0.1.12 November 07, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -10,7 +10,21 @@ var constants = function (require) {
       DEFAULT_RAYS: 6,
       DEFAULT_INNER_RADIUS_SCALAR: 17,
       DEFAULT_OUTER_RADIUS_SCALAR: 2.2,
-      MAX_CLICK_DISTANCE: 2
+      MAX_CLICK_DISTANCE: 2,
+      SOURCE_MODES: {
+        'lighter': 'lighter',
+        'darker': 'darker',
+        'xor': 'xor',
+        'copy': 'copy',
+        'source-atop': 'atop',
+        'source-in': 'in',
+        'source-out': 'out',
+        'source-over': 'over',
+        'destination-atop': 'bottom',
+        'destination-in': 'bottom-intersection',
+        'destination-out': 'bottom-out',
+        'destination-over': 'bottom-over'
+      }
     };
   }({});
 var Vector = function (require) {
@@ -165,8 +179,22 @@ var util = function (require) {
           for (i = 0; i < length; i++) {
             func(obj[i], i, obj);
           }
+        } else {
+          var keys = window.kit._u.getKeys(obj);
+          for (i = 0, length = keys.length; i < length; i++) {
+            func(obj[keys[i]], keys[i], obj);
+          }
         }
         return obj;
+      },
+      getKeys: function (obj) {
+        var keys = [];
+        for (var key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            keys.push(key);
+          }
+        }
+        return keys;
       },
       range: function (st, end) {
         var r = [];
@@ -183,6 +211,9 @@ var util = function (require) {
         }
         console.log('Item not Found, IndexOf (should not happen with current config)');
         return -1;
+      },
+      removeArrayEntry: function (arr, index) {
+        arr.splice(index, 1);
       },
       debugConsole: function (text) {
         var HUD = document.getElementById('console');
@@ -340,13 +371,16 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
       });
       kit.context.closePath();
       if (kit.fillImageExists) {
+        kit.context.globalCompositeOperation = kit.sourceMode;
         kit.context.clip();
         kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
         if (kit.toggleCurveColor === true) {
-          kit.context.lineWidth = 3;
+          kit.context.globalCompositeOperation = 'source-over';
+          kit.context.lineWidth = 2;
           kit.context.stroke();
         }
       } else {
+        kit.context.globalCompositeOperation = 'source-over';
         kit.context.stroke();
       }
       kit.context.restore();
@@ -446,6 +480,8 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.lineColor = '9fb4f4';
       this.backgroundAlpha = 1;
       document.getElementById('bgAlpha').value = this.backgroundAlpha;
+      var key = this._u.getKeys(constants.SOURCE_MODES)[0];
+      this.sourceMode = constants.SOURCE_MODES[key];
       this.controlPointRadius = 6;
       this.canvasWidth = 640;
       this.canvasHeight = 640;
@@ -577,7 +613,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
             this.keyFrames[this.segment].obj[ind].timing = 1;
           }
         }
-        this.setFrame();
+        this.storeFrame();
       };
       this.setState = function () {
         for (var i = 0; i < this.objList.length; i++) {
@@ -627,6 +663,46 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       }
       var ind = this.objList.length - 1;
       this.selectedObject = ind;
+      this.redraw();
+    };
+    cKit.prototype.removeObject = function () {
+      if (this.objList.length < 2) {
+        return;
+      }
+      _u.removeArrayEntry(this.objList, this.selectedObject);
+      _u.removeArrayEntry(this.objTypes, this.selectedObject);
+      var kit = this;
+      _u.each(this.keyFrames, function (keyFrame) {
+        _u.removeArrayEntry(keyFrame.obj, kit.selectedObject);
+      });
+      if (this.selectedObject === this.objList.length) {
+        this.selectedObject--;
+      }
+      this.redraw();
+      window.updateInterface();
+    };
+    cKit.prototype.removeSegment = function () {
+      if (this.keyFrames.length < 2) {
+        return;
+      }
+      _u.removeArrayEntry(this.keyFrames, this.segment);
+      if (this.segment === this.keyFrames.length) {
+        this.segment--;
+      }
+      window.updateInterface();
+      this.setState();
+      this.redraw();
+    };
+    cKit.prototype.removeLast = function () {
+      if (this.keyFrames.length < 2) {
+        return;
+      }
+      _u.removeArrayEntry(this.keyFrames, this.keyFrames.length - 1);
+      if (this.segment === this.keyFrames.length) {
+        this.segment--;
+      }
+      window.updateInterface();
+      this.setState();
       this.redraw();
     };
     cKit.prototype.addFillImage = function (src, label, page) {
@@ -711,7 +787,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.canvas.addEventListener('mouseup', this.endDrag, false);
       this.canvas.addEventListener('mousemove', this.move, false);
     };
-    cKit.prototype.setFrame = function () {
+    cKit.prototype.storeFrame = function () {
       for (var i = 0; i < this.objList.length; i++) {
         this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
       }
@@ -916,7 +992,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.objList = [];
       for (var i = 0; i < this.objTypes.length; i++) {
         if (this.objTypes[i][0] === 'flower') {
-          this.objList.push(new PetalFlower(this, this.objTypes[i][1], 1, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+          this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
         } else if (this.objTypes[i][0] === 'polar') {
         }
       }
