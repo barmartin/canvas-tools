@@ -60,8 +60,8 @@ define(function (require) {
     this.controlPointRadius = 6;
     this.canvasWidth = 640;
     this.canvasHeight = 640;
-    this.midWidth = this.canvasWidth / 2;
-    this.midHeight = this.canvasHeight / 2;
+    this.midWidth = this.canvasWidth/2;
+    this.midHeight = this.canvasHeight/2;
     this.center = Vector.create(this.midWidth, this.midHeight);
 
     this.inCurveEditMode = true;
@@ -315,6 +315,7 @@ define(function (require) {
     this.resourceList.fillImageLabel = label;
     this.resourceList.fillImagePage = page;
   };
+
   cKit.prototype.addBackGroundImage = function (src, label, page) {
     this.backgroundImage = new Image();
     this.backgroundImage.onload = function () {
@@ -327,16 +328,28 @@ define(function (require) {
     this.resourceList.backgroundImagePage = page;
   };
 
+  cKit.prototype.constrain = function (point) {
+    if(point.x<0) {
+      point.x=0;
+    } else if(point.x>this.canvasWidth) {
+      point.x=this.canvasWidth;
+    }
+    if(point.y<0) {
+      point.y=0;
+    } else if(point.y>this.canvasHeight) {
+      point.y=this.canvasHeight;
+    }
+  }
+
   // EVENT BINDING
-  // TODO kit is a hack, need to fix Global access
   cKit.prototype.startDrag = function(event) {
-    // TODO getPosition must be Global for now, localize?
     var kit = window.kit;
-    kit.position = _u.getPosition(event, kit.canvas);
-    _u.debugConsole('startDrag x:' + kit.position.x + ' y:' + kit.position.y);
-    var clickPoint = kit.Vector.rotate( kit.midWidth, kit.midHeight, kit.position, -kit.objList[kit.selectedObject].rotation*kit.constants.TWOPIDIV360 );
+    var position = _u.getPosition(event, kit.canvas);
     _u.each(kit.objList[kit.selectedObject].controlPoints, function( thisPoint ){
-      if( thisPoint.mouseInside( clickPoint ) ){
+      var actualPoint = Vector.rotate(kit.midWidth, kit.midHeight, thisPoint, kit.objList[kit.selectedObject].rotation*kit.constants.TWOPIDIV360);
+      actualPoint = new CPoint(kit, actualPoint.x, actualPoint.y);
+      kit.constrain(actualPoint);
+      if(actualPoint.mouseInside(position)){
         thisPoint.inDrag = true;
         kit.canvasMode = 'cpDrag';
         kit.redraw();
@@ -346,7 +359,6 @@ define(function (require) {
   }
 
   cKit.prototype.endDrag = function(event){ 
-    // alert('end');
     var kit = window.kit;
     kit.canvasMode = 'static';
     kit.position = _u.getPosition(event, kit.canvas);
@@ -691,7 +703,6 @@ define(function (require) {
     this.backgroundImageExists = false;
     this.fillImageExists = false;
     this.sourceMode = this.options.sourceMode;
-    console.log(this.sourceMode);
     if(typeof this.resourceList.backgroundImageSource === 'string'){
       this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
     }

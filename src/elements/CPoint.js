@@ -1,6 +1,7 @@
 define(function(require) {
   'use strict';
   var constants = require('constants');
+  var Vector = require('Vector');
 
   /* objPoint is a reference to the point inside the pedal */
   var CPoint = function(kit, x, y, parentObject, index) {
@@ -16,6 +17,7 @@ define(function(require) {
           return;
       }
       var realPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, this, parentObject.rotation*constants.TWOPIDIV360);
+      kit.constrain(realPoint);
       if (this.inDrag) {
         if (this.index === 1) {
           var _anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[0], parentObject.rotation*constants.TWOPIDIV360);
@@ -47,7 +49,7 @@ define(function(require) {
       kit.context.stroke();
     }
     this.mouseInside = function(point) {
-      return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > this.kit.Vector.distance(point, this);
+      return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > Vector.distance(point, this);
     }
   }
   return CPoint;
