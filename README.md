@@ -19,7 +19,6 @@ Animating Text<br/>
 Image Scaling<br/>
 Tranforms<br/>
 Shaders<br/>
-Object & Keyframe removal<br/>
 Shims<br/>
 Improve and abstract UI/Package interfaces<br/>
 Toggle for seamless looping<br/>
