@@ -303,7 +303,7 @@ function initLoadEvents() {
     updateInterface();
   });
   $('#get-data').click(function() {
-    var daSettings = {'backgroundColor':kit.backgroundColor, 'backgroundAlpha':kit.backgroundAlpha, 'lineColor':kit.lineColor, 'positions':kit.positions};
+    var daSettings = {'backgroundColor':kit.backgroundColor, 'backgroundAlpha':kit.backgroundAlpha, 'lineColor':kit.lineColor, 'positions':kit.positions, 'sourceMode': kit.sourceMode};
     $('#data-json-text').val(JSON.stringify([daSettings, kit.resourceList, kit.objTypes, kit.keyFrames]));
     kit.setState();
   });
@@ -538,7 +538,7 @@ $('#linkButton').click(function(){
 
 //"backgroundImageSource":"img/radials.jpg", \
 //"backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
-var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"}, \
+var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4","sourceMode":"lighter"}, \
 {"fillImageSource":"img/darkmountain.jpg","fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"}, \
 [["flower",6,1],["flower",6,4]], \
 \

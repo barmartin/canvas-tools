@@ -1,4 +1,4 @@
-/*! cKit.js v0.1.12 November 07, 2014 */
+/*! cKit.js v0.2.0 November 07, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -1004,6 +1004,8 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.lineColor = this.options.lineColor;
       this.backgroundImageExists = false;
       this.fillImageExists = false;
+      this.sourceMode = this.options.sourceMode;
+      console.log(this.sourceMode);
       if (typeof this.resourceList.backgroundImageSource === 'string') {
         this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
       }
