@@ -684,11 +684,14 @@ define(function (require) {
     this.selectedObject = 0;
     this.options = data[0];
     this.currentSelector = 'bg-color';
+    // TODO set defaults if DNE (Backwards compatibility)
     this.backgroundColor = this.options.backgroundColor;
     this.backgroundAlpha = this.options.backgroundAlpha;
     this.lineColor = this.options.lineColor;
     this.backgroundImageExists = false;
     this.fillImageExists = false;
+    this.sourceMode = this.options.sourceMode;
+    console.log(this.sourceMode);
     if(typeof this.resourceList.backgroundImageSource === 'string'){
       this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
     }
