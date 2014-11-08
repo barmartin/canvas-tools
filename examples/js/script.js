@@ -15,7 +15,7 @@ function updateInterface() {
   for(var i=1; i<=kit.objList.length; i++) {
     var itemButton = $('.object button:nth-child('+i+')');
     itemButton.removeClass('disabled');
-    if(i===kit.selectedObject+1){
+    if(i===kit.selectedObject+1) {
       itemButton.addClass('active');
     }
   }
@@ -55,8 +55,8 @@ function updateInterface() {
 }
 
 function updateObject() {
-  $('#rotation').val(kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
-  $('#length').val(kit.keyFrames[kit.segment].timing);
+  document.getElementById('rotation').value = kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation;
+  document.getElementById('length').value = kit.keyFrames[kit.segment].timing;
   if(kit.objList[kit.selectedObject] instanceof PetalFlower) {
     document.getElementById('k').value = kit.objList[kit.selectedObject].petalCount;
     document.getElementById('radialScalar').value = kit.objList[kit.selectedObject].radialAccent;
@@ -73,6 +73,7 @@ function initShapePanel() {
     kit.redraw();
     //return true;
   });
+
   $('#shapeColor').click( function() {
     if(this.checked) {
       kit.toggleCurveColor = true;
@@ -82,17 +83,21 @@ function initShapePanel() {
     kit.redraw();
     return true;
   });
+
   $('#k').change( function() {
     kit.updatePetalCount();
     return true;
   });
+
   $('#radialScalar').change( function() {
     kit.accentRadial();
     return true;
-  });  
+  });
+
   $('#myCanvas').mousedown(function(event) {
     event.preventDefault();
   });
+
   $('#bgAlpha').change(function() {
     var newAlpha = parseFloat($(this).val());
     if( kit.dnexist(newAlpha) || newAlpha > 1 ) {
@@ -106,6 +111,7 @@ function initShapePanel() {
     }
     kit.redraw();
   });
+
   $('.object button').click(function() {
     var selected = parseInt($(this).attr('data'));
     kit.selectedObject = selected-1;
@@ -113,9 +119,9 @@ function initShapePanel() {
     $('.object [data="'+selected+'"]').addClass('active');
     kit.redraw();
     updateObject();
-    updateInterface();
     return false;
   });
+
   $('.addObject').click(function() {
     if(kit.objList.length>3) {
       return false;
@@ -125,6 +131,18 @@ function initShapePanel() {
     $('.object [data="'+ob+'"]').removeClass('disabled').addClass('active');
     updateInterface();
     return false;
+  });
+
+  var index = 0;
+  var dropdownHTML = '';
+  kit._u.each(kit.constants.SOURCE_MODES, function(label, mode) {
+    dropdownHTML += '<option value="'+index+'">'+label+'</option>\n'
+    index++;
+  });
+  $('#sourceMode').html(dropdownHTML).change(function() {
+    var key = kit._u.getKeys(kit.constants.SOURCE_MODES)[this.value];
+    kit.sourceMode = kit.constants.SOURCE_MODES[key];
+    kit.redraw();
   });
 
   $('#imageButton').click(function() {
@@ -485,6 +503,7 @@ function selectObject(object) {
     $('.object button').removeClass('active');
     $('.object [data="'+val+'"]').removeClass('disabled').addClass('active');
     kit.selectedObject=val-1;
+    updateObject();
     kit.redraw();
   }
 }
@@ -517,17 +536,22 @@ $('#linkButton').click(function(){
   window.location = urlString;
 }); */
 
+//"backgroundImageSource":"img/radials.jpg", \
+//"backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
 var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4"}, \
-{"backgroundImageSource":"img/radials.jpg", \
-"backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
-"fillImageSource":"img/darkmountain.jpg", \
-"fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"},\
-[["flower", 6, 1],["flower", 6, 1]], \
-[{"obj":[{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":408,"y":131},{"x":280,"y":70},{"x":320,"y":70}],"rotation":0}, \
-{"controlPoints":[{"x":282.2044976220715,"y":254.5362695838375},{"x":191,"y":180},{"x":611,"y":148},{"x":320,"y":21}],"rotation":0}], \
-"timing":1},{"obj":[{"controlPoints":[{"x":149.16308946834707,"y":24.10179115107843},{"x":476,"y":533},{"x":205,"y":249},{"x":320,"y":41}], "rotation":0}, \
-{"controlPoints":[{"x":299.3844718719117,"y":284.29285785728575},{"x":232,"y":130},{"x":277,"y":605},{"x":320,"y":21}],"rotation":0}],"timing":1}, \
-{"obj":[{"controlPoints":[{"x":153.89385923452443,"y":32.29572474500833},{"x":622,"y":35},{"x":205,"y":249},{"x":320,"y":591}],"rotation":0}, \
-{"controlPoints":[{"x":263.7305589151625,"y":222.5384691275578},{"x":278,"y":48},{"x":277,"y":605},{"x":320,"y":56}],"rotation":0}],"timing":1}, \
-{"obj":[{"controlPoints":[{"x":153.89385923452443,"y":32.29572474500833},{"x":622,"y":35},{"x":205,"y":249},{"x":320,"y":591}],"rotation":0}, \
-{"controlPoints":[{"x":263.7305589151625,"y":222.5384691275578},{"x":278,"y":48},{"x":575,"y":96},{"x":320,"y":56}],"rotation":0}],"timing":1}]]';
+{"fillImageSource":"img/darkmountain.jpg","fillImagePage":"http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd"}, \
+[["flower",6,1],["flower",6,4]], \
+\
+[{"obj":[{"controlPoints":[{"x":310,"y":302.6794919243112},{"x":408,"y":131},{"x":280,"y":70},{"x":320,"y":70}], "rotation":0}, \
+{"controlPoints":[{"x":38.49378337237374,"y":482.527689948513},{"x":376,"y":309},{"x":611,"y":148},{"x":320,"y":60}],"rotation":0}], "timing":1.4}, \
+\
+{"obj":[{"controlPoints":[{"x":256.4980315265739,"y":210.01136422338897},{"x":153.00000000000003,"y":10}, \
+{"x":329,"y":413},{"x":320,"y":37}],"rotation":90},{"controlPoints":[{"x":296.046920865993,"y":333.8293166859393}, \
+{"x":347.00000000000006,"y":114},{"x":289,"y":387},{"x":320,"y":443}],"rotation":270}],"timing":1.4}, \
+\
+{"obj":[{"controlPoints":[{"x":153.89385923452443,"y":32.29572474500833},{"x":622,"y":35},{"x":205,"y":249}, \
+{"x":320,"y":591}],"rotation":180},{"controlPoints":[{"x":222.5384691275578,"y":376.2694410848375},{"x":476,"y":583}, \
+{"x":250,"y":563},{"x":320,"y":56}],"rotation":180}],"timing":1.4}, \
+\
+{"obj":[{"controlPoints":[{"x":153.89385923452443,"y":32.29572474500833},{"x":622,"y":35},{"x":205,"y":249},{"x":320,"y":591}],"rotation":270}, \
+{"controlPoints":[{"x":222.5384691275578,"y":376.2694410848375},{"x":443,"y":240},{"x":330,"y":458},{"x":320,"y":56}],"rotation":90}],"timing":1.4}]]'

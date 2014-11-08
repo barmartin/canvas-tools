@@ -83,13 +83,24 @@ define(function(require) {
         for (i = 0; i < length; i++) {
           func(obj[i], i, obj);
         }
-      }/* else {
-        var keys = _.keys(obj);
-        for (i = 0, length = keys.length; i < length; i++) {
+      } else {
+        // Fix self reference issue
+        var keys = window.kit._u.getKeys(obj);
+        for(i = 0, length = keys.length; i < length; i++) {
           func(obj[keys[i]], keys[i], obj);
         }
-      } */
+      }
       return obj;
+    },
+
+    getKeys: function(obj) {
+      var keys = [];
+      for(var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          keys.push(key);
+        }
+      }
+      return keys;
     },
 
     // TODO

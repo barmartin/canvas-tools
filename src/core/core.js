@@ -52,6 +52,8 @@ define(function (require) {
     this.lineColor = '9fb4f4';
     this.backgroundAlpha = 1.0;
     document.getElementById('bgAlpha').value = this.backgroundAlpha;
+    var key = this._u.getKeys(constants.SOURCE_MODES)[0];
+    this.sourceMode = constants.SOURCE_MODES[key];
     // SETUP ID to all interface elements and setter methods in package
 
     // CANVAS SETTINGS
@@ -207,7 +209,7 @@ define(function (require) {
           this.keyFrames[this.segment].obj[ind].timing = 1.0;
         }
       }
-      this.setFrame();
+      this.storeFrame();
     }
 
     this.setState = function() {
@@ -405,7 +407,7 @@ define(function (require) {
   /*
    * Used to store the canvas configuration to the current frame
    */
-  cKit.prototype.setFrame = function(){
+  cKit.prototype.storeFrame = function(){
     for( var i = 0; i<this.objList.length; i++){
         this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
     }
@@ -673,7 +675,7 @@ define(function (require) {
     this.objList = [];
     for(var i = 0; i < this.objTypes.length; i++) {
       if(this.objTypes[i][0] === 'flower') {
-        this.objList.push(new PetalFlower(this, this.objTypes[i][1], 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
+        this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
                                           this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
       } else if(this.objTypes[i][0] === 'polar') {
         // TODO

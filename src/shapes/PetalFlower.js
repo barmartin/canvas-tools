@@ -192,17 +192,19 @@ define(function(require) {
 
     kit.context.closePath();
     if(kit.fillImageExists) {
-      if(index>0) {
-        //kit.context.globalCompositeOperation = 'darker';
-      }
+      // TODO Multiple blending modes feature
+      kit.context.globalCompositeOperation = kit.sourceMode;
       kit.context.clip();
       kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
-      // kit.context.globalCompositeOperation = 'source-in';
       if(kit.toggleCurveColor===true){
+        // Restore composition mode in the case the line highlight mode is toggled
+        kit.context.globalCompositeOperation = 'source-over';
         kit.context.lineWidth = 2;
         kit.context.stroke();
       }
     } else {
+      // Restore composition mode in case fill image has been removed
+      kit.context.globalCompositeOperation = 'source-over';
       kit.context.stroke();
     }
     kit.context.restore();
