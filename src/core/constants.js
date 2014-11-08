@@ -25,15 +25,15 @@ define(function(require) {
       'lighter': 'lighter',
       'darker': 'darker',
       'xor': 'xor',
-      'copy': 'copy',
+      //'copy': 'copy',
       'source-atop': 'atop',
-      'source-in': 'in',
+      //'source-in': 'in',
       'source-out': 'out',
       'source-over': 'over',
       'destination-atop': 'bottom',
-      'destination-in': 'bottom-intersection',
+      //'destination-in': 'bottom-intersection',
       'destination-out': 'bottom-out',
-      'destination-over': 'bottom-over'
+      //'destination-over': 'bottom-over'
     }
   };
 

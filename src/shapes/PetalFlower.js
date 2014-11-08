@@ -199,7 +199,7 @@ define(function(require) {
       if(kit.toggleCurveColor===true){
         // Restore composition mode in the case the line highlight mode is toggled
         kit.context.globalCompositeOperation = 'source-over';
-        kit.context.lineWidth = 2;
+        kit.context.lineWidth = 1.9;
         kit.context.stroke();
       }
     } else {
