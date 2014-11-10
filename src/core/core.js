@@ -344,9 +344,11 @@ define(function (require) {
   // EVENT BINDING
   cKit.prototype.startDrag = function(event) {
     var kit = window.kit;
+    var selectedObj = kit.objList[kit.selectedObject];
+    var center = selectedObj.center;
     var position = _u.getPosition(event, kit.canvas);
     _u.each(kit.objList[kit.selectedObject].controlPoints, function( thisPoint ){
-      var actualPoint = Vector.rotate(kit.midWidth, kit.midHeight, thisPoint, kit.objList[kit.selectedObject].rotation*kit.constants.TWOPIDIV360);
+      var actualPoint = Vector.rotate(center.x, center.y, thisPoint, selectedObj.rotation*kit.constants.TWOPIDIV360);
       actualPoint = new CPoint(kit, actualPoint.x, actualPoint.y);
       kit.constrain(actualPoint);
       if(actualPoint.mouseInside(position)){
