@@ -17,7 +17,6 @@ A: stops animation<br/>
 GIF Encoding (WIP)<br/>
 Animating Text<br/>
 Image Scaling<br/>
-Tranforms<br/>
 Shaders<br/>
 Shims<br/>
 Improve and abstract UI/Package interfaces<br/>

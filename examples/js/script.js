@@ -6,7 +6,7 @@ function initInterface() {
   kit.encoder = new GIFEncoder();
   updateInterface();
   // for debuggin
-  mode('animation');
+  // mode('animation');
 }
 
 function updateInterface() {
