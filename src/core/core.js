@@ -12,6 +12,7 @@ define(function (require) {
   var cKit = function () {
     // Make these libs accessable by external script
     this.constants = constants;
+    this.Vector = Vector;
     this._u = _u;
 
     this.canvas = document.getElementById('myCanvas');
@@ -33,7 +34,6 @@ define(function (require) {
     this.frameDelay = 60;
     this.gifFramerate = 200;
     this.delta = -this.frameDelay;
-    this.Vector = Vector;
 
     this.sceneMode = constants.SCENE_NORMAL;
 
@@ -41,13 +41,12 @@ define(function (require) {
     this.encoder = '';
     this.delayTime = 0;
 
-    // TODO setup initList via external functions
+    // TODO move initializing constants to constants.js
     this.initList = ['flower'];
     this.curve = [];
     this.pattern = null;
     this.bodybg ='020202';
 
-    // TODO
     this.backgroundColor = '010201';
     this.lineColor = '9fb4f4';
     this.backgroundAlpha = 1.0;
@@ -64,20 +63,23 @@ define(function (require) {
     this.midHeight = this.canvasHeight/2;
     this.center = Vector.create(this.midWidth, this.midHeight);
 
-    this.inCurveEditMode = true;
+    this.editMode = constants.EDIT_SHAPE;
     this.toggleCurveColor = false;
     this.fieldFocus = false;
-    this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'inCurveEditMode': this.inCurveEditMode};
+    this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'editMode': this.editMode};
 
     this.objList = [];
     this.objTypes = [];
     this.selectedObject = 0;
 
-    // TESTING
-    this.debugMode = true;
+    // Image Resources
     this.resourceList = {};
     this.backgroundImageExists = false;
     this.fillImageExists = false;
+
+    // TESTING
+    this.debugMode = false;
+
 
     this.initializeCanvas = function() {
       this.initConstants();
@@ -96,6 +98,7 @@ define(function (require) {
         var dataz = window.getSampleJSON();
         // Temporary testing code
         this.loadData(dataz, false);
+        this.editMode = constants.EDIT_TRANSFORM;
         // this.addFillImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg', 'Color Wheel Ray', 'http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset');
         // this.addBackGroundImage('http://40.media.tumblr.com/56ff609390ee74b3994f311a8f13e0d5/tumblr_n4qrodAcxV1qaf77co1_1280.jpg', 'Ray Scope', 'http://serescosmicos.tumblr.com/post/94587874401');
         // this.addFillImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg', 'Dark Mountain', 'http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd');
@@ -124,11 +127,9 @@ define(function (require) {
     this.build = function() {
       var kit = this;
       _u.each(_u.range(0, this.initList.length), function(i) {
-        if (kit.initList[i] === 'polar') {
-          //kit.polarFlower(250, kit.k);
-        } else if (kit.initList[i] === 'flower') {
+        if (kit.initList[i] === 'flower') {
           kit.objList.push(new PetalFlower(kit, constants.DEFAULT_RAYS, 1, kit.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
-                                           kit.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, kit.center));
+                                           kit.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(kit.midWidth, kit.midHeight)));
           kit.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
         }
       });
@@ -155,25 +156,36 @@ define(function (require) {
 
       var kit = this;
       _u.each(this.objList, function(item) {
+        kit.context.save();
+        item.transform();
         item.draw();
+        kit.context.restore();
       });    
       // Always draw active control points on top
-      _u.each(this.objList, function(item) {
-        if(_u.indexOf(kit.objList, item) === kit.selectedObject) {
-          item.drawControlPoints();
-        }
-      }); 
+      // 
+      if(this.editMode===constants.EDIT_SHAPE) {
+        kit.context.save();
+        this.objList[kit.selectedObject].transform();
+        this.objList[kit.selectedObject].drawShapePoints();
+        kit.context.restore();
+      } 
+      if(this.editMode===constants.EDIT_TRANSFORM) {
+        kit.context.save();
+        this.objList[kit.selectedObject].transform();
+        this.objList[kit.selectedObject].drawTransformPoints();
+        kit.context.restore();
+      } 
     }
-
 
     this.updatePetalCount = function() {
       var kVal = document.getElementById('k').value;
       if (isNaN(kVal)) {
         return;
       }
-      if(this.objList[this.selectedObject] instanceof PetalFlower) {
-        this.objList[this.selectedObject] = new PetalFlower(this, kVal, 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR,
-                                                            this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center);
+      var object = this.objList[this.selectedObject];
+      if(object instanceof PetalFlower) {
+        this.objList[this.selectedObject] = new PetalFlower(this, kVal, object.radialAccent, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR,
+                                                            this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight));
         this.objTypes[this.selectedObject][1] = kVal;
         this.objList[this.selectedObject].updateRadialPoint();
         this.setState();
@@ -235,7 +247,7 @@ define(function (require) {
       this.keyFrames = [];
       this.segment = 0;
       this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
-                                        this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+                                        this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
       this.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
       this.selectedObject = 0;
       this.initFrame();
@@ -245,12 +257,25 @@ define(function (require) {
     this.initializeCanvas();
   }
 
+  cKit.prototype.getRotation = function() {
+    var rotationDegrees = this.keyFrames[this.segment].obj[this.selectedObject].rotation*this.constants.TWOPIDIV360;
+    return Math.floor(rotationDegrees * 100) / 100;
+  }
+
+  cKit.prototype.setRotation = function(val) {
+    this.objList[this.selectedObject].rotation = val;
+    this.keyFrames[this.segment].obj[this.selectedObject].rotation = val;
+    this.objList[this.selectedObject].allPetals = [];
+    this.objList[this.selectedObject].createPetals();
+    this.redraw();
+  }
+
   cKit.prototype.addObject = function(){
     if(this.objList.length >= constants.MAX_OBJECTS) {
       return;
     }
     this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
-                                      this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+                                      this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
     this.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
     for(var i=0; i<this.keyFrames.length; i++) {
       this.keyFrames[i].obj[this.objList.length-1] = this.objList[this.objList.length-1].getState();
@@ -305,6 +330,7 @@ define(function (require) {
   }
 
   cKit.prototype.addFillImage = function (src, label, page) {
+    this.fillImageExists = false;
     this.fillImage = new Image();
     this.fillImage.onload = function () {
       window.kit.fillImageExists = true;
@@ -342,67 +368,112 @@ define(function (require) {
   }
 
   // EVENT BINDING
+  // Consider moving out of kit scope because they are global
   cKit.prototype.startDrag = function(event) {
     var kit = window.kit;
-    var selectedObj = kit.objList[kit.selectedObject];
-    var center = selectedObj.center;
     var position = _u.getPosition(event, kit.canvas);
-    _u.each(kit.objList[kit.selectedObject].controlPoints, function( thisPoint ){
-      var actualPoint = Vector.rotate(center.x, center.y, thisPoint, selectedObj.rotation*kit.constants.TWOPIDIV360);
-      actualPoint = new CPoint(kit, actualPoint.x, actualPoint.y);
-      kit.constrain(actualPoint);
-      if(actualPoint.mouseInside(position)){
-        thisPoint.inDrag = true;
-        kit.canvasMode = 'cpDrag';
-        kit.redraw();
-        return;
-      }
-    });
+    var object = kit.objList[kit.selectedObject];
+    //var actualPosition = object.reverseTransformPoint(kit.position);
+    if(kit.editMode===constants.EDIT_SHAPE) {
+      _u.each(object.shapePoints, function( thisPoint ){
+
+        //var actualPoint = Vector.rotate(center.x, center.y, thisPoint, selectedObj.rotation*kit.constants.TWOPIDIV360);
+        var actualPosition = object.reverseTransformPoint(position);
+        // actualPoint = new CPoint(kit, actualPoint.x, actualPoint.y);
+        // kit.constrain(actualPoint);
+        if(thisPoint.mouseInside(actualPosition)){
+          thisPoint.inDrag = true;
+          kit.canvasMode = 'cpDrag';
+          kit.redraw();
+          return;
+        }
+      });
+    } else if(kit.editMode===constants.EDIT_TRANSFORM) {
+      _u.each(object.transformPoints, function( thisPoint ){
+        var positionInsideObject = object.reverseTransformPoint(position);
+        //kit.constrain(thisPoint);
+        if(thisPoint.mouseInside(positionInsideObject)){
+          thisPoint.inDrag = true;
+          kit.canvasMode = 'cpDrag';
+          kit.redraw();
+          return;
+        }
+      });
+    }
   }
 
   cKit.prototype.endDrag = function(event){ 
     var kit = window.kit;
     kit.canvasMode = 'static';
     kit.position = _u.getPosition(event, kit.canvas);
-    _u.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
-    _u.each( kit.objList, function( object ){
-      _u.each( object.controlPoints, function( thisPoint ){
+
+    //_u.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
+    if(kit.editMode===constants.EDIT_SHAPE) {
+      _u.each( kit.objList[kit.selectedObject].shapePoints, function( thisPoint ){
         if( thisPoint.inDrag === true ){
           thisPoint.inDrag = false;
           kit.redraw();
         }
       });
-    });
+    } else if(kit.editMode===constants.EDIT_TRANSFORM) {
+      _u.each( kit.objList[kit.selectedObject].transformPoints, function( thisPoint ){
+        if( thisPoint.inDrag === true ){
+          thisPoint.inDrag = false;
+          kit.redraw();
+        }
+      });
+    }
     kit.getState();
   }
   
   cKit.prototype.move = function(event){
-    //alert('move');
     var kit = window.kit;
     if ( kit.canvasMode !== 'cpDrag' ) {
       return;
     }
-    kit.position = _u.getPosition(event, kit.canvas);
-    _u.each( kit.objList, function( object ){
-      // TODO use Index of control point variable rather than iterable
-      var index = 0;
-      _u.each( object.controlPoints, function( thisPoint ){
+    var object = kit.objList[kit.selectedObject];
+    var position = _u.getPosition(event, kit.canvas);
+    var actualPosition = object.reverseTransformPoint(position);
+    // TODO use Index of control point variable rather than iterable
+    var index = 0;
+    if(kit.editMode===kit.constants.EDIT_SHAPE) {
+      _u.each( object.shapePoints, function( thisPoint ){
         // Only drag one control point at a time 
         if( thisPoint.inDrag ) {
-          var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -object.rotation*kit.constants.TWOPIDIV360 );
-          var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
+          //var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -object.rotation*kit.constants.TWOPIDIV360 );
+          // var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
+          var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
           newPoint.inDrag = true;
           object.updatePetal( index, newPoint );
-          _u.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::'+ _u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
-          //$('#console').html('<p>newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::')
-          //+ c_u.indexOf( object.controlPoints, thisPoint)  + ' object type:' + object.type +  '</p>');
           kit.redraw();
           return;
         } 
         index++;
       });
-    });
-    _u.debugConsole('mousemove x:' + kit.position.x + ' y:' + kit.position.y);
+    } else if(kit.editMode===kit.constants.EDIT_TRANSFORM) {
+      _u.each( object.transformPoints, function(thisPoint) {
+        // Expectation is one CPoint inDrag at a time
+        if(thisPoint.inDrag) {
+          // Center tranform point does not move
+          if(index===0) {
+            object.center=position;
+          } else if(index===1) {
+            // var rotatedPos = kit.Vector.rotate(0, 0, kit.position, -object.rotation*kit.constants.TWOPIDIV360);
+            var angleVector = Vector.create(position.x-object.center.x, position.y-object.center.y)
+            var angle = Vector.getRadians(Vector.create(0, 0), angleVector);
+            kit.setRotation(angle);
+            kit._u.debugConsole(angle);
+            //var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
+            //newPoint.inDrag = true;
+            //object.updateTransform(index, newPoint);
+          }
+          kit.redraw();
+          return;
+        }
+        index++;
+      });
+    }
+    //_u.debugConsole('mousemove x:' + kit.position.x + ' y:' + kit.position.y + ' mode:' + kit.editMode===kit.constants.EDIT_TRANSFORM);
     //$('#console').html('<p>mousemove x:' + position.x + ' y:' + position.y + '<p>');    
   }
 
@@ -427,7 +498,7 @@ define(function (require) {
     }
     this.keyFrames[this.segment].timing = parseFloat(document.getElementById('length').value);
     var val = document.getElementById('rotation').value;
-    this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val);
+    this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val)*constants.TWOPIDIV360;
   }
   /*
   cKit.prototype.gripImg = function(r, g, b){
@@ -493,14 +564,14 @@ define(function (require) {
     this.segment = 0;
     this.loopStartTime = _u.msTime();
     this.segmentStartTime = this.loopStartTime;
-    this.settingShelf = {'inCurveEditMode': this.inCurveEditMode, 'toggleCurveColor': this.toggleCurveColor};
-    this.inCurveEditMode = false;
+    this.settingShelf = {'editMode': this.editMode, 'toggleCurveColor': this.toggleCurveColor};
+    this.editMode = constants.EDIT_NONE;
     this.toggleCurveColor = false;
     window.updateInterface();
   }
 
   cKit.prototype.stopScene = function() {
-    this.inCurveEditMode = this.settingShelf.inCurveEditMode;
+    this.editMode = this.settingShelf.editMode;
     this.toggleCurveColor = this.settingShelf.toggleCurveColor;
     this.sceneReset();
   }
@@ -549,7 +620,7 @@ define(function (require) {
               this.segmentStartTime = _u.msTime();
           }
         } else {
-          if( this.sceneMode === constants.SCENE_GIF ) {
+          if(this.sceneMode === constants.SCENE_GIF) {
             this.gifComplete();
             return;
           }
@@ -563,7 +634,7 @@ define(function (require) {
       }
     }
     if(this.sceneMode === constants.SCENE_GIF) {
-      // TODO
+      // TODO Worker threads
       this.encoder.addFrame(this.context);
       setTimeout(function(){
           window.kit.sceneLoop();
@@ -588,30 +659,30 @@ define(function (require) {
     _u.each(this.keyFrames[keyTo].obj, function(ob) {
       var index = 0;
       var newCps = [];
-      _u.each(ob.controlPoints, function(cp) {
-        var newX = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].x*(1.0-sig)+cp.x*sig;
-        var newY = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].y*(1.0-sig)+cp.y*sig;
-        // To-DO check????????
+      _u.each(ob.shapePoints, function(cp) {
+        var newX = kit.keyFrames[kit.segment-1].obj[objIndex].shapePoints[index].x*(1.0-sig)+cp.x*sig;
+        var newY = kit.keyFrames[kit.segment-1].obj[objIndex].shapePoints[index].y*(1.0-sig)+cp.y*sig;
         var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
         newCps.push(newPoint);
         index++;
       });
       var newState = {
-        controlPoints:newCps
+        shapePoints:newCps
       }
 
       var fromRotation = kit.keyFrames[kit.segment-1].obj[objIndex].rotation;
       var toRotation = kit.keyFrames[keyTo].obj[objIndex].rotation;
       var del = toRotation-fromRotation;
-      if(Math.abs(del) > 180) {
+      // Always rotate the shortest path to the new angle
+      if(Math.abs(del) > Math.PI) {
         if(del<0) {
-          toRotation+=360;
+          toRotation+=2*Math.PI;
         } else {
-          fromRotation+=360;
+          fromRotation+=2*Math.PI;
         }
       }
-      newState.rotation = (fromRotation*(1-sig)+toRotation*sig)%360;
 
+      newState.rotation = (fromRotation*(1-sig)+toRotation*sig)%360;
       kit.objList[objIndex].setState(newState);
       objIndex++;
     });
@@ -651,14 +722,14 @@ define(function (require) {
       _u.each(this.keyFrames[this.segment].obj, function(ob) {
         var index = 0;
         var newCps = [];
-        _u.each(ob.controlPoints, function(cp) {
-          var newX = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].x*(1.0-sig)+cp.x*sig;
-          var newY = kit.keyFrames[kit.segment-1].obj[objIndex].controlPoints[index].y*(1.0-sig)+cp.y*sig;
+        _u.each(ob.shapePoints, function(cp) {
+          var newX = kit.keyFrames[kit.segment-1].obj[objIndex].shapePoints[index].x*(1.0-sig)+cp.x*sig;
+          var newY = kit.keyFrames[kit.segment-1].obj[objIndex].shapePoints[index].y*(1.0-sig)+cp.y*sig;
           var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
           newCps.push(newPoint);
           index++;
         });
-        var newState = {controlPoints:newCps};
+        var newState = {shapePoints:newCps};
 
         var fromRotation = kit.keyFrames[kit.segment-1].obj[objIndex].rotation;
         var toRotation = kit.keyFrames[kit.segment].obj[objIndex].rotation;
@@ -690,7 +761,7 @@ define(function (require) {
     for(var i = 0; i < this.objTypes.length; i++) {
       if(this.objTypes[i][0] === 'flower') {
         this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
-                                          this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+                                          this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
       } else if(this.objTypes[i][0] === 'polar') {
         // TODO
       }
@@ -720,22 +791,18 @@ define(function (require) {
     }
     this.segment = 0;
     this.setState();
-    this.redraw();
-    // While in debug mode loadData auto fires before object global reference set
-    // TODO
-    // window.updateInterface(this);
   }
 
-  for (var kit in cKit.prototype) {
+  /*for (var kit in cKit.prototype) {
     if(typeof cKit.prototype[kit] === 'function') {
-      /*var ev = kit.substring(2);
+      var ev = kit.substring(2);
       if (!this._events.hasOwnProperty(ev)) {
         window[kit] = cKit.prototype[kit].bind(this);
       }
-    } else {*/
+    } else {
       window[kit] = cKit.prototype[kit];
     }
-  }
+  } */
 
   // functions that cause preload to wait
   // more can be added by using registerPreloadMethod(func)

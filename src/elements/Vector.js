@@ -1,12 +1,12 @@
 define(function(require) {
   'use strict';
-  // var constants = require('constants');
+  var constants = require('constants');
   /* Vector Helper */
   return {
     create : function( x, y ){
       return {
-        'x' : x || -1,
-        'y' : y || -1
+        'x' : x,
+        'y' : y
       };
     },
     multiply : function(vector, scaleFactor){ 
@@ -25,7 +25,6 @@ define(function(require) {
       var nP =  this.create( thisX, thisY );
       return nP;
     },
-    // TODO replace getPoint calls
     getPolarPoint : function(center, radius, angle) {
       var thisX = center.x + radius * Math.sin( angle );
       var thisY = center.y - radius * Math.cos( angle );
@@ -43,6 +42,30 @@ define(function(require) {
       var xDist =  pointA.x - pointB.x;
       var yDist =  pointA.y - pointB.y;
       return Math.sqrt( xDist*xDist + yDist*yDist );      
+    },
+    getRadians : function(center, point) {
+      var xDelta = point.x-center.x;
+      var yDelta = center.y-point.y;
+      var rads = Math.atan2(xDelta, yDelta);
+      if(rads<0){
+        rads+=constants.TWOPI;
+      }
+      return rads;
+    },
+    getDegrees : function(center, point) {
+      var xDelta = point.x-center.x;
+      var yDelta = center.y-point.y;
+      var degrees = Math.atan2(xDelta, yDelta)*constants.TWOPIDIV360;
+      if(degrees<0){
+        degrees+=360;
+      }
+      return degrees;
+    },
+    zeroVector : function() {
+      return {
+        'x': 0,
+        'y': 0
+      }
     }
   }
 });

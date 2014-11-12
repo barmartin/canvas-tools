@@ -6,13 +6,19 @@ define(function(require) {
   var PI = Math.PI;
 
   return {
-  	// RADIO SETTINGS
+  	// LOOPING TYPE
     SCENE_NORMAL: 0,
     SCENE_GIF: 1,
+
+    // CONTROL POINT TYPE
+    EDIT_SHAPE: 0,
+    EDIT_TRANSFORM: 1,
+    EDIT_NONE: 2,
 
     // Math
     PI: PI,
     TWOPIDIV360: 2*Math.PI/360,
+    TWOPI: 2*Math.PI,
 
     // SCENE SETTINGS
     MAX_OBJECTS: 4,

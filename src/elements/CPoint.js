@@ -8,26 +8,28 @@ define(function(require) {
     this.kit = kit;
     this.x = x;
     this.y = y;
+    this.parentObject = parentObject;
     this.index = index;
     this.inDrag = false;
 
-    // TODO Review need for cPoints reference
-    this.draw = function(cPoints) {
-      if (!this.kit.inCurveEditMode) {
-          return;
-      }
-      var realPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, this, parentObject.rotation*constants.TWOPIDIV360);
-      kit.constrain(realPoint);
+    this.draw = function() {
+      var realPoint = Vector.rotate(0, 0, this, parentObject.rotation);
+      // Need to redo constraints with full reverse tranform now
+      // kit.constrain(realPoint);
       if (this.inDrag) {
+        var points = parentObject.shapePoints;
+        if(kit.editMode===constants.EDIT_TRANSFORM) {
+          points = parentObject.transformPoints;
+        }
         if (this.index === 1) {
-          var _anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[0], parentObject.rotation*constants.TWOPIDIV360);
+          var _anchorPoint = Vector.rotate(0, 0, points[0], parentObject.rotation);
           kit.context.beginPath();
           kit.context.moveTo(realPoint.x, realPoint.y);
           kit.context.lineTo(_anchorPoint.x, _anchorPoint.y);
           kit.context.stroke();
         }
         else if (this.index === 2) {
-          var anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[3], parentObject.rotation*constants.TWOPIDIV360);
+          var anchorPoint = Vector.rotate(0, 0, points[3], parentObject.rotation);
           kit.context.beginPath();
           kit.context.moveTo(realPoint.x, realPoint.y);
           kit.context.lineTo(anchorPoint.x, anchorPoint.y);

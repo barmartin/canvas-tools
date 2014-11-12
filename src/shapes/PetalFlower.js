@@ -1,6 +1,5 @@
 define(function(require) {
   'use strict';
-  var constants = require('constants');
   var CPoint = require('CPoint');
   var Vector = require('Vector');
   var u = require('util');
@@ -21,7 +20,8 @@ define(function(require) {
     // 
     this.allPetals = [];
     this.firstPetal = [];
-    this.controlPoints = [];
+    this.shapePoints = [];
+    this.transformPoints = [];
     this.thisAngle = 0;
 
     /* Setup curve that is the to be reflected/rotated/modified */
@@ -32,26 +32,32 @@ define(function(require) {
       cp3 = Vector.create(kit.curve[4], this.kit.curve[5]);
       cp4 = Vector.create(kit.curve[6], this.kit.curve[7]);
     } else {
-      cp = Vector.getPoint(this.center.x, this.center.y, this.innerRadius, this.firstInnerAngle);
+      cp = Vector.getPoint(0, 0, this.innerRadius, this.firstInnerAngle);
       var secondCPRadius = (this.outerRadius - this.innerRadius) / 2 + this.innerRadius;
-      cp2 = Vector.getPoint(this.center.x, this.center.y, secondCPRadius, this.firstInnerAngle);
-      cp3 = Vector.getPoint(this.center.x, this.center.y, this.outerRadius, this.thisAngle);
+      cp2 = Vector.getPoint(0, 0, secondCPRadius, this.firstInnerAngle);
+      cp3 = Vector.getPoint(0, 0, this.outerRadius, this.thisAngle);
       cp3.x = cp3.x - 40;
-      cp4 = Vector.getPoint(this.center.x, this.center.y, this.outerRadius, this.thisAngle);
+      cp4 = Vector.getPoint(0, 0, this.outerRadius, this.thisAngle);
     }
     /* getPoint() is a Radial point P(angle, radius) */
     this.firstPetal.push(cp);
-    this.controlPoints.push(new CPoint(kit, cp.x, cp.y, this, 0));
-    this.controlPoints.push(new CPoint(kit, cp2.x, cp2.y, this, 1));
+    this.shapePoints.push(new CPoint(kit, cp.x, cp.y, this, 0));
+    this.shapePoints.push(new CPoint(kit, cp2.x, cp2.y, this, 1));
     this.firstPetal.push(cp2);
-    this.controlPoints.push(new CPoint(kit, cp3.x, cp3.y, this, 2));
+    this.shapePoints.push(new CPoint(kit, cp3.x, cp3.y, this, 2));
     this.firstPetal.push(cp3);
-    this.controlPoints.push(new CPoint(kit, cp4.x, cp4.y, this, 3));
+    this.shapePoints.push(new CPoint(kit, cp4.x, cp4.y, this, 3));
     this.firstPetal.push(cp4);
     /* Reflect Curve about the y axis to create the first Petal */
-    this.firstPetal.push(Vector.create(-1 * (cp3.x - this.center.x) + this.center.x, cp3.y));
-    this.firstPetal.push(Vector.create(-1 * (cp2.x - this.center.x) + this.center.x, cp2.y));
-    this.firstPetal.push(Vector.create(-1 * (cp.x - this.center.x) + this.center.x, cp.y));
+    this.firstPetal.push(Vector.create(-cp3.x, cp3.y));
+    this.firstPetal.push(Vector.create(-cp2.x, cp2.y));
+    this.firstPetal.push(Vector.create(-cp.x, cp.y));
+
+    this.transformPoints.push( new CPoint(this.kit, 0, 0, this, 0) );
+    var rotatePoint = Vector.create(0, -this.kit.midHeight/2.5);
+    Vector.rotate(0, 0, rotatePoint, this.rotation);
+    this.transformPoints.push( new CPoint(this.kit, rotatePoint.x, rotatePoint.y, this, 1))
+    // TODO Scale point
 
     /* 
      * Use first Petal as a template for the rest of the Petals 
@@ -67,9 +73,8 @@ define(function(require) {
       this.thisAngle = i * this.increment;
       var newPetal = [];
       var thisAngle = this.thisAngle;
-      var thisFlower = this;
       u.each(this.firstPetal, function(point) {
-        var thisPoint = Vector.rotate(thisFlower.center.x, thisFlower.center.y, point, thisAngle);
+        var thisPoint = Vector.rotate(0, 0, point, thisAngle);
         newPetal.push(thisPoint);
       });
       this.allPetals.push(newPetal);
@@ -84,6 +89,7 @@ define(function(require) {
    */
   PetalFlower.prototype.updatePetal = function(index, newPoint) {    
     var newCoords = Vector.create(newPoint.x, newPoint.y);
+    /*
     if (newCoords.x < 10) {
       newCoords.x = 10;
     }
@@ -95,22 +101,23 @@ define(function(require) {
     }
     if (newCoords.y > this.kit.canvasWidth - 10) {
       newCoords.y = this.kit.canvasHeight - 10;
-    }
+    } */
     //var index = this.kit.indexOf(this.firstPetal, PetalPoint);
+    // Could add toggle to allow skewed flowers
     if (index === 3) {
-      newCoords.x = this.kit.canvasWidth / 2;
-      this.firstPetal[ 3 ].x = newCoords.x;
+      newCoords.x = 0;
+      this.firstPetal[ 3 ].x = 0;
       this.firstPetal[ index ].y = newPoint.y;
     } else if (index === 0) {
-      this.innerRadius = Vector.distance(Vector.create(this.center.x, this.center.y), Vector.create(newPoint.x, newPoint.y));
-      newCoords = Vector.getPoint(this.center.x, this.center.y, this.innerRadius, this.firstInnerAngle);
+      this.innerRadius = Vector.distance(Vector.create(0, 0), Vector.create(newPoint.x, newPoint.y));
+      newCoords = Vector.getPoint(0, 0, this.innerRadius, this.firstInnerAngle);
       this.firstPetal[ 0 ].x = newCoords.x;
       this.firstPetal[ 0 ].y = newCoords.y;
-      this.firstPetal[ 6 ].x = 2 * this.kit.canvasWidth / 2 - newCoords.x;
+      this.firstPetal[ 6 ].x = -newCoords.x;
       this.firstPetal[ 6 ].y = newCoords.y;
     } else {
       this.firstPetal[ index ].x = newPoint.x;
-      this.firstPetal[ 6 - index ].x = 2 * this.kit.canvasWidth / 2 - newPoint.x;
+      this.firstPetal[ 6 - index ].x = - newPoint.x;
       this.firstPetal[ 6 - index ].y = newPoint.y;
       this.firstPetal[ index ].y = newPoint.y;
     }
@@ -118,8 +125,40 @@ define(function(require) {
     /* Create the rest of the Petals by copying  and rotating the first Petal */
     this.createPetals();
     /* update control point with constrained values */
-    this.controlPoints[index].x = newCoords.x;
-    this.controlPoints[index].y = newCoords.y;
+    this.shapePoints[index].x = newCoords.x;
+    this.shapePoints[index].y = newCoords.y;
+  }
+
+  /*
+   * Update the first Petal based on a transform change.
+   * Recreate all the other Petals based on first Petal.
+   */
+  PetalFlower.prototype.updateTransform = function(index, newPoint) {
+    var newCoords = Vector.create(newPoint.x, newPoint.y);
+    if(index===1){
+      
+    }
+    this.transformPoints[index].x = newCoords.x;
+    this.transformPoints[index].y = newCoords.y;
+  }
+
+  /*
+   * Rotate, Scale and Transform Context
+   *  (RST)
+   */
+  PetalFlower.prototype.transform = function() {
+    this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
+  }
+
+  /*
+   *  Use a reverse transform to find actual point
+   *  For finding a click in the object space (TSR)
+   */
+  PetalFlower.prototype.reverseTransformPoint = function(point) {
+    // TODO scale and rotate inclusion
+    var actual = Vector.create(point.x-this.center.x, point.y-this.center.y);
+    actual = Vector.rotate(0, 0, actual, -this.rotation);
+    return actual;
   }
 
   /*
@@ -129,32 +168,31 @@ define(function(require) {
    */
   PetalFlower.prototype.updateFirstPetal = function() {
     //this.firstPetal = [];
-    this.firstPetal[0].x=this.controlPoints[0].x;
-    this.firstPetal[0].y=this.controlPoints[0].y;
-    this.firstPetal[1].x=this.controlPoints[1].x;
-    this.firstPetal[1].y=this.controlPoints[1].y;
-    this.firstPetal[2].x=this.controlPoints[2].x;
-    this.firstPetal[2].y=this.controlPoints[2].y;
-    this.firstPetal[3].x=this.controlPoints[3].x;
-    this.firstPetal[3].y=this.controlPoints[3].y;
+    this.firstPetal[0].x=this.shapePoints[0].x;
+    this.firstPetal[0].y=this.shapePoints[0].y;
+    this.firstPetal[1].x=this.shapePoints[1].x;
+    this.firstPetal[1].y=this.shapePoints[1].y;
+    this.firstPetal[2].x=this.shapePoints[2].x;
+    this.firstPetal[2].y=this.shapePoints[2].y;
+    this.firstPetal[3].x=this.shapePoints[3].x;
+    this.firstPetal[3].y=this.shapePoints[3].y;
     /* Reflect Curve about the y axis to create the first Petal */
-    this.firstPetal[4].x =-1 * (this.controlPoints[2].x - this.center.x) + this.center.x;
-    this.firstPetal[4].y = this.controlPoints[2].y;
-    this.firstPetal[5].x =-1 * (this.controlPoints[1].x - this.center.x) + this.center.x;
-    this.firstPetal[5].y = this.controlPoints[1].y;
-    this.firstPetal[6].x = -1 * (this.controlPoints[0].x - this.center.x) + this.center.x;
-    this.firstPetal[6].y = this.controlPoints[0].y;
+    this.firstPetal[4].x =-this.shapePoints[2].x;
+    this.firstPetal[4].y = this.shapePoints[2].y;
+    this.firstPetal[5].x =-this.shapePoints[1].x;
+    this.firstPetal[5].y = this.shapePoints[1].y;
+    this.firstPetal[6].x = -this.shapePoints[0].x;
+    this.firstPetal[6].y = this.shapePoints[0].y;
   }
 
   PetalFlower.prototype.setControlPoint = function(point, newPoint) {
-    this.controlPoints[this.kit.indexOf(this.controlPoints, point)] = newPoint;
+    this.shapePoints[this.kit.indexOf(this.shapePoints, point)] = newPoint;
   }
 
   PetalFlower.prototype.draw = function() {
     var index = 0;
     var flower = this;
     var kit = this.kit;
-    kit.context.save();
     kit.context.beginPath();
     u.each( this.allPetals, function(Petal) {
       // TODO manage these settings 
@@ -172,7 +210,7 @@ define(function(require) {
       } else {
         var rotated = [];
         for( var i = 0; i < Petal.length; i++) {
-          rotated.push(Vector.rotate(flower.center.x, flower.center.y, Petal[i], flower.rotation*constants.TWOPIDIV360));
+          rotated.push(Vector.rotate(0, 0, Petal[i], flower.rotation));
         }
         kit.context.moveTo(rotated[0].x, rotated[0].y);
         kit.context.bezierCurveTo(rotated[1].x, rotated[1].y, rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y);
@@ -180,13 +218,7 @@ define(function(require) {
         kit.context.moveTo( rotated[6].x, rotated[6].y );
         kit.context.lineTo(rotated[0].x, rotated[0].y);
       }
-      //kit.context.closePath();
-      if(index===0){
-        //kit.context.clip();
-        //kit.context.drawImage(kit.backgroundImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
-      }
-      // kit.context.stroke();
-      // kit.context.strokeStyle = '#' + kit.lineColor;
+      // Could setup different fills for each layer here
       index++;
     });
 
@@ -195,8 +227,8 @@ define(function(require) {
       // TODO Multiple blending modes feature
       kit.context.globalCompositeOperation = kit.sourceMode;
       kit.context.clip();
-      kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
-      if(kit.toggleCurveColor===true){
+      kit.context.drawImage(kit.fillImage, -kit.midWidth, -kit.midHeight, kit.canvasWidth, kit.canvasHeight);
+      if(kit.toggleCurveColor===true) {
         // Restore composition mode in the case the line highlight mode is toggled
         kit.context.globalCompositeOperation = 'source-over';
         kit.context.lineWidth = 1.9;
@@ -207,7 +239,6 @@ define(function(require) {
       kit.context.globalCompositeOperation = 'source-over';
       kit.context.stroke();
     }
-    kit.context.restore();
   }
 
   PetalFlower.prototype.updateRadialPoint = function() {
@@ -217,9 +248,9 @@ define(function(require) {
     var kit = this.kit;
     var flower = this;
     u.each(kit.keyFrames, function(keyFrame){
-      var point = keyFrame.obj[kit.selectedObject].controlPoints[0];
-      var radius = Vector.distance(flower.center, Vector.create(point.x, point.y));
-      var newPosition = Vector.getPolarPoint(flower.center, radius, flower.firstInnerAngle);
+      var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
+      var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
+      var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
       point.x = newPosition.x;
       point.y = newPosition.y;
     });
@@ -237,27 +268,32 @@ define(function(require) {
     var kit = this.kit;
     var flower = this;
     u.each(kit.keyFrames, function(keyFrame){
-      var point = keyFrame.obj[kit.selectedObject].controlPoints[0];
-      var radius = Vector.distance(flower.center, Vector.create(point.x, point.y));
-      var newPosition = Vector.getPolarPoint(flower.center, radius, flower.firstInnerAngle);
+      var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
+      var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
+      var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
       point.x = newPosition.x;
       point.y = newPosition.y;
     });
   }
 
-  PetalFlower.prototype.drawControlPoints = function() {
-    var cps = this.controlPoints;
-    u.each(cps, function(controlPoint) {
-      controlPoint.draw(cps);
+  PetalFlower.prototype.drawShapePoints = function() {
+    u.each(this.shapePoints, function(controlPoint) {
+      controlPoint.draw();
+    });
+  }
+
+  PetalFlower.prototype.drawTransformPoints = function() {
+    u.each(this.transformPoints, function(controlPoint) {
+      controlPoint.draw();
     });
   }
 
   PetalFlower.prototype.getState = function() {
     var cps = [];
-    u.each(this.controlPoints, function(point){
+    u.each(this.shapePoints, function(point){
       cps.push( Vector.create(point.x, point.y) );
     });
-    return { 'controlPoints': cps,
+    return { 'shapePoints': cps,
              'rotation': this.rotation };
   }
 
@@ -266,9 +302,9 @@ define(function(require) {
     this.rotation = state.rotation;
     // TODO check this
     kit.index = 0;
-    u.each(this.controlPoints, function(cp) {
-      cp.x = state.controlPoints[kit.index].x;
-      cp.y = state.controlPoints[kit.index].y;
+    u.each(this.shapePoints, function(cp) {
+      cp.x = state.shapePoints[kit.index].x;
+      cp.y = state.shapePoints[kit.index].y;
       kit.index++;      
     });
     //kitt.each(this.controlPoints, function(newCp){

@@ -1,6 +1,6 @@
 define(function(require) {
   'use strict';
-  // var constants = require('constants');
+  var constants = require('constants');
   /* Util Helper */
   return {
     getPosition: function(e, canvas) {
@@ -62,6 +62,10 @@ define(function(require) {
     // TODO validation
     validateFloat: function(obj) {
       return parseFloat(obj);
+    },
+
+    degreesToRadians: function(angle) {
+      return constants.TWOPIDIV360*angle;
     },
 
     toRGB: function(str) {
