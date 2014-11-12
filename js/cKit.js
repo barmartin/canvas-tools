@@ -1,11 +1,15 @@
-/*! cKit.js v0.2.1 November 07, 2014 */
+/*! cKit.js v0.2.5 November 11, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
       SCENE_NORMAL: 0,
       SCENE_GIF: 1,
+      EDIT_SHAPE: 0,
+      EDIT_TRANSFORM: 1,
+      EDIT_NONE: 2,
       PI: PI,
       TWOPIDIV360: 2 * Math.PI / 360,
+      TWOPI: 2 * Math.PI,
       MAX_OBJECTS: 4,
       DEFAULT_RAYS: 6,
       DEFAULT_INNER_RADIUS_SCALAR: 17,
@@ -23,13 +27,14 @@ var constants = function (require) {
       }
     };
   }({});
-var Vector = function (require) {
+var Vector = function (require, constants) {
     'use strict';
+    var constants = constants;
     return {
       create: function (x, y) {
         return {
-          'x': x || -1,
-          'y': y || -1
+          'x': x,
+          'y': y
         };
       },
       multiply: function (vector, scaleFactor) {
@@ -65,59 +70,97 @@ var Vector = function (require) {
         var xDist = pointA.x - pointB.x;
         var yDist = pointA.y - pointB.y;
         return Math.sqrt(xDist * xDist + yDist * yDist);
+      },
+      getRadians: function (center, point) {
+        var xDelta = point.x - center.x;
+        var yDelta = center.y - point.y;
+        var rads = Math.atan2(xDelta, yDelta);
+        if (rads < 0) {
+          rads += constants.TWOPI;
+        }
+        return rads;
+      },
+      getDegrees: function (center, point) {
+        var xDelta = point.x - center.x;
+        var yDelta = center.y - point.y;
+        var degrees = Math.atan2(xDelta, yDelta) * constants.TWOPIDIV360;
+        if (degrees < 0) {
+          degrees += 360;
+        }
+        return degrees;
+      },
+      zeroVector: function () {
+        return {
+          'x': 0,
+          'y': 0
+        };
       }
     };
-  }({});
-var CPoint = function (require, constants) {
+  }({}, constants);
+var CPoint = function (require, constants, Vector) {
     'use strict';
     var constants = constants;
+    var Vector = Vector;
     var CPoint = function (kit, x, y, parentObject, index) {
       this.kit = kit;
       this.x = x;
       this.y = y;
+      this.parentObject = parentObject;
       this.index = index;
       this.inDrag = false;
-      this.draw = function (cPoints) {
-        if (!this.kit.inCurveEditMode) {
-          return;
+      this.draw = function () {
+        var realPoint;
+        if (this.kit.editMode !== constants.EDIT_TRANSFORM || this.index !== 2) {
+          realPoint = Vector.rotate(0, 0, this, parentObject.rotation);
+        } else {
+          realPoint = this;
         }
-        var realPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, this, parentObject.rotation * constants.TWOPIDIV360);
         if (this.inDrag) {
+          var anchorPoint;
+          var points = parentObject.shapePoints;
+          if (this.kit.editMode === constants.EDIT_TRANSFORM) {
+            points = parentObject.transformPoints;
+          }
           if (this.index === 1) {
-            var _anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[0], parentObject.rotation * constants.TWOPIDIV360);
-            kit.context.beginPath();
-            kit.context.moveTo(realPoint.x, realPoint.y);
-            kit.context.lineTo(_anchorPoint.x, _anchorPoint.y);
-            kit.context.stroke();
+            anchorPoint = Vector.rotate(0, 0, points[0], parentObject.rotation);
+            this.kit.context.beginPath();
+            this.kit.context.moveTo(realPoint.x, realPoint.y);
+            this.kit.context.lineTo(anchorPoint.x, anchorPoint.y);
+            this.kit.context.stroke();
           } else if (this.index === 2) {
-            var anchorPoint = this.kit.Vector.rotate(kit.midWidth, kit.midHeight, parentObject.controlPoints[3], parentObject.rotation * constants.TWOPIDIV360);
-            kit.context.beginPath();
-            kit.context.moveTo(realPoint.x, realPoint.y);
-            kit.context.lineTo(anchorPoint.x, anchorPoint.y);
-            kit.context.stroke();
+            if (this.kit.editMode === constants.EDIT_TRANSFORM) {
+              anchorPoint = points[0];
+            } else {
+              anchorPoint = Vector.rotate(0, 0, points[3], parentObject.rotation);
+            }
+            this.kit.context.beginPath();
+            this.kit.context.moveTo(realPoint.x, realPoint.y);
+            this.kit.context.lineTo(anchorPoint.x, anchorPoint.y);
+            this.kit.context.stroke();
           }
         }
-        kit.context.beginPath();
-        kit.context.arc(realPoint.x, realPoint.y, this.kit.controlPointRadius, 0, Math.PI * 2, true);
-        kit.context.closePath();
-        kit.context.lineWidth = 1;
+        this.kit.context.beginPath();
+        this.kit.context.arc(realPoint.x, realPoint.y, this.kit.controlPointRadius, 0, Math.PI * 2, true);
+        this.kit.context.closePath();
+        this.kit.context.lineWidth = 1;
         if (this.inDrag) {
-          kit.context.fillStyle = '#999999';
-          kit.context.fill();
+          this.kit.context.fillStyle = '#999999';
+          this.kit.context.fill();
         } else {
-          kit.context.fillStyle = '#FFFFFF';
-          kit.context.fill();
+          this.kit.context.fillStyle = '#FFFFFF';
+          this.kit.context.fill();
         }
-        kit.context.stroke();
+        this.kit.context.stroke();
       };
       this.mouseInside = function (point) {
-        return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > this.kit.Vector.distance(point, this);
+        return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > Vector.distance(point, this) * this.parentObject.scale;
       };
     };
     return CPoint;
-  }({}, constants);
-var util = function (require) {
+  }({}, constants, Vector);
+var util = function (require, constants) {
     'use strict';
+    var constants = constants;
     return {
       getPosition: function (e, canvas) {
         var rect = canvas.getBoundingClientRect();
@@ -155,6 +198,9 @@ var util = function (require) {
       },
       validateFloat: function (obj) {
         return parseFloat(obj);
+      },
+      degreesToRadians: function (angle) {
+        return constants.TWOPIDIV360 * angle;
       },
       toRGB: function (str) {
         return [
@@ -219,10 +265,9 @@ var util = function (require) {
         HUD.appendChild(document.createTextNode(text));
       }
     };
-  }({});
-var PetalFlower = function (require, constants, CPoint, Vector, util) {
+  }({}, constants);
+var PetalFlower = function (require, CPoint, Vector, util) {
     'use strict';
-    var constants = constants;
     var CPoint = CPoint;
     var Vector = Vector;
     var u = util;
@@ -238,8 +283,12 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
       this.center = center;
       this.allPetals = [];
       this.firstPetal = [];
-      this.controlPoints = [];
+      this.shapePoints = [];
+      this.transformPoints = [];
       this.thisAngle = 0;
+      this.scaleDistance = this.kit.midWidth / 2;
+      this.scale = 1;
+      this.lastScale = 1;
       var cp, cp2, cp3, cp4;
       if (this.kit.curve.length === 8) {
         cp = Vector.create(kit.curve[0], this.kit.curve[1]);
@@ -247,24 +296,29 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
         cp3 = Vector.create(kit.curve[4], this.kit.curve[5]);
         cp4 = Vector.create(kit.curve[6], this.kit.curve[7]);
       } else {
-        cp = Vector.getPoint(this.center.x, this.center.y, this.innerRadius, this.firstInnerAngle);
+        cp = Vector.getPoint(0, 0, this.innerRadius, this.firstInnerAngle);
         var secondCPRadius = (this.outerRadius - this.innerRadius) / 2 + this.innerRadius;
-        cp2 = Vector.getPoint(this.center.x, this.center.y, secondCPRadius, this.firstInnerAngle);
-        cp3 = Vector.getPoint(this.center.x, this.center.y, this.outerRadius, this.thisAngle);
+        cp2 = Vector.getPoint(0, 0, secondCPRadius, this.firstInnerAngle);
+        cp3 = Vector.getPoint(0, 0, this.outerRadius, this.thisAngle);
         cp3.x = cp3.x - 40;
-        cp4 = Vector.getPoint(this.center.x, this.center.y, this.outerRadius, this.thisAngle);
+        cp4 = Vector.getPoint(0, 0, this.outerRadius, this.thisAngle);
       }
       this.firstPetal.push(cp);
-      this.controlPoints.push(new CPoint(kit, cp.x, cp.y, this, 0));
-      this.controlPoints.push(new CPoint(kit, cp2.x, cp2.y, this, 1));
+      this.shapePoints.push(new CPoint(kit, cp.x, cp.y, this, 0));
+      this.shapePoints.push(new CPoint(kit, cp2.x, cp2.y, this, 1));
       this.firstPetal.push(cp2);
-      this.controlPoints.push(new CPoint(kit, cp3.x, cp3.y, this, 2));
+      this.shapePoints.push(new CPoint(kit, cp3.x, cp3.y, this, 2));
       this.firstPetal.push(cp3);
-      this.controlPoints.push(new CPoint(kit, cp4.x, cp4.y, this, 3));
+      this.shapePoints.push(new CPoint(kit, cp4.x, cp4.y, this, 3));
       this.firstPetal.push(cp4);
-      this.firstPetal.push(Vector.create(-1 * (cp3.x - this.center.x) + this.center.x, cp3.y));
-      this.firstPetal.push(Vector.create(-1 * (cp2.x - this.center.x) + this.center.x, cp2.y));
-      this.firstPetal.push(Vector.create(-1 * (cp.x - this.center.x) + this.center.x, cp.y));
+      this.firstPetal.push(Vector.create(-cp3.x, cp3.y));
+      this.firstPetal.push(Vector.create(-cp2.x, cp2.y));
+      this.firstPetal.push(Vector.create(-cp.x, cp.y));
+      this.transformPoints.push(new CPoint(this.kit, 0, 0, this, 0));
+      var rotatePoint = Vector.create(0, -this.kit.midHeight / 2.5);
+      Vector.rotate(0, 0, rotatePoint, this.rotation);
+      this.transformPoints.push(new CPoint(this.kit, rotatePoint.x, rotatePoint.y, this, 1));
+      this.transformPoints.push(new CPoint(this.kit, this.scaleDistance, 0, this, 2));
       this.createPetals();
     };
     PetalFlower.prototype.createPetals = function () {
@@ -273,9 +327,8 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
         this.thisAngle = i * this.increment;
         var newPetal = [];
         var thisAngle = this.thisAngle;
-        var thisFlower = this;
         u.each(this.firstPetal, function (point) {
-          var thisPoint = Vector.rotate(thisFlower.center.x, thisFlower.center.y, point, thisAngle);
+          var thisPoint = Vector.rotate(0, 0, point, thisAngle);
           newPetal.push(thisPoint);
         });
         this.allPetals.push(newPetal);
@@ -283,64 +336,77 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
     };
     PetalFlower.prototype.updatePetal = function (index, newPoint) {
       var newCoords = Vector.create(newPoint.x, newPoint.y);
-      if (newCoords.x < 10) {
-        newCoords.x = 10;
-      }
-      if (newCoords.x > this.kit.canvasWidth - 10) {
-        newCoords.x = this.kit.canvasWidth - 10;
-      }
-      if (newCoords.y < 10) {
-        newCoords.y = 10;
-      }
-      if (newCoords.y > this.kit.canvasWidth - 10) {
-        newCoords.y = this.kit.canvasHeight - 10;
-      }
       if (index === 3) {
-        newCoords.x = this.kit.canvasWidth / 2;
-        this.firstPetal[3].x = newCoords.x;
+        newCoords.x = 0;
+        this.firstPetal[3].x = 0;
         this.firstPetal[index].y = newPoint.y;
       } else if (index === 0) {
-        this.innerRadius = Vector.distance(Vector.create(this.center.x, this.center.y), Vector.create(newPoint.x, newPoint.y));
-        newCoords = Vector.getPoint(this.center.x, this.center.y, this.innerRadius, this.firstInnerAngle);
+        this.innerRadius = Vector.distance(Vector.create(0, 0), Vector.create(newPoint.x, newPoint.y));
+        newCoords = Vector.getPoint(0, 0, this.innerRadius, this.firstInnerAngle);
         this.firstPetal[0].x = newCoords.x;
         this.firstPetal[0].y = newCoords.y;
-        this.firstPetal[6].x = 2 * this.kit.canvasWidth / 2 - newCoords.x;
+        this.firstPetal[6].x = -newCoords.x;
         this.firstPetal[6].y = newCoords.y;
       } else {
         this.firstPetal[index].x = newPoint.x;
-        this.firstPetal[6 - index].x = 2 * this.kit.canvasWidth / 2 - newPoint.x;
+        this.firstPetal[6 - index].x = -newPoint.x;
         this.firstPetal[6 - index].y = newPoint.y;
         this.firstPetal[index].y = newPoint.y;
       }
       this.allPetals = [];
       this.createPetals();
-      this.controlPoints[index].x = newCoords.x;
-      this.controlPoints[index].y = newCoords.y;
+      this.shapePoints[index].x = newCoords.x;
+      this.shapePoints[index].y = newCoords.y;
+    };
+    PetalFlower.prototype.updateTransform = function (index, newPoint) {
+      var newCoords = Vector.create(newPoint.x, newPoint.y);
+      if (index === 1) {
+      }
+      this.transformPoints[index].x = newCoords.x;
+      this.transformPoints[index].y = newCoords.y;
+    };
+    PetalFlower.prototype.transform = function () {
+      this.kit.context.transform(this.scale, 0, 0, this.scale, this.center.x, this.center.y);
+    };
+    PetalFlower.prototype.translateTranform = function () {
+      this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
+    };
+    PetalFlower.prototype.reverseTransformPoint = function (point) {
+      var actual = Vector.create(point.x - this.center.x, point.y - this.center.y);
+      actual.x /= this.scale;
+      actual.y /= this.scale;
+      actual = Vector.rotate(0, 0, actual, -this.rotation);
+      return actual;
+    };
+    PetalFlower.prototype.setScale = function (xPosition) {
+      this.scale = this.lastScale * xPosition / this.scaleDistance;
+    };
+    PetalFlower.prototype.resetScalePoint = function (xPosition) {
+      this.transformPoints[2].x = this.scaleDistance;
     };
     PetalFlower.prototype.updateFirstPetal = function () {
-      this.firstPetal[0].x = this.controlPoints[0].x;
-      this.firstPetal[0].y = this.controlPoints[0].y;
-      this.firstPetal[1].x = this.controlPoints[1].x;
-      this.firstPetal[1].y = this.controlPoints[1].y;
-      this.firstPetal[2].x = this.controlPoints[2].x;
-      this.firstPetal[2].y = this.controlPoints[2].y;
-      this.firstPetal[3].x = this.controlPoints[3].x;
-      this.firstPetal[3].y = this.controlPoints[3].y;
-      this.firstPetal[4].x = -1 * (this.controlPoints[2].x - this.center.x) + this.center.x;
-      this.firstPetal[4].y = this.controlPoints[2].y;
-      this.firstPetal[5].x = -1 * (this.controlPoints[1].x - this.center.x) + this.center.x;
-      this.firstPetal[5].y = this.controlPoints[1].y;
-      this.firstPetal[6].x = -1 * (this.controlPoints[0].x - this.center.x) + this.center.x;
-      this.firstPetal[6].y = this.controlPoints[0].y;
+      this.firstPetal[0].x = this.shapePoints[0].x;
+      this.firstPetal[0].y = this.shapePoints[0].y;
+      this.firstPetal[1].x = this.shapePoints[1].x;
+      this.firstPetal[1].y = this.shapePoints[1].y;
+      this.firstPetal[2].x = this.shapePoints[2].x;
+      this.firstPetal[2].y = this.shapePoints[2].y;
+      this.firstPetal[3].x = this.shapePoints[3].x;
+      this.firstPetal[3].y = this.shapePoints[3].y;
+      this.firstPetal[4].x = -this.shapePoints[2].x;
+      this.firstPetal[4].y = this.shapePoints[2].y;
+      this.firstPetal[5].x = -this.shapePoints[1].x;
+      this.firstPetal[5].y = this.shapePoints[1].y;
+      this.firstPetal[6].x = -this.shapePoints[0].x;
+      this.firstPetal[6].y = this.shapePoints[0].y;
     };
     PetalFlower.prototype.setControlPoint = function (point, newPoint) {
-      this.controlPoints[this.kit.indexOf(this.controlPoints, point)] = newPoint;
+      this.shapePoints[this.kit.indexOf(this.shapePoints, point)] = newPoint;
     };
     PetalFlower.prototype.draw = function () {
       var index = 0;
       var flower = this;
       var kit = this.kit;
-      kit.context.save();
       kit.context.beginPath();
       u.each(this.allPetals, function (Petal) {
         kit.context.lineWidth = 1;
@@ -353,7 +419,7 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
         } else {
           var rotated = [];
           for (var i = 0; i < Petal.length; i++) {
-            rotated.push(Vector.rotate(flower.center.x, flower.center.y, Petal[i], flower.rotation * constants.TWOPIDIV360));
+            rotated.push(Vector.rotate(0, 0, Petal[i], flower.rotation));
           }
           kit.context.moveTo(rotated[0].x, rotated[0].y);
           kit.context.bezierCurveTo(rotated[1].x, rotated[1].y, rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y);
@@ -361,15 +427,13 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
           kit.context.moveTo(rotated[6].x, rotated[6].y);
           kit.context.lineTo(rotated[0].x, rotated[0].y);
         }
-        if (index === 0) {
-        }
         index++;
       });
       kit.context.closePath();
       if (kit.fillImageExists) {
         kit.context.globalCompositeOperation = kit.sourceMode;
         kit.context.clip();
-        kit.context.drawImage(kit.fillImage, 0, 0, kit.canvasWidth, kit.canvasHeight);
+        kit.context.drawImage(kit.fillImage, -kit.midWidth, -kit.midHeight, kit.canvasWidth, kit.canvasHeight);
         if (kit.toggleCurveColor === true) {
           kit.context.globalCompositeOperation = 'source-over';
           kit.context.lineWidth = 1.9;
@@ -379,7 +443,6 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
         kit.context.globalCompositeOperation = 'source-over';
         kit.context.stroke();
       }
-      kit.context.restore();
     };
     PetalFlower.prototype.updateRadialPoint = function () {
       this.increment = 2 * Math.PI / this.petalCount;
@@ -387,9 +450,9 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
       var kit = this.kit;
       var flower = this;
       u.each(kit.keyFrames, function (keyFrame) {
-        var point = keyFrame.obj[kit.selectedObject].controlPoints[0];
-        var radius = Vector.distance(flower.center, Vector.create(point.x, point.y));
-        var newPosition = Vector.getPolarPoint(flower.center, radius, flower.firstInnerAngle);
+        var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
+        var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
+        var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
         point.x = newPosition.x;
         point.y = newPosition.y;
       });
@@ -401,26 +464,38 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
       var kit = this.kit;
       var flower = this;
       u.each(kit.keyFrames, function (keyFrame) {
-        var point = keyFrame.obj[kit.selectedObject].controlPoints[0];
-        var radius = Vector.distance(flower.center, Vector.create(point.x, point.y));
-        var newPosition = Vector.getPolarPoint(flower.center, radius, flower.firstInnerAngle);
+        var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
+        var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
+        var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
         point.x = newPosition.x;
         point.y = newPosition.y;
       });
     };
-    PetalFlower.prototype.drawControlPoints = function () {
-      var cps = this.controlPoints;
-      u.each(cps, function (controlPoint) {
-        controlPoint.draw(cps);
+    PetalFlower.prototype.drawShapePoints = function () {
+      this.kit.context.save();
+      this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
+      var flower = this;
+      u.each(this.shapePoints, function (controlPoint) {
+        var newPoint = new CPoint(flower.kit, controlPoint.x * flower.scale, controlPoint.y * flower.scale, flower, controlPoint.index);
+        newPoint.draw();
       });
+      this.kit.context.restore();
+    };
+    PetalFlower.prototype.drawTransformPoints = function () {
+      this.kit.context.save();
+      this.translateTranform();
+      this.transformPoints[0].draw();
+      this.transformPoints[1].draw();
+      this.transformPoints[2].draw();
+      this.kit.context.restore();
     };
     PetalFlower.prototype.getState = function () {
       var cps = [];
-      u.each(this.controlPoints, function (point) {
+      u.each(this.shapePoints, function (point) {
         cps.push(Vector.create(point.x, point.y));
       });
       return {
-        'controlPoints': cps,
+        'shapePoints': cps,
         'rotation': this.rotation
       };
     };
@@ -428,9 +503,9 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
       var kit = this.kit;
       this.rotation = state.rotation;
       kit.index = 0;
-      u.each(this.controlPoints, function (cp) {
-        cp.x = state.controlPoints[kit.index].x;
-        cp.y = state.controlPoints[kit.index].y;
+      u.each(this.shapePoints, function (cp) {
+        cp.x = state.shapePoints[kit.index].x;
+        cp.y = state.shapePoints[kit.index].y;
         kit.index++;
       });
       this.allPetals = [];
@@ -439,7 +514,7 @@ var PetalFlower = function (require, constants, CPoint, Vector, util) {
       kit.redraw();
     };
     return PetalFlower;
-  }({}, constants, CPoint, Vector, util);
+  }({}, CPoint, Vector, util);
 var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
     'use strict';
     var constants = constants;
@@ -449,6 +524,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
     var _u = util;
     var cKit = function () {
       this.constants = constants;
+      this.Vector = Vector;
       this._u = _u;
       this.canvas = document.getElementById('myCanvas');
       this.context = '';
@@ -460,11 +536,10 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.segment = 0;
       this.loopStartTime = 0;
       this.setTime = 0;
-      this.pauseTime = 200;
-      this.frameDelay = 60;
+      this.pauseTime = 0;
+      this.frameDelay = 30;
       this.gifFramerate = 200;
       this.delta = -this.frameDelay;
-      this.Vector = Vector;
       this.sceneMode = constants.SCENE_NORMAL;
       this.encoder = '';
       this.delayTime = 0;
@@ -484,20 +559,20 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.midWidth = this.canvasWidth / 2;
       this.midHeight = this.canvasHeight / 2;
       this.center = Vector.create(this.midWidth, this.midHeight);
-      this.inCurveEditMode = true;
+      this.editMode = constants.EDIT_SHAPE;
       this.toggleCurveColor = false;
       this.fieldFocus = false;
       this.settingShelf = {
         'toggleCurveColor': this.toggleCurveColor,
-        'inCurveEditMode': this.inCurveEditMode
+        'editMode': this.editMode
       };
       this.objList = [];
       this.objTypes = [];
       this.selectedObject = 0;
-      this.debugMode = true;
       this.resourceList = {};
       this.backgroundImageExists = false;
       this.fillImageExists = false;
+      this.debugMode = false;
       this.initializeCanvas = function () {
         this.initConstants();
         this.bindEvents();
@@ -513,6 +588,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
         if (this.debugMode === true) {
           var dataz = window.getSampleJSON();
           this.loadData(dataz, false);
+          this.editMode = constants.EDIT_TRANSFORM;
         }
         this.redraw();
       };
@@ -534,9 +610,8 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.build = function () {
         var kit = this;
         _u.each(_u.range(0, this.initList.length), function (i) {
-          if (kit.initList[i] === 'polar') {
-          } else if (kit.initList[i] === 'flower') {
-            kit.objList.push(new PetalFlower(kit, constants.DEFAULT_RAYS, 1, kit.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, kit.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, kit.center));
+          if (kit.initList[i] === 'flower') {
+            kit.objList.push(new PetalFlower(kit, constants.DEFAULT_RAYS, 1, kit.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, kit.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(kit.midWidth, kit.midHeight)));
             kit.objTypes.push([
               'flower',
               constants.DEFAULT_RAYS,
@@ -560,21 +635,26 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
         }
         var kit = this;
         _u.each(this.objList, function (item) {
+          kit.context.save();
+          item.transform();
           item.draw();
+          kit.context.restore();
         });
-        _u.each(this.objList, function (item) {
-          if (_u.indexOf(kit.objList, item) === kit.selectedObject) {
-            item.drawControlPoints();
-          }
-        });
+        if (this.editMode === constants.EDIT_SHAPE) {
+          this.objList[kit.selectedObject].drawShapePoints();
+        }
+        if (this.editMode === constants.EDIT_TRANSFORM) {
+          this.objList[kit.selectedObject].drawTransformPoints();
+        }
       };
       this.updatePetalCount = function () {
         var kVal = document.getElementById('k').value;
         if (isNaN(kVal)) {
           return;
         }
-        if (this.objList[this.selectedObject] instanceof PetalFlower) {
-          this.objList[this.selectedObject] = new PetalFlower(this, kVal, 1, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center);
+        var object = this.objList[this.selectedObject];
+        if (object instanceof PetalFlower) {
+          this.objList[this.selectedObject] = new PetalFlower(this, kVal, object.radialAccent, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight));
           this.objTypes[this.selectedObject][1] = kVal;
           this.objList[this.selectedObject].updateRadialPoint();
           this.setState();
@@ -630,7 +710,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
         this.fillImageExists = false;
         this.keyFrames = [];
         this.segment = 0;
-        this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+        this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
         this.objTypes.push([
           'flower',
           constants.DEFAULT_RAYS,
@@ -643,11 +723,22 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       };
       this.initializeCanvas();
     };
+    cKit.prototype.getRotation = function () {
+      var rotationDegrees = this.keyFrames[this.segment].obj[this.selectedObject].rotation * this.constants.TWOPIDIV360;
+      return Math.floor(rotationDegrees * 100) / 100;
+    };
+    cKit.prototype.setRotation = function (val) {
+      this.objList[this.selectedObject].rotation = val;
+      this.keyFrames[this.segment].obj[this.selectedObject].rotation = val;
+      this.objList[this.selectedObject].allPetals = [];
+      this.objList[this.selectedObject].createPetals();
+      this.redraw();
+    };
     cKit.prototype.addObject = function () {
       if (this.objList.length >= constants.MAX_OBJECTS) {
         return;
       }
-      this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+      this.objList.push(new PetalFlower(this, constants.DEFAULT_RAYS, 1, this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
       this.objTypes.push([
         'flower',
         constants.DEFAULT_RAYS,
@@ -702,6 +793,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.redraw();
     };
     cKit.prototype.addFillImage = function (src, label, page) {
+      this.fillImageExists = false;
       this.fillImage = new Image();
       this.fillImage.onload = function () {
         window.kit.fillImageExists = true;
@@ -723,33 +815,74 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.resourceList.backgroundImageLabel = label;
       this.resourceList.backgroundImagePage = page;
     };
+    cKit.prototype.constrain = function (point) {
+      if (point.x < 0) {
+        point.x = 0;
+      } else if (point.x > this.canvasWidth) {
+        point.x = this.canvasWidth;
+      }
+      if (point.y < 0) {
+        point.y = 0;
+      } else if (point.y > this.canvasHeight) {
+        point.y = this.canvasHeight;
+      }
+    };
     cKit.prototype.startDrag = function (event) {
       var kit = window.kit;
-      kit.position = _u.getPosition(event, kit.canvas);
-      _u.debugConsole('startDrag x:' + kit.position.x + ' y:' + kit.position.y);
-      var clickPoint = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -kit.objList[kit.selectedObject].rotation * kit.constants.TWOPIDIV360);
-      _u.each(kit.objList[kit.selectedObject].controlPoints, function (thisPoint) {
-        if (thisPoint.mouseInside(clickPoint)) {
-          thisPoint.inDrag = true;
-          kit.canvasMode = 'cpDrag';
-          kit.redraw();
-          return;
-        }
-      });
+      var position = _u.getPosition(event, kit.canvas);
+      var object = kit.objList[kit.selectedObject];
+      if (kit.editMode === constants.EDIT_SHAPE) {
+        _u.each(object.shapePoints, function (thisPoint) {
+          var actualPosition = object.reverseTransformPoint(position);
+          if (thisPoint.mouseInside(actualPosition)) {
+            thisPoint.inDrag = true;
+            kit.canvasMode = 'cpDrag';
+            kit.redraw();
+            return;
+          }
+        });
+      } else if (kit.editMode === constants.EDIT_TRANSFORM) {
+        _u.each(object.transformPoints, function (thisPoint) {
+          var positionInsideObject;
+          if (thisPoint.index !== 2) {
+            positionInsideObject = Vector.create(position.x - object.center.x, position.y - object.center.y);
+            positionInsideObject = Vector.rotate(0, 0, positionInsideObject, -object.rotation);
+          } else {
+            object.lastScale = object.scale;
+            positionInsideObject = Vector.create(position.x - object.center.x, position.y - object.center.y);
+          }
+          if (thisPoint.mouseInside(positionInsideObject)) {
+            thisPoint.inDrag = true;
+            kit.canvasMode = 'cpDrag';
+            kit.redraw();
+            return;
+          }
+        });
+      }
     };
     cKit.prototype.endDrag = function (event) {
       var kit = window.kit;
       kit.canvasMode = 'static';
       kit.position = _u.getPosition(event, kit.canvas);
-      _u.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
-      _u.each(kit.objList, function (object) {
-        _u.each(object.controlPoints, function (thisPoint) {
+      var object = kit.objList[kit.selectedObject];
+      if (kit.editMode === constants.EDIT_SHAPE) {
+        _u.each(object.shapePoints, function (thisPoint) {
           if (thisPoint.inDrag === true) {
             thisPoint.inDrag = false;
             kit.redraw();
           }
         });
-      });
+      } else if (kit.editMode === constants.EDIT_TRANSFORM) {
+        _u.each(object.transformPoints, function (thisPoint) {
+          if (thisPoint.inDrag === true) {
+            thisPoint.inDrag = false;
+            if (thisPoint.index === 2) {
+              thisPoint.x = object.scaleDistance;
+            }
+            kit.redraw();
+          }
+        });
+      }
       kit.getState();
     };
     cKit.prototype.move = function (event) {
@@ -757,23 +890,42 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       if (kit.canvasMode !== 'cpDrag') {
         return;
       }
-      kit.position = _u.getPosition(event, kit.canvas);
-      _u.each(kit.objList, function (object) {
-        var index = 0;
-        _u.each(object.controlPoints, function (thisPoint) {
+      var object = kit.objList[kit.selectedObject];
+      var position = _u.getPosition(event, kit.canvas);
+      var actualPosition = object.reverseTransformPoint(position);
+      var index = 0;
+      if (kit.editMode === kit.constants.EDIT_SHAPE) {
+        _u.each(object.shapePoints, function (thisPoint) {
           if (thisPoint.inDrag) {
-            var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -object.rotation * kit.constants.TWOPIDIV360);
-            var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
+            var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
             newPoint.inDrag = true;
             object.updatePetal(index, newPoint);
-            _u.debugConsole('newPoint.x/y::' + rotatedPos.x + '/' + rotatedPos.y + ' indexof::' + _u.indexOf(object.controlPoints, thisPoint) + ' object type:' + object.type + '</p>');
             kit.redraw();
             return;
           }
           index++;
         });
-      });
-      _u.debugConsole('mousemove x:' + kit.position.x + ' y:' + kit.position.y);
+      } else if (kit.editMode === kit.constants.EDIT_TRANSFORM) {
+        _u.each(object.transformPoints, function (thisPoint) {
+          if (thisPoint.inDrag) {
+            if (index === 0) {
+              object.center = position;
+            } else if (index === 1) {
+              var angleVector = Vector.create(position.x - object.center.x, position.y - object.center.y);
+              var angle = Vector.getRadians(Vector.create(0, 0), angleVector);
+              kit.setRotation(angle);
+              kit._u.debugConsole(angle);
+            } else if (index === 2) {
+              var newX = position.x - object.center.x;
+              object.setScale(newX);
+              thisPoint.x = newX;
+            }
+            kit.redraw();
+            return;
+          }
+          index++;
+        });
+      }
     };
     cKit.prototype.bindEvents = function () {
       this.canvas.addEventListener('touchstart', this.startDrag, false);
@@ -789,7 +941,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       }
       this.keyFrames[this.segment].timing = parseFloat(document.getElementById('length').value);
       var val = document.getElementById('rotation').value;
-      this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val);
+      this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val) * constants.TWOPIDIV360;
     };
     cKit.prototype.gifInit = function () {
       this.encoder.setRepeat(-1);
@@ -814,15 +966,15 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.loopStartTime = _u.msTime();
       this.segmentStartTime = this.loopStartTime;
       this.settingShelf = {
-        'inCurveEditMode': this.inCurveEditMode,
+        'editMode': this.editMode,
         'toggleCurveColor': this.toggleCurveColor
       };
-      this.inCurveEditMode = false;
+      this.editMode = constants.EDIT_NONE;
       this.toggleCurveColor = false;
       window.updateInterface();
     };
     cKit.prototype.stopScene = function () {
-      this.inCurveEditMode = this.settingShelf.inCurveEditMode;
+      this.editMode = this.settingShelf.editMode;
       this.toggleCurveColor = this.settingShelf.toggleCurveColor;
       this.sceneReset();
     };
@@ -897,22 +1049,22 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       _u.each(this.keyFrames[keyTo].obj, function (ob) {
         var index = 0;
         var newCps = [];
-        _u.each(ob.controlPoints, function (cp) {
-          var newX = kit.keyFrames[kit.segment - 1].obj[objIndex].controlPoints[index].x * (1 - sig) + cp.x * sig;
-          var newY = kit.keyFrames[kit.segment - 1].obj[objIndex].controlPoints[index].y * (1 - sig) + cp.y * sig;
+        _u.each(ob.shapePoints, function (cp) {
+          var newX = kit.keyFrames[kit.segment - 1].obj[objIndex].shapePoints[index].x * (1 - sig) + cp.x * sig;
+          var newY = kit.keyFrames[kit.segment - 1].obj[objIndex].shapePoints[index].y * (1 - sig) + cp.y * sig;
           var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
           newCps.push(newPoint);
           index++;
         });
-        var newState = { controlPoints: newCps };
+        var newState = { shapePoints: newCps };
         var fromRotation = kit.keyFrames[kit.segment - 1].obj[objIndex].rotation;
         var toRotation = kit.keyFrames[keyTo].obj[objIndex].rotation;
         var del = toRotation - fromRotation;
-        if (Math.abs(del) > 180) {
+        if (Math.abs(del) > Math.PI) {
           if (del < 0) {
-            toRotation += 360;
+            toRotation += 2 * Math.PI;
           } else {
-            fromRotation += 360;
+            fromRotation += 2 * Math.PI;
           }
         }
         newState.rotation = (fromRotation * (1 - sig) + toRotation * sig) % 360;
@@ -952,14 +1104,14 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
         _u.each(this.keyFrames[this.segment].obj, function (ob) {
           var index = 0;
           var newCps = [];
-          _u.each(ob.controlPoints, function (cp) {
-            var newX = kit.keyFrames[kit.segment - 1].obj[objIndex].controlPoints[index].x * (1 - sig) + cp.x * sig;
-            var newY = kit.keyFrames[kit.segment - 1].obj[objIndex].controlPoints[index].y * (1 - sig) + cp.y * sig;
+          _u.each(ob.shapePoints, function (cp) {
+            var newX = kit.keyFrames[kit.segment - 1].obj[objIndex].shapePoints[index].x * (1 - sig) + cp.x * sig;
+            var newY = kit.keyFrames[kit.segment - 1].obj[objIndex].shapePoints[index].y * (1 - sig) + cp.y * sig;
             var newPoint = new CPoint(kit, newX, newY, kit.objList[objIndex], index);
             newCps.push(newPoint);
             index++;
           });
-          var newState = { controlPoints: newCps };
+          var newState = { shapePoints: newCps };
           var fromRotation = kit.keyFrames[kit.segment - 1].obj[objIndex].rotation;
           var toRotation = kit.keyFrames[kit.segment].obj[objIndex].rotation;
           var del = toRotation - fromRotation;
@@ -988,7 +1140,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.objList = [];
       for (var i = 0; i < this.objTypes.length; i++) {
         if (this.objTypes[i][0] === 'flower') {
-          this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, this.center));
+          this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight / constants.DEFAULT_INNER_RADIUS_SCALAR, this.canvasHeight / constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
         } else if (this.objTypes[i][0] === 'polar') {
         }
       }
@@ -1001,7 +1153,6 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.backgroundImageExists = false;
       this.fillImageExists = false;
       this.sourceMode = this.options.sourceMode;
-      console.log(this.sourceMode);
       if (typeof this.resourceList.backgroundImageSource === 'string') {
         this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
       }
@@ -1017,13 +1168,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       }
       this.segment = 0;
       this.setState();
-      this.redraw();
     };
-    for (var kit in cKit.prototype) {
-      if (typeof cKit.prototype[kit] === 'function') {
-        window[kit] = cKit.prototype[kit];
-      }
-    }
     cKit.prototype._preloadMethods = [];
     cKit.prototype._registeredMethods = {
       pre: [],
