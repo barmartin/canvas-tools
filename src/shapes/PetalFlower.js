@@ -17,16 +17,21 @@ define(function(require) {
     this.innerRadius = innerRadius;
     this.outerRadius = outerRadius;
     this.center = center;
-    // 
+
     this.allPetals = [];
     this.firstPetal = [];
     this.shapePoints = [];
     this.transformPoints = [];
     this.thisAngle = 0;
 
+    this.scaleDistance = this.kit.midWidth/2;
+    this.scale = 1;
+    this.lastScale = 1;
+
     /* Setup curve that is the to be reflected/rotated/modified */
     var cp, cp2, cp3, cp4;
     if (this.kit.curve.length === 8) {
+      // REMOVE Backbone.js Legacy code
       cp = Vector.create(kit.curve[0], this.kit.curve[1]);
       cp2 = Vector.create(kit.curve[2], this.kit.curve[3]);
       cp3 = Vector.create(kit.curve[4], this.kit.curve[5]);
@@ -57,6 +62,7 @@ define(function(require) {
     var rotatePoint = Vector.create(0, -this.kit.midHeight/2.5);
     Vector.rotate(0, 0, rotatePoint, this.rotation);
     this.transformPoints.push( new CPoint(this.kit, rotatePoint.x, rotatePoint.y, this, 1))
+    this.transformPoints.push( new CPoint(this.kit, this.scaleDistance, 0, this, 2))
     // TODO Scale point
 
     /* 
@@ -147,6 +153,14 @@ define(function(require) {
    *  (RST)
    */
   PetalFlower.prototype.transform = function() {
+    this.kit.context.transform(this.scale, 0, 0, this.scale, this.center.x, this.center.y);
+  }
+
+  /*
+   * Rotate, Scale and Transform Context
+   *  (RST)
+   */
+  PetalFlower.prototype.translateTranform = function() {
     this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
   }
 
@@ -157,8 +171,18 @@ define(function(require) {
   PetalFlower.prototype.reverseTransformPoint = function(point) {
     // TODO scale and rotate inclusion
     var actual = Vector.create(point.x-this.center.x, point.y-this.center.y);
+    actual.x /= this.scale;
+    actual.y /= this.scale;
     actual = Vector.rotate(0, 0, actual, -this.rotation);
     return actual;
+  }
+
+  PetalFlower.prototype.setScale = function(xPosition) {
+    this.scale = this.lastScale*xPosition/this.scaleDistance;
+  }
+
+  PetalFlower.prototype.resetScalePoint = function(xPosition) {
+    this.transformPoints[2].x = this.scaleDistance;
   }
 
   /*
@@ -243,7 +267,6 @@ define(function(require) {
 
   PetalFlower.prototype.updateRadialPoint = function() {
     this.increment = 2 * Math.PI / this.petalCount;
-    // rotate?
     this.firstInnerAngle = -0.5 * this.increment * this.radialAccent;
     var kit = this.kit;
     var flower = this;
@@ -263,7 +286,6 @@ define(function(require) {
   PetalFlower.prototype.accentRadialPoint = function(scale) {
     this.radialAccent = scale;
     this.increment = 2 * Math.PI / this.petalCount;
-    // rotate?
     this.firstInnerAngle = -0.5 * this.increment * scale;
     var kit = this.kit;
     var flower = this;
@@ -277,15 +299,24 @@ define(function(require) {
   }
 
   PetalFlower.prototype.drawShapePoints = function() {
+    this.kit.context.save();
+    // Using custom transform to translate without scaling control point size
+    this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
+    var flower = this;
     u.each(this.shapePoints, function(controlPoint) {
-      controlPoint.draw();
+      var newPoint = new CPoint(flower.kit, controlPoint.x*flower.scale, controlPoint.y*flower.scale, flower, controlPoint.index);
+      newPoint.draw();
     });
+    this.kit.context.restore();
   }
 
   PetalFlower.prototype.drawTransformPoints = function() {
-    u.each(this.transformPoints, function(controlPoint) {
-      controlPoint.draw();
-    });
+    this.kit.context.save();
+    this.translateTranform();
+    this.transformPoints[0].draw();
+    this.transformPoints[1].draw();
+    this.transformPoints[2].draw();
+    this.kit.context.restore();
   }
 
   PetalFlower.prototype.getState = function() {
@@ -300,15 +331,12 @@ define(function(require) {
   PetalFlower.prototype.setState = function(state) {
     var kit = this.kit;
     this.rotation = state.rotation;
-    // TODO check this
     kit.index = 0;
     u.each(this.shapePoints, function(cp) {
       cp.x = state.shapePoints[kit.index].x;
       cp.y = state.shapePoints[kit.index].y;
       kit.index++;      
     });
-    //kitt.each(this.controlPoints, function(newCp){
-    //this.controlPoints = state.controlPoints;
     this.allPetals = [];
     this.updateFirstPetal();
     this.createPetals();

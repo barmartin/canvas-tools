@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     watch: {
       main: {
         files: ['src/**/*.js', 'examples/css/styles.less'],
-        tasks: ['jshint', 'requirejs'],
+        tasks: ['jshint', 'requirejs', 'less'],
         options: {}
       }
     },

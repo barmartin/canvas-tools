@@ -29,9 +29,9 @@ define(function (require) {
     this.segment = 0;
     this.loopStartTime = 0;
     this.setTime = 0;
-    this.pauseTime = 200;
+    this.pauseTime = 0;
     //this.timeOut = 20;
-    this.frameDelay = 60;
+    this.frameDelay = 30;
     this.gifFramerate = 200;
     this.delta = -this.frameDelay;
 
@@ -164,16 +164,10 @@ define(function (require) {
       // Always draw active control points on top
       // 
       if(this.editMode===constants.EDIT_SHAPE) {
-        kit.context.save();
-        this.objList[kit.selectedObject].transform();
         this.objList[kit.selectedObject].drawShapePoints();
-        kit.context.restore();
       } 
       if(this.editMode===constants.EDIT_TRANSFORM) {
-        kit.context.save();
-        this.objList[kit.selectedObject].transform();
         this.objList[kit.selectedObject].drawTransformPoints();
-        kit.context.restore();
       } 
     }
 
@@ -373,14 +367,9 @@ define(function (require) {
     var kit = window.kit;
     var position = _u.getPosition(event, kit.canvas);
     var object = kit.objList[kit.selectedObject];
-    //var actualPosition = object.reverseTransformPoint(kit.position);
     if(kit.editMode===constants.EDIT_SHAPE) {
       _u.each(object.shapePoints, function( thisPoint ){
-
-        //var actualPoint = Vector.rotate(center.x, center.y, thisPoint, selectedObj.rotation*kit.constants.TWOPIDIV360);
         var actualPosition = object.reverseTransformPoint(position);
-        // actualPoint = new CPoint(kit, actualPoint.x, actualPoint.y);
-        // kit.constrain(actualPoint);
         if(thisPoint.mouseInside(actualPosition)){
           thisPoint.inDrag = true;
           kit.canvasMode = 'cpDrag';
@@ -390,8 +379,15 @@ define(function (require) {
       });
     } else if(kit.editMode===constants.EDIT_TRANSFORM) {
       _u.each(object.transformPoints, function( thisPoint ){
-        var positionInsideObject = object.reverseTransformPoint(position);
-        //kit.constrain(thisPoint);
+        var positionInsideObject;
+        if(thisPoint.index!==2) {
+          positionInsideObject = Vector.create(position.x-object.center.x, position.y-object.center.y);
+          positionInsideObject = Vector.rotate(0, 0, positionInsideObject, -object.rotation);
+        } else {
+          // Scale control point is not rotated
+          object.lastScale = object.scale;
+          positionInsideObject = Vector.create(position.x-object.center.x, position.y-object.center.y);
+        }
         if(thisPoint.mouseInside(positionInsideObject)){
           thisPoint.inDrag = true;
           kit.canvasMode = 'cpDrag';
@@ -406,19 +402,22 @@ define(function (require) {
     var kit = window.kit;
     kit.canvasMode = 'static';
     kit.position = _u.getPosition(event, kit.canvas);
-
+    var object = kit.objList[kit.selectedObject];
     //_u.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
     if(kit.editMode===constants.EDIT_SHAPE) {
-      _u.each( kit.objList[kit.selectedObject].shapePoints, function( thisPoint ){
+      _u.each(object.shapePoints, function( thisPoint ){
         if( thisPoint.inDrag === true ){
           thisPoint.inDrag = false;
           kit.redraw();
         }
       });
     } else if(kit.editMode===constants.EDIT_TRANSFORM) {
-      _u.each( kit.objList[kit.selectedObject].transformPoints, function( thisPoint ){
+      _u.each(object.transformPoints, function( thisPoint ){
         if( thisPoint.inDrag === true ){
           thisPoint.inDrag = false;
+          if(thisPoint.index===2) {
+            thisPoint.x = object.scaleDistance;
+          }
           kit.redraw();
         }
       });
@@ -458,14 +457,14 @@ define(function (require) {
           if(index===0) {
             object.center=position;
           } else if(index===1) {
-            // var rotatedPos = kit.Vector.rotate(0, 0, kit.position, -object.rotation*kit.constants.TWOPIDIV360);
             var angleVector = Vector.create(position.x-object.center.x, position.y-object.center.y)
             var angle = Vector.getRadians(Vector.create(0, 0), angleVector);
             kit.setRotation(angle);
             kit._u.debugConsole(angle);
-            //var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
-            //newPoint.inDrag = true;
-            //object.updateTransform(index, newPoint);
+          } else if(index===2) {
+            var newX = position.x-object.center.x;
+            object.setScale(newX);
+            thisPoint.x = newX;
           }
           kit.redraw();
           return;

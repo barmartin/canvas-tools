@@ -89,7 +89,7 @@ function initShapePanel() {
 
   $('#bgAlpha').change(function() {
     var newAlpha = parseFloat($(this).val());
-    if( kit.dnexist(newAlpha) || newAlpha > 1 ) {
+    if( kit._u.dnexist(newAlpha) || newAlpha > 1 ) {
       kit.backgroundAlpha = 1.0;
       $(this).val('1.0');
     } else if( newAlpha < 0) {

@@ -13,45 +13,55 @@ define(function(require) {
     this.inDrag = false;
 
     this.draw = function() {
-      var realPoint = Vector.rotate(0, 0, this, parentObject.rotation);
+      var realPoint;
+      if(this.kit.editMode!==constants.EDIT_TRANSFORM||this.index!==2) {
+        realPoint = Vector.rotate(0, 0, this, parentObject.rotation);
+      } else {
+        realPoint = this;
+      }
       // Need to redo constraints with full reverse tranform now
       // kit.constrain(realPoint);
       if (this.inDrag) {
+        var anchorPoint;
         var points = parentObject.shapePoints;
-        if(kit.editMode===constants.EDIT_TRANSFORM) {
+        if(this.kit.editMode===constants.EDIT_TRANSFORM) {
           points = parentObject.transformPoints;
         }
         if (this.index === 1) {
-          var _anchorPoint = Vector.rotate(0, 0, points[0], parentObject.rotation);
-          kit.context.beginPath();
-          kit.context.moveTo(realPoint.x, realPoint.y);
-          kit.context.lineTo(_anchorPoint.x, _anchorPoint.y);
-          kit.context.stroke();
-        }
-        else if (this.index === 2) {
-          var anchorPoint = Vector.rotate(0, 0, points[3], parentObject.rotation);
-          kit.context.beginPath();
-          kit.context.moveTo(realPoint.x, realPoint.y);
-          kit.context.lineTo(anchorPoint.x, anchorPoint.y);
-          kit.context.stroke();
+          anchorPoint = Vector.rotate(0, 0, points[0], parentObject.rotation);
+          this.kit.context.beginPath();
+          this.kit.context.moveTo(realPoint.x, realPoint.y);
+          this.kit.context.lineTo(anchorPoint.x, anchorPoint.y);
+          this.kit.context.stroke();
+        } else if (this.index === 2) {
+          if(this.kit.editMode===constants.EDIT_TRANSFORM) {
+            // TODO fix this
+            anchorPoint = points[0];
+          } else {
+            anchorPoint = Vector.rotate(0, 0, points[3], parentObject.rotation);
+          }
+          this.kit.context.beginPath();
+          this.kit.context.moveTo(realPoint.x, realPoint.y);
+          this.kit.context.lineTo(anchorPoint.x, anchorPoint.y);
+          this.kit.context.stroke();
         }
       }
-      kit.context.beginPath();
-      kit.context.arc(realPoint.x, realPoint.y, this.kit.controlPointRadius, 0, Math.PI * 2, true);
-      kit.context.closePath();
-      kit.context.lineWidth = 1;
+      this.kit.context.beginPath();
+      this.kit.context.arc(realPoint.x, realPoint.y, this.kit.controlPointRadius, 0, Math.PI * 2, true);
+      this.kit.context.closePath();
+      this.kit.context.lineWidth = 1;
 
       if (this.inDrag) {
-        kit.context.fillStyle = '#999999';
-        kit.context.fill();
+        this.kit.context.fillStyle = '#999999';
+        this.kit.context.fill();
       } else {
-        kit.context.fillStyle = '#FFFFFF';
-        kit.context.fill();
+        this.kit.context.fillStyle = '#FFFFFF';
+        this.kit.context.fill();
       }
-      kit.context.stroke();
+      this.kit.context.stroke();
     }
     this.mouseInside = function(point) {
-      return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > Vector.distance(point, this);
+      return this.kit.controlPointRadius + constants.MAX_CLICK_DISTANCE > Vector.distance(point, this)*this.parentObject.scale;
     }
   }
   return CPoint;
