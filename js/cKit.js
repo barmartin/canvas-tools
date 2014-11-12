@@ -572,7 +572,7 @@ var core = function (require, constants, Vector, CPoint, PetalFlower, util) {
       this.resourceList = {};
       this.backgroundImageExists = false;
       this.fillImageExists = false;
-      this.debugMode = false;
+      this.debugMode = true;
       this.initializeCanvas = function () {
         this.initConstants();
         this.bindEvents();

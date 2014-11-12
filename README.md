@@ -16,7 +16,6 @@ A: stops animation<br/>
 <h4>More features soon</h4>
 Animating Text<br/>
 Image Scaling<br/>
-Tranforms<br/>
 GIF Encoding (WIP)<br/>
 Shaders <br/>
 Object & Keyframe removal <br/>
