@@ -10,8 +10,6 @@
       <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />  
       <link rel="stylesheet" type="text/css" href="css/dhtmlxcolorpicker.css" />
       <link rel="stylesheet" type="text/css" href="css/styles.css">
-      <!--link rel="stylesheet/less" type="text/css" href="css/preboot.less">
-      <link rel="stylesheet/less" type="text/css" href="css/styles.less"-->
     </head>
     <body>
         <div class="container">
@@ -127,12 +125,29 @@
                       <div class="tab-pane" id="animation">
                             <form name="animation" action="">
                                 <div class="row">
+                                    <div class="btn btn-default" id="stop">Stop</div>
+                                    <!--div class="btn btn-default" id="playSegment">Play Segment</div-->
+                                    <div class="btn btn-default" id="playAll">Play All</div>
+                                </div>
+                                <div class="row">
                                     <div class="col small-lab tall-row">Segment</div>
                                     <div class="col butn" id="btn-first"></div>
                                     <div class="col butn" id="btn-prev"></div>
                                     <div id="segmentId" class="col tall-row" style="margin:6px 11px 11px;">0</div>
                                     <div class="col butn" id="btn-next"></div>
                                     <div class="col butn" id="btn-last"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="btn btn-default" id="removeSegment">Remove Keyframe</div>
+                                    <div class="btn btn-default" id="removeLast">Remove Last Keyframe</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col lab">
+                                        Seamless Animation&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <input type="checkbox" checked name="seamless" id="seamless">
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col small-lab tall-row">Object</div>
@@ -164,15 +179,6 @@
                                     <div class="col small-lab">Rotation</div>
                                     <input class="form-field" type="text" name="rotation" id="rotation" value="0.0" size="5"></input>
                                 </div>
-                                <div class="row">
-                                    <div class="btn btn-default" id="stop">Stop</div>
-                                    <!--div class="btn btn-default" id="playSegment">Play Segment</div-->
-                                    <div class="btn btn-default" id="playAll">Play All</div>
-                                </div>
-                                <div class="row">
-                                    <div class="btn btn-default" id="removeSegment">Remove Keyframe</div>
-                                    <div class="btn btn-default" id="removeLast">Remove Last Keyframe</div>
-                                </div>
                                 <div class="row last">
                                     <span class="large-lab">GIF functionality is WIP</span> <span class="col large-lab"><i>Firefox & server local image fills only</i></span>
                                     <div class="clearfix"></div>
@@ -181,9 +187,6 @@
                             </form>
                         </div><!-- /Animation Tab -->
                         <div class="tab-pane" id="data-tab">
-                            <div class="row">
-
-                            </div>
                             <div class="row">
                                 <div class="col-xs-6">
                                     <span class="large-lab clearfix">Load Sample Scene</span>
@@ -228,20 +231,17 @@
             </footer>
         </div> <!-- /container -->
         <script type="text/javascript" src="js/lib/jquery-1.11.1.min.js"></script>
-        <!--script type="text/javascript" src="js/lib/less-1.6.3.js"></script-->
         <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>  
         <script type="text/javascript" src="js/lib/pnglib.js"></script>          
         <script type="text/javascript" src="js/lib/dhtmlxcommon.js"></script>
         <script type="text/javascript" src="js/lib/dhtmlxcolorpicker.js"></script>
-
-        <!--script type="text/javascript" src="js/lib/gif.js"></script-->
-
+        
         <script type="text/javascript" src="js/lib/jsgif/LZWEncoder.js"></script>
         <script type="text/javascript" src="js/lib/jsgif/NeuQuant.js"></script>
         <script type="text/javascript" src="js/lib/jsgif/GIFEncoder.js"></script>
         <script type="text/javascript" src="js/lib/jsgif/b64.js"></script>
 
         <script type="text/javascript" src="js/cKit.js"></script>
-        <script type="text/javascript" src="js/script.js"></script>          
+        <script type="text/javascript" src="js/interfaceEvents.js"></script>          
     </body>
 </html>

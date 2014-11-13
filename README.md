@@ -13,10 +13,10 @@ A: stops animation<br/>
 
 <a href="http://thebarry.github.io/canvas-tools/" target="_blank">Demo Here</a>
 
-<h4>More features soon</h4>
+<h4>Improvements & Features To be Completed</h4>
+GIF Encoding (WIP)<br/>
 Animating Text<br/>
 Image Scaling<br/>
-GIF Encoding (WIP)<br/>
-Shaders <br/>
-Object & Keyframe removal <br/>
-Shims
+Shaders<br/>
+Shims<br/>
+Improve and abstract UI/Package interfaces<br/>
