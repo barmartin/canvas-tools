@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/barmartin/ck.js.git"
   },
-  "version": "0.2.6",
+  "version": "0.3.0",
   "devDependencies": {
     "grunt": "~0.4.2",
     "amdclean": "~0.3.3",

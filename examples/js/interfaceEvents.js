@@ -1,7 +1,7 @@
 function initInterface() {
-  initShapePanel();
-  initAnimationPanel();
-  initLoadEvents();
+  initShapeTab();
+  initAnimationTab();
+  initLoadTab();
   initKeyboard();
   kit.encoder = new GIFEncoder();
   updateInterface();
@@ -62,7 +62,7 @@ function updateObject() {
   }
 }
 
-function initShapePanel() {
+function initShapeTab() {
   $('#shapeColor').click( function() {
     if(this.checked) {
       kit.toggleCurveColor = true;
@@ -179,7 +179,7 @@ function forwardFrame() {
   }
 }
 
-function initAnimationPanel() {
+function initAnimationTab() {
   $('#btn-first').click(function() {
     kit.segment = 0;
     $('#rotation').val(kit.getRotation());
@@ -286,7 +286,7 @@ function playAll() {
   $('#stop').attr('disabled', false);
 }
 
-function initLoadEvents() {
+function initLoadTab() {
   $('#load-data').click(function() {
     var dataz = $.parseJSON($('#data-json-text').val());
     kit.loadData(dataz, false);
@@ -349,7 +349,7 @@ function mode(type) {
   }
 }
 
-// COLOR PICKER CODE
+// COLOR PICKER
 var currentSelector;
 window.dhx_globalImgPath='img/cp/';
 var paletteWidth = 45;
@@ -508,47 +508,17 @@ function selectObject(object) {
   }
 }
 
-// LEGACY CODE
-/* 
-Array.prototype.insert = function (index, item) {
-  this.splice(index, 0, item);
-};
-
-function setInputCells(){
-  // TODO
-  $('#animation input[name="rotation"]').val(0);//kit.keyFrames[kit.segment].obj[kit.selectedObject].rotation);
-  $('#animation input#length').val(1.0);//kit.keyFrames[kit.segment].timing);
-  $('#shape #k').val(6);//kit.objTypes[kit.selectedObject][1]);
-}
-
-/* Disabled now that there are multiple objects in the scene.
-$('#linkButton').click(function(){
-  var x1,y1,x2,y2,x3,y3,x4,y4;
-  var cpList = kit.objList[0].controlPoints;
-  x1=kit.cpFormat(cpList[0].x);y1=kit.cpFormat(cpList[0].y);
-  x2=kit.cpFormat(cpList[1].x);y2=kit.cpFormat(cpList[1].y);
-  x3=kit.cpFormat(cpList[2].x);y3=kit.cpFormat(cpList[2].y);
-  x4=kit.cpFormat(cpList[3].x);y4=kit.cpFormat(cpList[3].y);
-  var cpString = x1;
-  cpString = cpString.concat(y1,x2,y2,x3,y3,x4,y4);
-  var urlString = '#f/' + kit.k + '/' + kit.backgroundColor + kit.encodeToHex(kit.backgroundAlpha)+'/' + kit.lineColor +
-          '/' + cpString;
-  window.location = urlString;
-}); */
-
-//"backgroundImageSource":"img/radials.jpg", \
-//"backgroundImagePage":"http://serescosmicos.tumblr.com/post/94587874401", \
 var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":1,"lineColor":"9fb4f4","sourceMode":"lighter"}, \
 {"fillImageSource":"img/darkmountain.jpg", "fillImagePage":"http://serescosmicos.tumblr.com/post/94587874401"},[["flower",6,2],["flower",6,1],["flower","12",1]], \
-[{"obj":[{"shapePoints":[{"x":-141.79099936173662,"y":-81.86307165016471},{"x":18.5,"y":-145},{"x":23.5,"y":108},{"x":0,"y":-151}],"rotation":0}, \
-{"shapePoints":[{"x":-2.3048861143232213,"y":-3.9921798556678283},{"x":19.5,"y":-120},{"x":-8.5,"y":-289},{"x":0,"y":-163}],"rotation":0}, \
-{"shapePoints":[{"x":-9.74377581562431,"y":-36.36426640147081},{"x":-69.5,"y":-250},{"x":-0.5,"y":-206},{"x":0,"y":193}],"rotation":0}],"timing":1}, \
-{"obj":[{"shapePoints":[{"x":-126.49975296418566,"y":-73.03466642629377},{"x":85.5,"y":-134},{"x":-8.5,"y":128},{"x":0,"y":-151}],"rotation":4.696703992269068}, \
-{"shapePoints":[{"x":-88.08837891572303,"y":-152.57354783841137},{"x":36.5,"y":-216},{"x":206.5,"y":-115},{"x":0,"y":-199}],"rotation":4.701578590710583}, \
-{"shapePoints":[{"x":-75.49102030073418,"y":-281.7363232775535},{"x":-19.5,"y":-299},{"x":201.5,"y":-189},{"x":0,"y":-290.9090909090909}],"rotation":0}],"timing":1}, \
-{"obj":[{"shapePoints":[{"x":-126.49975296418566,"y":-73.03466642629377},{"x":24.5,"y":-123},{"x":4.5,"y":95},{"x":0,"y":-200}],"rotation":3.1540920026091546}, \
-{"shapePoints":[{"x":-8.097067370350821,"y":-14.02453207775575},{"x":42.5,"y":-224},{"x":16.5,"y":59},{"x":0,"y":-199}],"rotation":3.1458661318481425}, \
-{"shapePoints":[{"x":-64.04464065994941,"y":-239.01785289542278},{"x":66.5,"y":-57},{"x":-55.5,"y":-162},{"x":0,"y":-290.9090909090909}],"rotation":0}],"timing":1}, \
-{"obj":[{"shapePoints":[{"x":-126.49975296418566,"y":-73.03466642629377},{"x":24.5,"y":-123},{"x":4.5,"y":95},{"x":0,"y":-200}],"rotation":1.5626332428118657}, \
-{"shapePoints":[{"x":-115.2055228710846,"y":-199.54181892525688},{"x":263.5,"y":-131},{"x":48.5,"y":16},{"x":0,"y":-199}],"rotation":1.5531770048972708}, \
-{"shapePoints":[{"x":-76.14351177448445,"y":-284.17145460909506},{"x":145.5,"y":-149},{"x":-138.5,"y":-257},{"x":0,"y":-290.9090909090909}],"rotation":0}],"timing":1}]]'
+[{"obj":[{"shapePoints":[{"x":-141.79099936173662,"y":-81.86307165016471},{"x":18.5,"y":-145},{"x":23.5,"y":108},{"x":0,"y":-151}],"rotation":0,"scale":1,"position":{"x":320,"y":320},"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-2.3048861143232213,"y":-3.9921798556678283},{"x":19.5,"y":-120},{"x":-8.5,"y":-289},{"x":0,"y":-163}],"rotation":0,"scale":1,"position":{"x":320,"y":320},"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-9.74377581562431,"y":-36.36426640147081},{"x":-69.5,"y":-250},{"x":-0.5,"y":-206},{"x":0,"y":193}],"rotation":0,"scale":1,"position":{"x":320,"y":320},"scale":1,"position":{"x":320,"y":320}}],"timing":1}, \
+{"obj":[{"shapePoints":[{"x":-126.49975296418566,"y":-73.03466642629377},{"x":85.5,"y":-134},{"x":-8.5,"y":128},{"x":0,"y":-151}],"rotation":4.696703992269068,"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-88.08837891572303,"y":-152.57354783841137},{"x":36.5,"y":-216},{"x":206.5,"y":-115},{"x":0,"y":-199}],"rotation":4.701578590710583,"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-75.49102030073418,"y":-281.7363232775535},{"x":-19.5,"y":-299},{"x":201.5,"y":-189},{"x":0,"y":-290.9090909090909}],"rotation":0,"scale":1,"position":{"x":320,"y":320}}],"timing":1}, \
+{"obj":[{"shapePoints":[{"x":-126.49975296418566,"y":-73.03466642629377},{"x":24.5,"y":-123},{"x":4.5,"y":95},{"x":0,"y":-200}],"rotation":3.1540920026091546,"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-8.097067370350821,"y":-14.02453207775575},{"x":42.5,"y":-224},{"x":16.5,"y":59},{"x":0,"y":-199}],"rotation":3.1458661318481425,"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-64.04464065994941,"y":-239.01785289542278},{"x":66.5,"y":-57},{"x":-55.5,"y":-162},{"x":0,"y":-290.9090909090909}],"rotation":0,"scale":1,"position":{"x":320,"y":320}}],"timing":1}, \
+{"obj":[{"shapePoints":[{"x":-126.49975296418566,"y":-73.03466642629377},{"x":24.5,"y":-123},{"x":4.5,"y":95},{"x":0,"y":-200}],"rotation":1.5626332428118657,"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-115.2055228710846,"y":-199.54181892525688},{"x":263.5,"y":-131},{"x":48.5,"y":16},{"x":0,"y":-199}],"rotation":1.5531770048972708,"scale":1,"position":{"x":320,"y":320}}, \
+{"shapePoints":[{"x":-76.14351177448445,"y":-284.17145460909506},{"x":145.5,"y":-149},{"x":-138.5,"y":-257},{"x":0,"y":-290.9090909090909}],"rotation":0,"scale":1,"position":{"x":320,"y":320}}],"timing":1}]]'

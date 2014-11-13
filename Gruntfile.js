@@ -59,7 +59,12 @@ module.exports = function(grunt) {
             'constants': 'src/core/constants',
             'CPoint': 'src/elements/CPoint',
             'Vector': 'src/elements/Vector',
-            'PetalFlower': 'src/shapes/PetalFlower'
+            'PetalFlower': 'src/objects/PetalFlower',
+            'mainLoop': 'src/animation/mainLoop',
+            'canvasEvents': 'src/events/canvasEvents',
+            'sceneEvents': 'src/events/sceneEvents',
+            'objectEvents': 'src/events/objectEvents',
+            'settingsEvents': 'src/events/settingsEvents'
           },
           useStrict: true,
           wrap: {
