@@ -20,4 +20,4 @@ Image Scaling<br/>
 Shaders<br/>
 Shims<br/>
 Improve and abstract UI/Package interfaces<br/>
-Toggle for seamless looping<br/>
+Add scale and position to keyframe

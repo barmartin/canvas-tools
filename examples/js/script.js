@@ -200,29 +200,16 @@ function initAnimationPanel() {
     kit.setState();
     $('#segmentId').html(kit.segment);
   });
-  /*$('#clear-frame').click(function() {
-    if(kit.segment>0) {
-      kit.keyFrames[kit.segment] = kit.keyFrames[kit.segment-1];
-    }
-  });
-  $('#insert-frame').click(function() {
-    // frame always exist after moving into state, initialized on right -> click from previous states
-    kit.keyFrames.insert(kit.segment, {});
-    kit.keyFrames[kit.segment].obj = [];
-    kit.getState();
-  });
-  $('#delete-frame').click(function() {
-    // frame always exist after moving into state, initialized on right -> click from previous states
-    if(kit.keyFrames.length<2) {
-      return;
-    }
-    delete kit.keyFrames[kit.segment];
-    if(kit.segment<kit.keyFrames.length) {
-      kit.setState();
+
+  $('#seamless').click( function() {
+    if(this.checked) {
+      kit.seamlessAnimation = true;
     } else {
-      kit.segment--;
+      kit.seamlessAnimation = false;
     }
-  });*/
+    kit.redraw();
+    return true;
+  });
   $('#playSegment').click(function() {
     kit.animationMode = true;
     if(kit.segment === 0) {
@@ -306,8 +293,8 @@ function initLoadEvents() {
     updateInterface();
   });
   $('#get-data').click(function() {
-    var daSettings = {'backgroundColor':kit.backgroundColor, 'backgroundAlpha':kit.backgroundAlpha, 'lineColor':kit.lineColor, 'positions':kit.positions, 'sourceMode': kit.sourceMode};
-    $('#data-json-text').val(JSON.stringify([daSettings, kit.resourceList, kit.objTypes, kit.keyFrames]));
+    var settings = kit.getSettings();
+    $('#data-json-text').val(JSON.stringify([settings, kit.resourceList, kit.objTypes, kit.keyFrames]));
   });
   $('.load-sample').click(function() {
     var dataz = $.parseJSON(sampleJSON);

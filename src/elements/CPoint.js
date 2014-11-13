@@ -35,7 +35,6 @@ define(function(require) {
           this.kit.context.stroke();
         } else if (this.index === 2) {
           if(this.kit.editMode===constants.EDIT_TRANSFORM) {
-            // TODO fix this
             anchorPoint = points[0];
           } else {
             anchorPoint = Vector.rotate(0, 0, points[3], parentObject.rotation);

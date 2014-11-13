@@ -26,6 +26,11 @@ define(function(require) {
     DEFAULT_INNER_RADIUS_SCALAR: 17,
     DEFAULT_OUTER_RADIUS_SCALAR: 2.2,
 
+    BACKGROUND_COLOR: '010201',
+    BACKGROUND_ALPHA: '1',
+    LINE_COLOR: '9fb4f4',
+    BODY_BACKGROUND_COLOR: '020202',
+
     MAX_CLICK_DISTANCE: 2,
     SOURCE_MODES: {
       'lighter': 'lighter',

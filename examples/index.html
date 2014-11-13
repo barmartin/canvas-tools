@@ -21,9 +21,6 @@
             </div>
             <div id="cpc-bodybg" class="cpc" style="display:none">
             </div>  
-            <!--div class="container" id="app">
-            </div-->      
-
             <div style="color: black; display:none;" class="jumbotron">
                 <span>Canvas Testing Console : </span>
                 <span id="console"></span>
@@ -130,12 +127,29 @@
                       <div class="tab-pane" id="animation">
                             <form name="animation" action="">
                                 <div class="row">
+                                    <div class="btn btn-default" id="stop">Stop</div>
+                                    <!--div class="btn btn-default" id="playSegment">Play Segment</div-->
+                                    <div class="btn btn-default" id="playAll">Play All</div>
+                                </div>
+                                <div class="row">
                                     <div class="col small-lab tall-row">Segment</div>
                                     <div class="col butn" id="btn-first"></div>
                                     <div class="col butn" id="btn-prev"></div>
                                     <div id="segmentId" class="col tall-row" style="margin:6px 11px 11px;">0</div>
                                     <div class="col butn" id="btn-next"></div>
                                     <div class="col butn" id="btn-last"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="btn btn-default" id="removeSegment">Remove Keyframe</div>
+                                    <div class="btn btn-default" id="removeLast">Remove Last Keyframe</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col lab">
+                                        Seamless Animation&nbsp;
+                                    </div>
+                                    <div class="col">
+                                        <input type="checkbox" checked name="seamless" id="seamless">
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col small-lab tall-row">Object</div>
@@ -167,33 +181,6 @@
                                     <div class="col small-lab">Rotation</div>
                                     <input class="form-field" type="text" name="rotation" id="rotation" value="0.0" size="5"></input>
                                 </div>
-                                <!--div class="row">
-                                    <div class="col small-lab">Animate</div>
-                                    <input type="checkbox" name="animate"></input>
-                                </div-->
-                                <!--div class="row">
-                                    <div class="col small-lab tall-row">Keyframes</div>
-                                    <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-default">
-                                            <input type="radio" name="clear" id="clear-frame"> Clear Frame
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="radio" name="insert" id="insert-frame"> Insert Frame
-                                        </label>
-                                        <label class="btn btn-default">
-                                            <input type="radio" name="clear" id="delete-frame"> Delete Frame
-                                        </label>
-                                    </div>
-                                </div-->
-                                <div class="row">
-                                    <div class="btn btn-default" id="stop">Stop</div>
-                                    <!--div class="btn btn-default" id="playSegment">Play Segment</div-->
-                                    <div class="btn btn-default" id="playAll">Play All</div>
-                                </div>
-                                <div class="row">
-                                    <div class="btn btn-default" id="removeSegment">Remove Keyframe</div>
-                                    <div class="btn btn-default" id="removeLast">Remove Last Keyframe</div>
-                                </div>
                                 <div class="row last">
                                     <span class="large-lab">GIF functionality is WIP</span> <span class="col large-lab"><i>Firefox & server local image fills only</i></span>
                                     <div class="clearfix"></div>
@@ -202,18 +189,6 @@
                             </form>
                         </div><!-- /Animation Tab -->
                         <div class="tab-pane" id="data-tab">
-                            <div class="row">
-                                <!--div class="col-md-6">
-                                    <span class="large-lab">Load Sample Scene</div>
-                                    <div class="clearfix"></div>        
-                                    <div class="btn btn-default" class="load-sample">Load Sample</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="large-lab">Clear Scene</div>
-                                    <div class="clearfix"></div>
-                                    <div class="btn btn-default" class="clear-scene">Clear Scene</div>
-                                </div-->
-                            </div>
                             <div class="row">
                                 <div class="col-xs-6">
                                     <span class="large-lab clearfix">Load Sample Scene</span>

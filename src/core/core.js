@@ -31,7 +31,7 @@ define(function (require) {
     this.setTime = 0;
     this.pauseTime = 0;
     //this.timeOut = 20;
-    this.frameDelay = 30;
+    this.frameDelay = 10;
     this.gifFramerate = 200;
     this.delta = -this.frameDelay;
 
@@ -43,28 +43,27 @@ define(function (require) {
 
     // TODO move initializing constants to constants.js
     this.initList = ['flower'];
-    this.curve = [];
     this.pattern = null;
-    this.bodybg ='020202';
+    this.bodybg = constants.BODY_BACKGROUND_COLOR;
 
-    this.backgroundColor = '010201';
-    this.lineColor = '9fb4f4';
-    this.backgroundAlpha = 1.0;
-    document.getElementById('bgAlpha').value = this.backgroundAlpha;
+    this.backgroundColor = constants.BACKGROUND_COLOR;
+    this.lineColor = constants.LINE_COLOR;
+    this.backgroundAlpha = constants.BACKGROUND_ALPHA;
+
     var key = this._u.getKeys(constants.SOURCE_MODES)[0];
     this.sourceMode = constants.SOURCE_MODES[key];
     // SETUP ID to all interface elements and setter methods in package
 
     // CANVAS SETTINGS
-    this.controlPointRadius = 6;
     this.canvasWidth = 640;
     this.canvasHeight = 640;
     this.midWidth = this.canvasWidth/2;
     this.midHeight = this.canvasHeight/2;
-    this.center = Vector.create(this.midWidth, this.midHeight);
+    this.controlPointRadius = 6;
 
     this.editMode = constants.EDIT_SHAPE;
     this.toggleCurveColor = false;
+    this.seamlessAnimation = true;
     this.fieldFocus = false;
     this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'editMode': this.editMode};
 
@@ -82,7 +81,6 @@ define(function (require) {
 
 
     this.initializeCanvas = function() {
-      this.initConstants();
       this.bindEvents();
       this.context = this.canvas.getContext('2d');
       var kInputField = document.getElementById('k');
@@ -107,23 +105,6 @@ define(function (require) {
       this.redraw();
     }
 
-    this.initConstants = function() {
-      if (_u.exists(this.positions)) {
-        if(this.positions.length!==24) {return;}
-        this.curve.push(this.validateInt(this.positions.substring(0, 3)));
-        this.curve.push(this.validateInt(this.positions.substring(3, 6)));
-
-        this.curve.push(this.validateInt(this.positions.substring(6, 9)));
-        this.curve.push(this.validateInt(this.positions.substring(9, 12)));
-
-        this.curve.push(this.validateInt(this.positions.substring(12, 15)));
-        this.curve.push(this.validateInt(this.positions.substring(15, 18)));
-
-        this.curve.push(this.validateInt(this.positions.substring(18, 21)));
-        this.curve.push(this.validateInt(this.positions.substring(21, 24)));
-      }
-    }
-
     this.build = function() {
       var kit = this;
       _u.each(_u.range(0, this.initList.length), function(i) {
@@ -146,7 +127,6 @@ define(function (require) {
       this.context.strokeStyle = '#' + this.lineColor;
 
       if(this.backgroundImageExists){
-        // TODO resize background
         this.context.drawImage(this.backgroundImage, 0, 0, this.canvasWidth, this.canvasHeight);
       } else {
         var rgb = _u.toRGB(this.backgroundColor);
@@ -161,8 +141,7 @@ define(function (require) {
         item.draw();
         kit.context.restore();
       });    
-      // Always draw active control points on top
-      // 
+      // Always draw active control points on top (last)
       if(this.editMode===constants.EDIT_SHAPE) {
         this.objList[kit.selectedObject].drawShapePoints();
       } 
@@ -365,6 +344,9 @@ define(function (require) {
   // Consider moving out of kit scope because they are global
   cKit.prototype.startDrag = function(event) {
     var kit = window.kit;
+    if (kit.animationMode===true) {
+      return;
+    }
     var position = _u.getPosition(event, kit.canvas);
     var object = kit.objList[kit.selectedObject];
     if(kit.editMode===constants.EDIT_SHAPE) {
@@ -400,10 +382,12 @@ define(function (require) {
 
   cKit.prototype.endDrag = function(event){ 
     var kit = window.kit;
+    if (kit.animationMode===true) {
+      return;
+    }
     kit.canvasMode = 'static';
     kit.position = _u.getPosition(event, kit.canvas);
     var object = kit.objList[kit.selectedObject];
-    //_u.debugConsole('endDrag x:' + kit.position.x + ' y:' + kit.position.y);
     if(kit.editMode===constants.EDIT_SHAPE) {
       _u.each(object.shapePoints, function( thisPoint ){
         if( thisPoint.inDrag === true ){
@@ -427,7 +411,7 @@ define(function (require) {
   
   cKit.prototype.move = function(event){
     var kit = window.kit;
-    if ( kit.canvasMode !== 'cpDrag' ) {
+    if (kit.canvasMode !== 'cpDrag' || kit.animationMode===true) {
       return;
     }
     var object = kit.objList[kit.selectedObject];
@@ -439,8 +423,6 @@ define(function (require) {
       _u.each( object.shapePoints, function( thisPoint ){
         // Only drag one control point at a time 
         if( thisPoint.inDrag ) {
-          //var rotatedPos = kit.Vector.rotate(kit.midWidth, kit.midHeight, kit.position, -object.rotation*kit.constants.TWOPIDIV360 );
-          // var newPoint = new CPoint(kit, rotatedPos.x, rotatedPos.y, object, index);
           var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
           newPoint.inDrag = true;
           object.updatePetal( index, newPoint );
@@ -472,8 +454,6 @@ define(function (require) {
         index++;
       });
     }
-    //_u.debugConsole('mousemove x:' + kit.position.x + ' y:' + kit.position.y + ' mode:' + kit.editMode===kit.constants.EDIT_TRANSFORM);
-    //$('#console').html('<p>mousemove x:' + position.x + ' y:' + position.y + '<p>');    
   }
 
   cKit.prototype.bindEvents = function(){
@@ -485,7 +465,6 @@ define(function (require) {
     this.canvas.addEventListener('mousedown', this.startDrag, false);
     this.canvas.addEventListener('mouseup', this.endDrag, false);
     this.canvas.addEventListener('mousemove', this.move, false);
-    //this.animationEvents();
   }
 
   /*
@@ -499,39 +478,9 @@ define(function (require) {
     var val = document.getElementById('rotation').value;
     this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val)*constants.TWOPIDIV360;
   }
-  /*
-  cKit.prototype.gripImg = function(r, g, b){
-    var p = new PNGlib(paletteWidth, paletteHeight, 256); // construcor takes height, weight and color-depth    
-    for (var i = 0; i < paletteWidth; i++) {
-      for (var j = 0; j < paletteHeight; j++) {
-        // use a color triad of Microsofts million dollar color
-        p.buffer[p.index(i, j)] = p.color(r, g, b);
-      //p.buffer[p.index(Math.floor(x), Math.floor(y))] = p.color(0xcc, 0x00, 0x44);
-      //p.buffer[p.index(Math.floor(x), Math.floor(y + 10))] = p.color(0x00, 0xcc, 0x44);
-      }
-    }
-    return '<img src="data:image/png;base64,'+p.getBase64()+'">';
-  }*/
 
 // ANIMATION
-  // TODO 
-  /* cKit.prototype.trigger = function() {
-    //$('footer p.copy').append(new Date().getFullYear());
-    cKit.initializeCanvas();
-    cKit.initColorPickers();
-    // $('.selectpicker').selectpicker();
-    if (this.keyFrames.length === 0) {
-      this.keyFrames = [{}];
-      this.keyFrames[0].obj = [];
-    }
-    for(var i = 0; i<this.objList.length;i++) {
-      this.keyFrames[0].obj[i] = this.objList[i].getState();
-    }
-    this.keyFrames[0].timing = 1.0;
-    this.setupGif();
-  }  */
-
-// TODO
+// TODO add worker threads to GIF builder
   cKit.prototype.gifInit = function() {
     this.encoder.setRepeat(-1);
     this.encoder.setDelay(this.gifFramerate);
@@ -587,13 +536,13 @@ define(function (require) {
    *
    */
   cKit.prototype.setState = function() {
-    for( var i=0; i<this.objList.length; i++){
+    for( var i=0; i<this.objList.length; i++) {
       this.objList[i].setState(this.keyFrames[this.segment].obj[i]);
     }
   }
 
   cKit.prototype.sceneLoop = function() {
-    if(!this.animationMode||this.keyFrames.length<2){
+    if(!this.animationMode||this.keyFrames.length<2) {
       this.stopScene();
       window.updateInterface();
       return;
@@ -603,20 +552,30 @@ define(function (require) {
     } else {
       this.delta = _u.msTime()-this.segmentStartTime;
     }
+    // pauseTime is the resting time at the first frame
     if(this.segment === 0 && this.delta >= this.pauseTime) {
       this.segment = 1;
       this.delta = 0;
       this.segmentStartTime = _u.msTime();
-    } else if(this.segment !== 0){
+    } else if(this.segment !== 0) {
       // TODO EASING modes
       if(this.delta > this.keyFrames[this.segment-1].timing*1000) {
-        if(this.segment < this.keyFrames.length) {
+        // If not seamlessly looping set to start without incremental return
+        if(this.segment === this.keyFrames.length-1 && this.seamlessAnimation === false) {
+          this.segment = 0;
           this.setState();
+          this.segment = 1;
+          this.delta = 0;
+          this.segmentStartTime = _u.msTime();
+        } else if(this.segment < this.keyFrames.length) {
+          this.setState();
+          // segment sometime is larger than the keyFrame array
+          // manipulation in animation mode is disabled for a few reasons
           this.segment++;
           if(this.sceneMode === this.GIF) {
-              this.delta = 0;
+            this.delta = 0;
           } else {
-              this.segmentStartTime = _u.msTime();
+            this.segmentStartTime = _u.msTime();
           }
         } else {
           if(this.sceneMode === constants.SCENE_GIF) {
@@ -625,7 +584,6 @@ define(function (require) {
           }
           this.segment = 0;
           this.setState();
-          // This is a hack on delta for segment = 1
           this.segmentStartTime = _u.msTime();
         }
       } else {
@@ -640,6 +598,7 @@ define(function (require) {
         }, 
       0.01);
     } else {
+      // TODO, do faster callbacks checking for frameDelay (smooth it)
       setTimeout(function(){
         window.kit.sceneLoop();
       }, 
@@ -668,7 +627,6 @@ define(function (require) {
       var newState = {
         shapePoints:newCps
       }
-
       var fromRotation = kit.keyFrames[kit.segment-1].obj[objIndex].rotation;
       var toRotation = kit.keyFrames[keyTo].obj[objIndex].rotation;
       var del = toRotation-fromRotation;
@@ -680,13 +638,13 @@ define(function (require) {
           fromRotation+=2*Math.PI;
         }
       }
-
       newState.rotation = (fromRotation*(1-sig)+toRotation*sig)%360;
       kit.objList[objIndex].setState(newState);
       objIndex++;
     });
   }
 
+  // This needs to be updated (disabled functionality)
   cKit.prototype.segmentLoop = function() {
     if(!this.animationMode || this.segment === 0) {
       this.setState();
@@ -749,6 +707,11 @@ define(function (require) {
     setTimeout(function(){window.kit.segmentLoop()}, window.kit.frameDelay);
   }
 
+  cKit.prototype.getSettings = function(data, preinit) {  
+    return {'backgroundColor': this.backgroundColor, 'backgroundAlpha': this.backgroundAlpha, 'lineColor': this.lineColor, 
+    'sourceMode': this.sourceMode, 'seamlessAnimation': this.seamlessAnimation};
+  }
+
   cKit.prototype.loadData = function(data, preinit) {
     this.objList = [];
     this.objTypes = [];
@@ -762,57 +725,56 @@ define(function (require) {
         this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
                                           this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
       } else if(this.objTypes[i][0] === 'polar') {
-        // TODO
       }
     }
-    this.selectedObject = 0;
+
     this.options = data[0];
+    // DNE is for backwards compatibility for JSON data
+    if(_u.exists(this.options.backgroundColor)) {
+      this.backgroundColor = this.options.backgroundColor;
+    } else {
+      this.backgroundColor = constants.BACKGROUND_COLOR;
+    }
+    if(_u.exists(this.options.backgroundAlpha)) {
+      this.backgroundAlpha = this.options.backgroundAlpha;
+    } else {
+      this.backgroundAlpha = constants.BACKGROUND_ALPHA;
+    }
+    if(_u.exists(this.options.lineColor)) {
+      this.lineColor = this.options.lineColor;
+    } else {
+      this.lineColor = constants.LINE_COLOR;
+    }
+    // Update the color pickers
+    // TODO fix this
     this.currentSelector = 'bg-color';
-    // TODO set defaults if DNE (Backwards compatibility)
-    this.backgroundColor = this.options.backgroundColor;
-    this.backgroundAlpha = this.options.backgroundAlpha;
-    this.lineColor = this.options.lineColor;
+    window.setColor('#'+this.backgroundColor);
+    this.currentSelector = 'line-color';
+    window.setColor('#'+this.lineColor);
+
+    if(_u.exists(this.options.sourceMode)) {
+      this.sourceMode = this.options.sourceMode;
+    } else {
+      this.sourceMode = constants.SOURCE_MODE;
+    }
+    if(_u.exists(this.options.seamlessAnimation)) {
+      this.seamlessAnimation = this.options.seamlessAnimation;
+    } else {
+      this.seamlessAnimation = true;
+    }
+    
     this.backgroundImageExists = false;
     this.fillImageExists = false;
-    this.sourceMode = this.options.sourceMode;
-    if(typeof this.resourceList.backgroundImageSource === 'string'){
+        if(typeof this.resourceList.backgroundImageSource === 'string'){
       this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
     }
     if(typeof this.resourceList.fillImageSource === 'string'){
       this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImageLabel, this.resourceList.fillImagePage)
     }
-    if(!this.preinit) {
-      window.setColor('#'+this.backgroundColor);
-    }
-    this.currentSelector = 'line-color';
-    if(!this.preinit) {
-      window.setColor('#'+this.lineColor);
-    }
+    this.selectedObject = 0;
     this.segment = 0;
     this.setState();
   }
-
-  /*for (var kit in cKit.prototype) {
-    if(typeof cKit.prototype[kit] === 'function') {
-      var ev = kit.substring(2);
-      if (!this._events.hasOwnProperty(ev)) {
-        window[kit] = cKit.prototype[kit].bind(this);
-      }
-    } else {
-      window[kit] = cKit.prototype[kit];
-    }
-  } */
-
-  // functions that cause preload to wait
-  // more can be added by using registerPreloadMethod(func)
-  cKit.prototype._preloadMethods = [
-  ];
-
-  cKit.prototype._registeredMethods = { pre: [], post: [], remove: [] };
-
-  cKit.prototype.registerPreloadMethod = function(m) {
-    cKit.prototype._preloadMethods.push(m);
-  }.bind(this);
 
   cKit.prototype.registerMethod = function(name, m) {
     if (!cKit.prototype._registeredMethods.hasOwnProperty(name)) {
