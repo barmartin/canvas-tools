@@ -5,6 +5,7 @@ define(function(require) {
   var _u = require('util');
   var Vector = require('Vector');
   var PetalFlower = require('PetalFlower');
+  var FillImage = require('FillImage');
 
   // Store all objects current configuration to keyframes
   kit.prototype.setState = function() {
@@ -25,6 +26,12 @@ define(function(require) {
   kit.prototype.getRotation = function() {
     var rotationDegrees = this.keyFrames[this.segment].obj[this.selectedObject].rotation/this.constants.TWOPIDIV360;
     return Math.floor(rotationDegrees * 100) / 100;
+  }
+
+  kit.prototype.getRotationMatrix = function(angle) {
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    return [cos, sin, -sin, cos, 0, 0];
   }
 
   // Set the current rotation in radians
@@ -75,13 +82,7 @@ define(function(require) {
 
   // Add a new fill image.  Label and Page are optional arguments
   kit.prototype.addFillImage = function (src, label, page) {
-    this.fillImageExists = false;
-    this.fillImage = new Image();
-    this.fillImage.onload = function () {
-      window.kit.fillImageExists = true;
-      window.kit.redraw();
-    };
-    this.fillImage.src = src;
+    this.fillImage = new FillImage(src, label, page);
     this.resourceList.fillImageSource = src;
     this.resourceList.fillImageLabel = label;
     this.resourceList.fillImagePage = page;

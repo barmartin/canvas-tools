@@ -123,7 +123,7 @@ define(function(require) {
           return i;
         }
       }
-      console.log('Item not Found, IndexOf (should not happen with current config)');
+      console.log('There is a bug with a call to indexOf');
       return -1;
     },
 

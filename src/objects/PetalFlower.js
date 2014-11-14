@@ -2,6 +2,7 @@ define(function(require) {
   'use strict';
   var CPoint = require('CPoint');
   var Vector = require('Vector');
+  var Transform = require('Transform');
   var u = require('util');
 
   var PetalFlower = function(kit, petals, radialAccent, innerRadius, outerRadius, center) {
@@ -62,6 +63,66 @@ define(function(require) {
      * First Petal is drawn at each radial based on PetalCount rotation
      */
     this.createPetals();
+  }
+
+  PetalFlower.prototype.draw = function() {
+    var index = 0;
+    var flower = this;
+    var kit = this.kit;
+    kit.context.beginPath();
+    u.each( this.allPetals, function(Petal) {
+      /*  Highlight specific curve needs to be redone after fillImage func added
+       *  Line should go over the image clip, may need two loops
+      if(index === 0 && kit.toggleCurveColor && !kit.fillImageExists) {
+        kit.context.strokeStyle = '#00ff00';
+        kit.context.save();
+      }  */
+      if(flower.rotation === 0) {
+        kit.context.moveTo(Petal[0].x, Petal[0].y);
+        kit.context.bezierCurveTo(Petal[1].x, Petal[1].y, Petal[2].x, Petal[2].y, Petal[3].x, Petal[3].y);
+        kit.context.bezierCurveTo(Petal[4].x, Petal[4].y, Petal[5].x, Petal[5].y, Petal[6].x, Petal[6].y);
+        kit.context.moveTo(Petal[6].x, Petal[6].y);
+        kit.context.lineTo(Petal[0].x, Petal[0].y);
+      } else {
+        var rotated = [];
+        // Create a new set of vectors rotating this petal to the correct position about flower center
+        for( var i = 0; i < Petal.length; i++) {
+          rotated.push(Vector.rotate(0, 0, Petal[i], flower.rotation));
+        }
+        kit.context.moveTo(rotated[0].x, rotated[0].y);
+        kit.context.bezierCurveTo(rotated[1].x, rotated[1].y, rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y);
+        kit.context.bezierCurveTo(rotated[4].x, rotated[4].y, rotated[5].x, rotated[5].y, rotated[6].x, rotated[6].y);
+        kit.context.moveTo(rotated[6].x, rotated[6].y);
+        kit.context.lineTo(rotated[0].x, rotated[0].y);
+      }
+      // Could setup different fills for each layer and flower
+      /* if(index === 0 && kit.toggleCurveColor && !kit.fillImageExists) {
+        kit.context.closePath();
+        kit.context.stroke();
+        kit.context.strokeStyle = kit.lineColor;
+        kit.context.beginPath();
+        console.log(kit.lineColor);
+      } */
+      index++;
+    });
+
+    kit.context.closePath();
+    if(kit.fillImageExists) {
+      // TODO Multiple blending modes feature
+      kit.context.globalCompositeOperation = kit.sourceMode;
+      kit.context.clip();
+      kit.fillImage.draw(new Transform(this.center, this.scale, this.rotation), this);
+      if(kit.toggleCurveColor===true) {
+        // Restore composition mode in the case the line highlight mode is toggled
+        kit.context.globalCompositeOperation = 'source-over';
+        kit.context.lineWidth = 1.9;
+        kit.context.stroke();
+      }
+    } else {
+      // Restore composition mode in case fill image has been removed
+      kit.context.globalCompositeOperation = 'source-over';
+      kit.context.stroke();
+    }
   }
 
 /* Use first Petal as a template for the rest of the Petals */ 
@@ -187,66 +248,6 @@ define(function(require) {
 
   PetalFlower.prototype.setControlPoint = function(point, newPoint) {
     this.shapePoints[this.kit.indexOf(this.shapePoints, point)] = newPoint;
-  }
-
-  PetalFlower.prototype.draw = function() {
-    var index = 0;
-    var flower = this;
-    var kit = this.kit;
-    kit.context.beginPath();
-    u.each( this.allPetals, function(Petal) {
-      /*  Highlight specific curve needs to be redone after fillImage func added
-       *  Line should go over the image clip, may need two loops
-      if(index === 0 && kit.toggleCurveColor && !kit.fillImageExists) {
-        kit.context.strokeStyle = '#00ff00';
-        kit.context.save();
-      }  */
-      if(flower.rotation === 0) {
-        kit.context.moveTo( Petal[0].x, Petal[0].y );
-        kit.context.bezierCurveTo(Petal[1].x, Petal[1].y, Petal[2].x, Petal[2].y, Petal[3].x, Petal[3].y);
-        kit.context.bezierCurveTo(Petal[4].x, Petal[4].y, Petal[5].x, Petal[5].y, Petal[6].x, Petal[6].y);
-        kit.context.moveTo( Petal[6].x, Petal[6].y );
-        kit.context.lineTo(Petal[0].x, Petal[0].y);
-      } else {
-        var rotated = [];
-        // Create a new set of vectors rotating this petal to the correct position about flower center
-        for( var i = 0; i < Petal.length; i++) {
-          rotated.push(Vector.rotate(0, 0, Petal[i], flower.rotation));
-        }
-        kit.context.moveTo(rotated[0].x, rotated[0].y);
-        kit.context.bezierCurveTo(rotated[1].x, rotated[1].y, rotated[2].x, rotated[2].y, rotated[3].x, rotated[3].y);
-        kit.context.bezierCurveTo(rotated[4].x, rotated[4].y, rotated[5].x, rotated[5].y, rotated[6].x, rotated[6].y);
-        kit.context.moveTo( rotated[6].x, rotated[6].y );
-        kit.context.lineTo(rotated[0].x, rotated[0].y);
-      }
-      // Could setup different fills for each layer and flower
-      /* if(index === 0 && kit.toggleCurveColor && !kit.fillImageExists) {
-        kit.context.closePath();
-        kit.context.stroke();
-        kit.context.strokeStyle = kit.lineColor;
-        kit.context.beginPath();
-        console.log(kit.lineColor);
-      } */
-      index++;
-    });
-
-    kit.context.closePath();
-    if(kit.fillImageExists) {
-      // TODO Multiple blending modes feature
-      kit.context.globalCompositeOperation = kit.sourceMode;
-      kit.context.clip();
-      kit.context.drawImage(kit.fillImage, -kit.midWidth, -kit.midHeight, kit.canvasWidth, kit.canvasHeight);
-      if(kit.toggleCurveColor===true) {
-        // Restore composition mode in the case the line highlight mode is toggled
-        kit.context.globalCompositeOperation = 'source-over';
-        kit.context.lineWidth = 1.9;
-        kit.context.stroke();
-      }
-    } else {
-      // Restore composition mode in case fill image has been removed
-      kit.context.globalCompositeOperation = 'source-over';
-      kit.context.stroke();
-    }
   }
 
   PetalFlower.prototype.updateRadialPoint = function() {

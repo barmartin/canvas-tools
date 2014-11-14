@@ -4,6 +4,8 @@ define(function (require) {
   require('constants');
   require('Vector');
   require('CPoint');
+  require('Transform');
+  require('FillImage');
   require('PetalFlower');
   require('mainLoop');
   require('canvasEvents');

@@ -6,55 +6,6 @@ define(function(require) {
   var PetalFlower = require('PetalFlower');
   var Vector = require('Vector');
 
-  // Initialize Objects and Set the First KeyFrame
-  // Only run when the package is initialized
-  kit.prototype.build = function() {
-    var kit = this;
-    _u.each(_u.range(0, this.initList.length), function(i) {
-      if (kit.initList[i] === 'flower') {
-        kit.objList.push(new PetalFlower(kit, constants.DEFAULT_RAYS, 1, kit.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
-                                         kit.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(kit.midWidth, kit.midHeight)));
-        kit.objTypes.push(['flower', constants.DEFAULT_RAYS, 1]);
-      }
-    });
-    this.initFrame();
-  }
-
-  // This function is used on every scene change
-  kit.prototype.redraw = function() {
-    // Clear the canvas
-    this.context.save();
-    this.context.setTransform(1, 0, 0, 1, 0, 0);
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.restore();
-
-    // Reset stroke style in case of highlighted shape
-    this.context.strokeStyle = '#' + this.lineColor;
-
-    if(this.backgroundImageExists){
-      this.context.drawImage(this.backgroundImage, 0, 0, this.canvasWidth, this.canvasHeight);
-    } else {
-      var rgb = _u.toRGB(this.backgroundColor);
-      this.context.fillStyle = 'rgba('+rgb[0]+', ' + rgb[1] + ', ' + rgb[2] + ', ' + this.backgroundAlpha + ')';
-      this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    }
-
-    var kit = this;
-    _u.each(this.objList, function(item) {
-      kit.context.save();
-      item.transform();
-      item.draw();
-      kit.context.restore();
-    });    
-    // Always draw active control points on top (last)
-    if(this.editMode===constants.EDIT_SHAPE) {
-      this.objList[kit.selectedObject].drawShapePoints();
-    } 
-    if(this.editMode===constants.EDIT_TRANSFORM) {
-      this.objList[kit.selectedObject].drawTransformPoints();
-    } 
-  }
-
   // Create a new keyframe, store all objects state
   kit.prototype.initFrame = function() {
     this.keyFrames[this.segment] = {};

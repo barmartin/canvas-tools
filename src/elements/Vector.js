@@ -66,6 +66,9 @@ define(function(require) {
         'x': 0,
         'y': 0
       }
+    },
+    reflectMatrix : function(theta) {
+      return [Math.cos(2*theta), Math.sin(2*theta), Math.sin(2*theta), -Math.cos(2*theta)];
     }
   }
 });

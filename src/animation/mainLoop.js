@@ -18,6 +18,7 @@ define(function(require) {
     } else {
       this.delta = _u.msTime()-this.segmentStartTime;
     }
+    var lastStartTime = _u.msTime();
     // pauseTime is the resting time at the first frame
     if(this.segment === 0 && this.delta >= this.pauseTime) {
       this.segment = 1;
@@ -64,10 +65,11 @@ define(function(require) {
       0.01);
     } else {
       // TODO, do faster callbacks checking for frameDelay (smooth it)
+      var processTime = _u.msTime()-lastStartTime;
       setTimeout(function(){
         window.kit.sceneLoop();
       }, 
-      window.kit.frameDelay);
+      Math.max(0, window.kit.frameDelay-processTime));
     }
   }
 
@@ -172,7 +174,6 @@ define(function(require) {
         newState.rotation = (fromRotation*(1-sig)+toRotation*sig)%360;
         newState.position = Vector.create(obFrom.center.x*(1.0-sig)+ob.center.x*sig,
                             obFrom.center.y*(1.0-sig)+ob.center.y*sig);
-        console.log(newState.position.x + '::::');
         newState.scale = obFrom.scale*(1.0-sig)+ob.scale*sig;
 
         kit.objList[objIndex].setState(newState);
