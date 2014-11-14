@@ -26,7 +26,7 @@ define(function (require) {
     this.loopStartTime = 0;
     this.setTime = 0;
     this.pauseTime = 0;
-    this.frameDelay = 40;
+    this.frameDelay = 60;
     this.gifFramerate = 200;
     this.delta = -this.frameDelay;
 
@@ -50,8 +50,8 @@ define(function (require) {
     // SETUP ID to all interface elements and setter methods in package
 
     // CANVAS SETTINGS
-    this.canvasWidth = 640;
-    this.canvasHeight = 640;
+    this.canvasWidth = 500;
+    this.canvasHeight = 500;
     this.midWidth = this.canvasWidth/2;
     this.midHeight = this.canvasHeight/2;
     this.maxRadius = Math.sqrt(this.midWidth*this.midWidth+this.midHeight*this.midHeight);
@@ -132,29 +132,19 @@ define(function (require) {
     }
 
     var kit = this;
-    /*if(this.fillImageExists) {
+    _u.each(this.objList, function(item) {
       kit.context.save();
-      var ob = this.objList[0];
-      ob.transform();
-      this.fillImage.draw(new Transform(ob.center, ob.scale, ob.rotation), ob);
+      item.transform();
+      item.draw();
       kit.context.restore();
-    } else { 
-      this.fillImageExists = false;*/
-      _u.each(this.objList, function(item) {
-        kit.context.save();
-        item.transform();
-        item.draw();
-        kit.context.restore();
-      });    
-     // this.fillImageExists = true;
-      // Always draw active control points on top (last)
-      if(this.editMode===constants.EDIT_SHAPE) {
-        this.objList[kit.selectedObject].drawShapePoints();
-      } 
-      if(this.editMode===constants.EDIT_TRANSFORM) {
-        this.objList[kit.selectedObject].drawTransformPoints();
-      }
-    //}
+    });    
+    // Always draw active control points on top (last)
+    if(this.editMode===constants.EDIT_SHAPE) {
+      this.objList[kit.selectedObject].drawShapePoints();
+    } 
+    if(this.editMode===constants.EDIT_TRANSFORM) {
+      this.objList[kit.selectedObject].drawTransformPoints();
+    }
   }
 
   return kit;
