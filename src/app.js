@@ -15,7 +15,10 @@ define(function (require) {
 
   var _globalInit = function() {
     window.kit = new kit();
-    window.initInterface();
+    // Wait for angular to load templates
+    setTimeout(function(){
+      window.initInterface();
+    }, 60);
   };
 
   if (document.readyState === 'complete') {

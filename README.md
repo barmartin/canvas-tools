@@ -20,3 +20,11 @@ Image Scaling<br/>
 Shaders<br/>
 Shims<br/>
 Improve and abstract UI/Package interfaces<br/>
+
+Currently testing AngularJS for the example page.
+Must be run through a server.
+After cloning the easiest way to run it is using,
+python -m SimpleHTTPServer 8080
+inside [PROJECT-ROOT]/examples
+Then you can see the page at localhost:8080
+

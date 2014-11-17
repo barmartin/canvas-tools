@@ -51,7 +51,7 @@ module.exports = function(grunt) {
             });
           },
           optimize: 'none',
-          out: 'lib/cKit.js',
+          out: 'examples/js/lib/cKit.js',
           paths: {
             'app': 'src/app',
             'core': 'src/core/core',

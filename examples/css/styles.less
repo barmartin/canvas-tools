@@ -1,134 +1,140 @@
 @import 'preboot.less';
 html,body{
-    color: #eee;
+  color: #eee;
 }
 body {
-    padding-top: 60px;
-    padding-bottom: 40px;
+  background-color: #020202;
+  margin: 0;
+  width: 100%;
 }
-.interface {
-    width:380px;
-    float:left;
-    color:#000;
+.wrapper {
+  width:100%;
 }
-.interface #tab-content {
-    .border-bottom-radius( 5px );
-    .border-right-radius( 5px );
-    .box-shadow(0 0 10px rgba(0,0,0,.25));
-    #gradient > .vertical( #efeffa, #dedede );
+.container {
+  padding-top: 60px;
+  padding-bottom: 40px;
+  max-width: 1100px;
+  margin-right: auto;
+  margin-left: auto;
+}
+.content {
+  display: inline-block;
+}
+.nav-tabs {
+  border: none;
+}
+control-panels {
+  max-width:450px;
+  display: inline-block;
+  color:#000;
+}
+control-panels .tab-content {
+  .border-bottom-radius( 5px );
+  .border-right-radius( 5px );
+  .box-shadow(0 0 10px rgba(0,0,0,.25));
+  #gradient > .vertical( #efeffa, #dedede );
 }
 .nav-tabs > li.active > a,.nav-tabs > li:hover > a {
-    #gradient > .vertical( #dedeea, #efeffa );
+  #gradient > .vertical( #dedeea, #efeffa );
 }
 .nav-tabs > li > a {
-    #gradient > .vertical( #efefff, #e2e2ea );
-    color:#555555;
+  #gradient > .vertical( #efefff, #e2e2ea );
+  color:#555555;
 }
-.interface .row {
-    padding: 7px;
+control-panels .row {
+  padding: 5px;
 }
-.interface .wrow {
-    margin-top: 14px;
+control-panels .wrow {
+  margin-top: 14px;
 }
-.col { 
-    float:left;
-}
-.col-6 {
-    width:60%;
-}
-.col-5 {
-    width:50%;
-}
-.col-4 {
-    width:40%;
-}
-.col-3 {
-    width:33%;
+.lab {
+  margin-top: 5px;
 }
 .tab-pane {
-    margin-left: 30px;
-    width:320px;
-    padding: 10px 0 20px 10px;
+  margin-left: 15px;
+  margin-right: 15px;
+  padding: 10px 0 20px 10px;
 }
-form .lab {
-    margin-top: 5px;
-    width:140px;
+.ng-invalid.ng-dirty { 
+  border-color:#FA787E;
 }
-.small-lab {
-    width:110px;
+.ng-valid.ng-dirty {
+  border-color:#78FA89;
 }
-.tiny-lab {
-    width:70px;
-}
+
 #imageButton {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 .dhtmlxcolorpicker input.cs_Hex_MiniX, .dhtmlxcolorpicker input.cs_Input_MiniX {
-    height:15px;
-    line-height:12px;
+  height:15px;
+  line-height:12px;
 }
 .dhtmlxcolorpicker .cs_ButtonOk, .dhtmlxcolorpicker .cs_ButtonCancel, 
 .dhtmlxcolorpicker .cs_ButtonOk_Hover, .dhtmlxcolorpicker .cs_ButtonCancel_Hover {
-    line-height: 16px;
+  line-height: 16px;
 }
 .cHolder {
-    border: 1px solid #ddd;
-    margin-right: 4px;
-    width: 45px;
-    height: 45px;
+  display: inline-block;
+  border: 1px solid #ddd;
+  margin-right: 4px;
+  width: 45px;
+  height: 45px;
 }
 .form .row {
-    margin-bottom: 3px;
+  margin-bottom: 3px;
 }
 .canvasContainer {
-    margin-right: 80px;
+  margin-right: 80px;
 }
 #myCanvas:active, #myCanvas:focus {
-    cursor:pointer;
+  cursor:pointer;
 }
 .row {
-    border-bottom: 1px solid #fff;
+  border-bottom: 1px solid #fff;
 }
 .row.last {
-    border-bottom: none;
-    margin-bottom: 0;
+  border-bottom: none;
+  margin-bottom: 0;
 }
 #tabs {
-    border-bottom: none;
+  border-bottom: none;
 }
 .corner{
-    position: absolute;
-    top: 3px;
-    left: 5px;
+  position: absolute;
+  top: 3px;
+  left: 5px;
 }
 .corner row {
-    position: relative;
+  position: relative;
 }
 #cpc-bodybg {
-    position: absolute;
-    top:40px;
-    left:10px;
+  position: absolute;
+  top:40px;
+  left:10px;
+}
+.segment-selector > * {
+  float: left;
 }
 .butn {
-    cursor: pointer;
-    width: 33px;
-    height: 43px;
+  cursor: pointer;
+  width: 33px;
+  height: 43px;
 }
 #btn-first {
-    background-image: url('../img/pan/first.png');
+  background-image: url('../img/pan/first.png');
 }
 #btn-prev {
-    background-image: url('../img/pan/prev.png');
+  background-image: url('../img/pan/prev.png');
 }
 #btn-next {
-    background-image: url('../img/pan/next.png');
+  background-image: url('../img/pan/next.png');
 }
 #btn-last {
-    background-image: url('../img/pan/last.png');
+  background-image: url('../img/pan/last.png');
 }
 #addObject {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 .clear-scene {
-    margin-left: 18px;
+  margin-left: 18px;
 }

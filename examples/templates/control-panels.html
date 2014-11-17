@@ -1,0 +1,13 @@
+        <ul class="nav nav-tabs"> <!-- id="tabs"  data-tabs="tabs"-->
+          <li ng-class="{active: tabCtrl.isSelected(1)}"><a href ng-click="tabCtrl.selectTab(1)">Shape</a>
+          </li>
+          <li ng-class="{active: tabCtrl.isSelected(2)}"><a href ng-click="tabCtrl.selectTab(2)">Animation</a>
+          </li>
+          <li ng-class="{active: tabCtrl.isSelected(3)}"><a href ng-click="tabCtrl.selectTab(3)">Loading</a>
+          </li>
+        </ul>
+        <div id="tab-content" class="tab-content">
+          <shape-tab class="tab-pane" ng-class="{active: tabCtrl.isSelected(1)}"></shape-tab>
+          <animation-tab class="tab-pane" ng-class="{active: tabCtrl.isSelected(2)}"></animation-tab>
+          <loading-tab class="tab-pane" ng-class="{active: tabCtrl.isSelected(3)}"></loading-tab>
+        </div>

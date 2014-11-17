@@ -11,26 +11,26 @@ function initInterface() {
 
 function updateInterface() {
   // OBJECT
-  $('.object button').addClass('disabled').removeClass('active');
+  $('.object div').addClass('disabled').removeClass('active');
   for(var i=1; i<=kit.objList.length; i++) {
-    var itemButton = $('.object button:nth-child('+i+')');
+    var itemButton = $('.object div:nth-child('+i+')');
     itemButton.removeClass('disabled');
     if(i===kit.selectedObject+1) {
       itemButton.addClass('active');
     }
   }
   for(var index=kit.objList.length+1; index<=kit.constants.MAX_OBJECTS; index++) {
-    $('.object button:nth-child('+index+')').addClass('disabled');
+    $('.object div:nth-child('+index+')').addClass('disabled');
   }
 
   // ANIMATION
   $('#segmentId').html(kit.segment);
   if(kit.animationMode===true) {
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    $('#stop').attr('disabled', false);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', true);
+    $('.stop').attr('disabled', false);
   } else {
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
-    $('#stop').attr('disabled', true);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
+    $('.stop').attr('disabled', true);
   }
 
   // RESOURCES
@@ -53,13 +53,14 @@ function updateInterface() {
   updateObject();
 }
 
+
 function updateObject() {
   document.getElementById('rotation').value = kit.getRotation();
   document.getElementById('length').value = kit.keyFrames[kit.segment].timing;
   if(kit.objList[kit.selectedObject] instanceof PetalFlower) {
     document.getElementById('k').value = kit.objList[kit.selectedObject].petalCount;
     document.getElementById('radialScalar').value = kit.objList[kit.selectedObject].radialAccent;
-  }
+  } 
 }
 
 function initShapeTab() {
@@ -101,10 +102,10 @@ function initShapeTab() {
     kit.redraw();
   });
 
-  $('.object button').click(function() {
+  $('.object div').click(function() {
     var selected = parseInt($(this).attr('data'));
     kit.selectedObject = selected-1;
-    $('.object button').removeClass('active');
+    $('.object div').removeClass('active');
     $('.object [data="'+selected+'"]').addClass('active');
     kit.redraw();
     updateObject();
@@ -135,11 +136,13 @@ function initShapeTab() {
   });
 
   $('#imageButton').click(function() {
-    var highlightMode = kit.inCurveEditMode;
-    kit.inCurveEditMode = false;
+    kit.settingShelf = {'editMode': kit.editMode, 'toggleCurveColor': kit.toggleCurveColor};
+    kit.editMode = constants.EDIT_NONE;
+    kit.toggleCurveColor = false;
     kit.redraw();
     window.open(kit.canvas.toDataURL('image/png'));
-    kit.inCurveEditMode = highlightMode;
+    kit.editMode = kit.settingShelf.editMode;
+    kit.toggleCurveColor = kit.settingShelf.toggleCurveColor;
     kit.redraw();
   });
   $('#removeObject').click(function() {
@@ -210,7 +213,7 @@ function initAnimationTab() {
     kit.redraw();
     return true;
   });
-  $('#playSegment').click(function() {
+  $('.playSegment').click(function() {
     kit.animationMode = true;
     if(kit.segment === 0) {
       if(kit.keyFrames.length < 2) {
@@ -224,14 +227,14 @@ function initAnimationTab() {
     kit.setTime = 0;
     kit.loopStartTime = new Date().getTime();
     $(this).attr('disabled', true);
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    $('#stop').attr('disabled', false);
+    $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
+    $('.stop').attr('disabled', false);
     kit.segmentLoop();
   });
-  $('#playAll').click(function() {
+  $('.playAll').click(function() {
     playAll();
   });
-  $('#stop').click(function() {
+  $('.stop').click(function() {
     stopScene();
   });
   $('.form-field').focus(function() {
@@ -247,7 +250,7 @@ function initAnimationTab() {
     kit.keyFrames[kit.segment].timing = parseFloat($(this).val());
   });
   $('#makeGIF').click(function() {
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', true);
     kit.gifInit();
     kit.sceneLoop();
   });
@@ -275,15 +278,15 @@ function initAnimationTab() {
 function stopScene() {
   kit.stopScene();
   $(this).attr('disabled', true);
-  $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+  $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
   $('#segmentId').html(0);
 }
 
 function playAll() {
   kit.loopInit();
   kit.sceneLoop();
-  $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-  $('#stop').attr('disabled', false);
+  $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
+  $('.stop').attr('disabled', false);
 }
 
 function initLoadTab() {
@@ -361,7 +364,9 @@ function initColorPickers() {
   var y = new dhtmlXColorPicker('cpc-bodybg', false, false, false, false);
   var z = new dhtmlXColorPicker('cpc-bg', false, false, false, false);
   x.init();y.init();z.init();
-  x.setOnSelectHandler(setColor);y.setOnSelectHandler(setColor);z.setOnSelectHandler(setColor);
+  x.setOnSelectHandler(setColor);
+  y.setOnSelectHandler(setColor);
+  z.setOnSelectHandler(setColor);
   x.setOnCancelHandler(function () {
     $('.cpc').hide();
   });
@@ -467,13 +472,13 @@ function keyDownHandler(event) {
   } else if(keyPressed == 'A') { 
     kit.stopScene();
     $(this).attr('disabled', true);
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
     $('#segmentId').html(0);
   // 83 S KEY (START)
   } else if (keyPressed == 'S') { 
     kit.loopInit();
     kit.sceneLoop();
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
+    $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
     $('#stop').attr('disabled', false);
 
   // EDIT MODES  
@@ -500,7 +505,7 @@ function selectObject(object) {
   var val=parseFloat(object);
   if(kit.selectedObject!==val-1&&val<=kit.objList.length
     &&val<=kit.constants.MAX_OBJECTS&&val>=1) {
-    $('.object button').removeClass('active');
+    $('.object div').removeClass('active');
     $('.object [data="'+val+'"]').removeClass('disabled').addClass('active');
     kit.selectedObject=val-1;
     updateObject();

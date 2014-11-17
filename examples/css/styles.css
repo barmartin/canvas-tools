@@ -9,15 +9,32 @@ body {
   color: #eee;
 }
 body {
+  background-color: #020202;
+  margin: 0;
+  width: 100%;
+}
+.wrapper {
+  width: 100%;
+}
+.container {
   padding-top: 60px;
   padding-bottom: 40px;
+  max-width: 1100px;
+  margin-right: auto;
+  margin-left: auto;
 }
-.interface {
-  width: 380px;
-  float: left;
+.content {
+  display: inline-block;
+}
+.nav-tabs {
+  border: none;
+}
+control-panels {
+  max-width: 450px;
+  display: inline-block;
   color: #000;
 }
-.interface #tab-content {
+control-panels .tab-content {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   border-top-right-radius: 5px;
@@ -54,41 +71,25 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffefefff', endColorstr='#ffe2e2ea', GradientType=0);
   color: #555555;
 }
-.interface .row {
-  padding: 7px;
+control-panels .row {
+  padding: 5px;
 }
-.interface .wrow {
+control-panels .wrow {
   margin-top: 14px;
 }
-.col {
-  float: left;
-}
-.col-6 {
-  width: 60%;
-}
-.col-5 {
-  width: 50%;
-}
-.col-4 {
-  width: 40%;
-}
-.col-3 {
-  width: 33%;
+.lab {
+  margin-top: 5px;
 }
 .tab-pane {
-  margin-left: 30px;
-  width: 320px;
+  margin-left: 15px;
+  margin-right: 15px;
   padding: 10px 0 20px 10px;
 }
-form .lab {
-  margin-top: 5px;
-  width: 140px;
+.ng-invalid.ng-dirty {
+  border-color: #FA787E;
 }
-.small-lab {
-  width: 110px;
-}
-.tiny-lab {
-  width: 70px;
+.ng-valid.ng-dirty {
+  border-color: #78FA89;
 }
 #imageButton {
   margin-left: 20px;
@@ -105,6 +106,7 @@ form .lab {
   line-height: 16px;
 }
 .cHolder {
+  display: inline-block;
   border: 1px solid #ddd;
   margin-right: 4px;
   width: 45px;
@@ -142,6 +144,9 @@ form .lab {
   position: absolute;
   top: 40px;
   left: 10px;
+}
+.segment-selector > * {
+  float: left;
 }
 .butn {
   cursor: pointer;

@@ -50,14 +50,16 @@ define(function(require) {
 
   /*
    * Used to store the canvas configuration shape to the current frame
+   * only used to store control points (shape)
    */
   kit.prototype.storeFrame = function(){
     for( var i = 0; i<this.objList.length; i++){
         this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
     }
-    this.keyFrames[this.segment].timing = parseFloat(document.getElementById('length').value);
-    var val = document.getElementById('rotation').value;
-    this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val)*constants.TWOPIDIV360;
+    // this.keyFrames[this.segment].timing = _u.parseValueOrDefault(document.getElementById('length').value);
+    // var val = document.getElementById('rotation').value;
+    // this.keyFrames[this.segment].obj[this.selectedObject].rotation = this.objList[this.selectedObject].rotation;
+    //parseFloat(val)*constants.TWOPIDIV360;
   }
 
   kit.prototype.removeSegment = function(){
