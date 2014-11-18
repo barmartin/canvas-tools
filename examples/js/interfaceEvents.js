@@ -35,19 +35,15 @@ function updateInterface() {
 
   // RESOURCES
   if(typeof kit.resourceList !== 'undefined') {
-    $('#backgroundImageLabel').val(kit.resourceList.backgroundImageLabel);
-    $('#backgroundImageSource').val(kit.resourceList.backgroundImageSource)
-    $('#backgroundImagePage').val(kit.resourceList.backgroundImagePage)
-    $('#fillImageLabel').val(kit.resourceList.fillImageLabel)
-    $('#fillImageSource').val(kit.resourceList.fillImageSource)
-    $('#fillImagePage').val(kit.resourceList.fillImagePage)
+    $('#backgroundImageSource').val(kit.resourceList.backgroundImageSource);
+    $('#backgroundImagePage').val(kit.resourceList.backgroundImagePage);
+    $('#fillImageSource').val(kit.resourceList.fillImageSource);
+    $('#fillImagePage').val(kit.resourceList.fillImagePage);
   } else {
-    $('#backgroundImageLabel').val('');
-    $('#backgroundImageSource').val('')
-    $('#backgroundImagePage').val('')
-    $('#fillImageLabel').val('')
-    $('#fillImageSource').val('')
-    $('#fillImagePage').val('')
+    $('#backgroundImageSource').val('');
+    $('#backgroundImagePage').val('');
+    $('#fillImageSource').val('');
+    $('#fillImagePage').val('');
   }
   $('#shapeColor').prop("checked", kit.toggleCurveColor);
   updateObject();
@@ -256,22 +252,25 @@ function initAnimationTab() {
   });
 
   $('#edit-shape').click(function(){
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $(this).addClass('active');
     kit.editMode = kit.constants.EDIT_SHAPE;
     kit.redraw();
+    return false;
   });
   $('#edit-transform').click(function(){
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $(this).addClass('active');
     kit.editMode = kit.constants.EDIT_TRANSFORM;
     kit.redraw();
+    return false;
   });
   $('#edit-none').click(function(){
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $(this).addClass('active');
     kit.editMode = kit.constants.EDIT_NONE;
     kit.redraw();
+    return false;
   });
 }
 
@@ -314,26 +313,24 @@ function initLoadTab() {
   });
   $('#backgroundImageSource').blur(function() {
     kit.fieldFocus = false;
-    kit.backgroundImageSource = $(this).val();
-    kit.backgroundImageExists = false;
-    kit.backgroundImage = new Image();
-    kit.backgroundImage.onload = function () {
-      kit.backgroundImageExists = true;
-      kit.redraw();
-    };
-    kit.backgroundImage.src = $(this).val();
-    kit.redraw();
-  });
-  $('#backgroundImageLabel').change(function() {
-    kit.backgroundImageLabel = $(this).val();
+    var val = $(this).val();
+    var page = $('#backgroundImagePage').val();
+    kit.addBackgroundImage(val, page);
   });
   $('#backgroundImagePage').change(function() {
-    kit.backgroundImagePage = $(this).val();
+    var val = $(this).val();
+    kit.backgroundImagePage = val;
+    kit.resourceList.backgroundImagePage = val;
   });
   $('#fillImageSource').blur(function() {
     kit.fieldFocus = false;
-    kit.addFillImage($(this).val());
+    kit.addFillImage($(this).val(), $('#fillImagePage').val());
     kit.redraw();
+  });
+  $('#fillImagePage').change(function() {
+    var val = $(this).val();
+    kit.fillImagePage = val;
+    kit.resourceList.fillImagePage = val;
   });
 }
 
@@ -452,13 +449,13 @@ function keyDownHandler(event) {
   var keyPressed = String.fromCharCode(event.keyCode);
 
   // OBJECT SELECTION
-  if(keyPressed === '1') {   
+  if(keyPressed === '1') {
     selectObject(1);
-  } else if(keyPressed === '2') { 
+  } else if(keyPressed === '2') {
     selectObject(2);
-  } else if(keyPressed === '3') { 
+  } else if(keyPressed === '3') {
     selectObject(3);
-  } else if(keyPressed === '4') { 
+  } else if(keyPressed === '4') {
     selectObject(4);
 
   // KEYFRAME SELECTION
@@ -469,13 +466,13 @@ function keyDownHandler(event) {
   } else if(event.keyCode=='39'||keyPressed=="'") { 
     forwardFrame();
   // 65 A KEY (STOP)
-  } else if(keyPressed == 'A') { 
+  } else if(keyPressed == 'A') {
     kit.stopScene();
     $(this).attr('disabled', true);
     $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
     $('#segmentId').html(0);
   // 83 S KEY (START)
-  } else if (keyPressed == 'S') { 
+  } else if (keyPressed == 'S') {
     kit.loopInit();
     kit.sceneLoop();
     $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
@@ -483,17 +480,17 @@ function keyDownHandler(event) {
 
   // EDIT MODES  
   } else if(keyPressed == 'Q') { 
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $('#edit-shape').addClass('active');
     kit.editMode = kit.constants.EDIT_SHAPE;
     kit.redraw();
   } else if(keyPressed == 'W') { 
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $('#edit-transform').addClass('active');
     kit.editMode = kit.constants.EDIT_TRANSFORM;
     kit.redraw();
   } else if(keyPressed == 'E') { 
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $('#edit-none').addClass('active');
     kit.editMode = kit.constants.EDIT_NONE;
     kit.redraw();
@@ -513,7 +510,7 @@ function selectObject(object) {
   }
 }
 
-var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":"1","lineColor":"9fb4f4","sourceMode":"lighter","seamlessAnimation":true},{"fillImageSource":"img/darkmountain.jpg"}, \
+var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":"1","lineColor":"9fb4f4","sourceMode":"lighter","seamlessAnimation":true},{"fillImageSource":"img/darkmountain.jpg", "fillImagePage": "http://gorettmisstag.tumblr.com/post/99916508796/by-anthony-hurd"}, \
 [["flower","12",1],["flower",6,2]],[{"obj":[{"shapePoints":[{"x":-0.5590233628997393,"y":-2.0863035929598417},{"x":12.1485961292003,"y":-128.88002328150233},{"x":-49.11165462656021,"y":-78.63714243359995},{"x":0,"y":-132.16734734352232}], \
 "rotation":5.754529970058761,"scale":0.834656832,"position":{"x":250,"y":250}},{"shapePoints":[{"x":-30.122221832793045,"y":-17.391072883752692},{"x":85.9704641350211,"y":-161.39240506329114},{"x":10.021097046413503,"y":-69.62025316455697},{"x":0,"y":-227.27272727272725}], \
 "rotation":0,"scale":0.948,"position":{"x":250,"y":250}}],"timing":1.5},{"obj":[{"shapePoints":[{"x":-66.54834810398798,"y":-248.36181628386313},{"x":49.62409043622804,"y":-209.6660121056433},{"x":-2.8280655533554153,"y":-179.2534302318673},{"x":0,"y":-216.07629402658225}], \

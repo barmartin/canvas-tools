@@ -11,47 +11,44 @@ function initInterface() {
 
 function updateInterface() {
   // OBJECT
-  $('.object button').addClass('disabled').removeClass('active');
+  $('.object div').addClass('disabled').removeClass('active');
   for(var i=1; i<=kit.objList.length; i++) {
-    var itemButton = $('.object button:nth-child('+i+')');
+    var itemButton = $('.object div:nth-child('+i+')');
     itemButton.removeClass('disabled');
     if(i===kit.selectedObject+1) {
       itemButton.addClass('active');
     }
   }
   for(var index=kit.objList.length+1; index<=kit.constants.MAX_OBJECTS; index++) {
-    $('.object button:nth-child('+index+')').addClass('disabled');
+    $('.object div:nth-child('+index+')').addClass('disabled');
   }
 
   // ANIMATION
   $('#segmentId').html(kit.segment);
   if(kit.animationMode===true) {
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    $('#stop').attr('disabled', false);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', true);
+    $('.stop').attr('disabled', false);
   } else {
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
-    $('#stop').attr('disabled', true);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
+    $('.stop').attr('disabled', true);
   }
 
   // RESOURCES
   if(typeof kit.resourceList !== 'undefined') {
-    $('#backgroundImageLabel').val(kit.resourceList.backgroundImageLabel);
-    $('#backgroundImageSource').val(kit.resourceList.backgroundImageSource)
-    $('#backgroundImagePage').val(kit.resourceList.backgroundImagePage)
-    $('#fillImageLabel').val(kit.resourceList.fillImageLabel)
-    $('#fillImageSource').val(kit.resourceList.fillImageSource)
-    $('#fillImagePage').val(kit.resourceList.fillImagePage)
+    $('#backgroundImageSource').val(kit.resourceList.backgroundImageSource);
+    $('#backgroundImagePage').val(kit.resourceList.backgroundImagePage);
+    $('#fillImageSource').val(kit.resourceList.fillImageSource);
+    $('#fillImagePage').val(kit.resourceList.fillImagePage);
   } else {
-    $('#backgroundImageLabel').val('');
-    $('#backgroundImageSource').val('')
-    $('#backgroundImagePage').val('')
-    $('#fillImageLabel').val('')
-    $('#fillImageSource').val('')
-    $('#fillImagePage').val('')
+    $('#backgroundImageSource').val('');
+    $('#backgroundImagePage').val('');
+    $('#fillImageSource').val('');
+    $('#fillImagePage').val('');
   }
   $('#shapeColor').prop("checked", kit.toggleCurveColor);
   updateObject();
 }
+
 
 function updateObject() {
   document.getElementById('rotation').value = kit.getRotation();
@@ -59,7 +56,7 @@ function updateObject() {
   if(kit.objList[kit.selectedObject] instanceof PetalFlower) {
     document.getElementById('k').value = kit.objList[kit.selectedObject].petalCount;
     document.getElementById('radialScalar').value = kit.objList[kit.selectedObject].radialAccent;
-  }
+  } 
 }
 
 function initShapeTab() {
@@ -101,10 +98,10 @@ function initShapeTab() {
     kit.redraw();
   });
 
-  $('.object button').click(function() {
+  $('.object div').click(function() {
     var selected = parseInt($(this).attr('data'));
     kit.selectedObject = selected-1;
-    $('.object button').removeClass('active');
+    $('.object div').removeClass('active');
     $('.object [data="'+selected+'"]').addClass('active');
     kit.redraw();
     updateObject();
@@ -135,11 +132,13 @@ function initShapeTab() {
   });
 
   $('#imageButton').click(function() {
-    var highlightMode = kit.inCurveEditMode;
-    kit.inCurveEditMode = false;
+    kit.settingShelf = {'editMode': kit.editMode, 'toggleCurveColor': kit.toggleCurveColor};
+    kit.editMode = constants.EDIT_NONE;
+    kit.toggleCurveColor = false;
     kit.redraw();
     window.open(kit.canvas.toDataURL('image/png'));
-    kit.inCurveEditMode = highlightMode;
+    kit.editMode = kit.settingShelf.editMode;
+    kit.toggleCurveColor = kit.settingShelf.toggleCurveColor;
     kit.redraw();
   });
   $('#removeObject').click(function() {
@@ -210,7 +209,7 @@ function initAnimationTab() {
     kit.redraw();
     return true;
   });
-  $('#playSegment').click(function() {
+  $('.playSegment').click(function() {
     kit.animationMode = true;
     if(kit.segment === 0) {
       if(kit.keyFrames.length < 2) {
@@ -224,14 +223,14 @@ function initAnimationTab() {
     kit.setTime = 0;
     kit.loopStartTime = new Date().getTime();
     $(this).attr('disabled', true);
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    $('#stop').attr('disabled', false);
+    $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
+    $('.stop').attr('disabled', false);
     kit.segmentLoop();
   });
-  $('#playAll').click(function() {
+  $('.playAll').click(function() {
     playAll();
   });
-  $('#stop').click(function() {
+  $('.stop').click(function() {
     stopScene();
   });
   $('.form-field').focus(function() {
@@ -247,43 +246,46 @@ function initAnimationTab() {
     kit.keyFrames[kit.segment].timing = parseFloat($(this).val());
   });
   $('#makeGIF').click(function() {
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', true);
     kit.gifInit();
     kit.sceneLoop();
   });
 
   $('#edit-shape').click(function(){
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $(this).addClass('active');
     kit.editMode = kit.constants.EDIT_SHAPE;
     kit.redraw();
+    return false;
   });
   $('#edit-transform').click(function(){
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $(this).addClass('active');
     kit.editMode = kit.constants.EDIT_TRANSFORM;
     kit.redraw();
+    return false;
   });
   $('#edit-none').click(function(){
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $(this).addClass('active');
     kit.editMode = kit.constants.EDIT_NONE;
     kit.redraw();
+    return false;
   });
 }
 
 function stopScene() {
   kit.stopScene();
   $(this).attr('disabled', true);
-  $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+  $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
   $('#segmentId').html(0);
 }
 
 function playAll() {
   kit.loopInit();
   kit.sceneLoop();
-  $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-  $('#stop').attr('disabled', false);
+  $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
+  $('.stop').attr('disabled', false);
 }
 
 function initLoadTab() {
@@ -311,26 +313,24 @@ function initLoadTab() {
   });
   $('#backgroundImageSource').blur(function() {
     kit.fieldFocus = false;
-    kit.backgroundImageSource = $(this).val();
-    kit.backgroundImageExists = false;
-    kit.backgroundImage = new Image();
-    kit.backgroundImage.onload = function () {
-      kit.backgroundImageExists = true;
-      kit.redraw();
-    };
-    kit.backgroundImage.src = $(this).val();
-    kit.redraw();
-  });
-  $('#backgroundImageLabel').change(function() {
-    kit.backgroundImageLabel = $(this).val();
+    var val = $(this).val();
+    var page = $('#backgroundImagePage').val();
+    kit.addBackgroundImage(val, page);
   });
   $('#backgroundImagePage').change(function() {
-    kit.backgroundImagePage = $(this).val();
+    var val = $(this).val();
+    kit.backgroundImagePage = val;
+    kit.resourceList.backgroundImagePage = val;
   });
   $('#fillImageSource').blur(function() {
     kit.fieldFocus = false;
-    kit.addFillImage($(this).val());
+    kit.addFillImage($(this).val(), $('#fillImagePage').val());
     kit.redraw();
+  });
+  $('#fillImagePage').change(function() {
+    var val = $(this).val();
+    kit.fillImagePage = val;
+    kit.resourceList.fillImagePage = val;
   });
 }
 
@@ -361,7 +361,9 @@ function initColorPickers() {
   var y = new dhtmlXColorPicker('cpc-bodybg', false, false, false, false);
   var z = new dhtmlXColorPicker('cpc-bg', false, false, false, false);
   x.init();y.init();z.init();
-  x.setOnSelectHandler(setColor);y.setOnSelectHandler(setColor);z.setOnSelectHandler(setColor);
+  x.setOnSelectHandler(setColor);
+  y.setOnSelectHandler(setColor);
+  z.setOnSelectHandler(setColor);
   x.setOnCancelHandler(function () {
     $('.cpc').hide();
   });
@@ -447,13 +449,13 @@ function keyDownHandler(event) {
   var keyPressed = String.fromCharCode(event.keyCode);
 
   // OBJECT SELECTION
-  if(keyPressed === '1') {   
+  if(keyPressed === '1') {
     selectObject(1);
-  } else if(keyPressed === '2') { 
+  } else if(keyPressed === '2') {
     selectObject(2);
-  } else if(keyPressed === '3') { 
+  } else if(keyPressed === '3') {
     selectObject(3);
-  } else if(keyPressed === '4') { 
+  } else if(keyPressed === '4') {
     selectObject(4);
 
   // KEYFRAME SELECTION
@@ -464,31 +466,31 @@ function keyDownHandler(event) {
   } else if(event.keyCode=='39'||keyPressed=="'") { 
     forwardFrame();
   // 65 A KEY (STOP)
-  } else if(keyPressed == 'A') { 
+  } else if(keyPressed == 'A') {
     kit.stopScene();
     $(this).attr('disabled', true);
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', false);
+    $('.playSegment, .playAll, #makeGIF').attr('disabled', false);
     $('#segmentId').html(0);
   // 83 S KEY (START)
-  } else if (keyPressed == 'S') { 
+  } else if (keyPressed == 'S') {
     kit.loopInit();
     kit.sceneLoop();
-    $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-    $('#stop').attr('disabled', false);
+    $('.playSegment, .playAll, .makeGIF').attr('disabled', true);
+    $('.stop').attr('disabled', false);
 
   // EDIT MODES  
   } else if(keyPressed == 'Q') { 
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $('#edit-shape').addClass('active');
     kit.editMode = kit.constants.EDIT_SHAPE;
     kit.redraw();
   } else if(keyPressed == 'W') { 
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $('#edit-transform').addClass('active');
     kit.editMode = kit.constants.EDIT_TRANSFORM;
     kit.redraw();
   } else if(keyPressed == 'E') { 
-    $('.edit-mode button').removeClass('active');
+    $('.edit-mode [type="button"]').removeClass('active');
     $('#edit-none').addClass('active');
     kit.editMode = kit.constants.EDIT_NONE;
     kit.redraw();
@@ -500,7 +502,7 @@ function selectObject(object) {
   var val=parseFloat(object);
   if(kit.selectedObject!==val-1&&val<=kit.objList.length
     &&val<=kit.constants.MAX_OBJECTS&&val>=1) {
-    $('.object button').removeClass('active');
+    $('.object div').removeClass('active');
     $('.object [data="'+val+'"]').removeClass('disabled').addClass('active');
     kit.selectedObject=val-1;
     updateObject();
@@ -508,7 +510,7 @@ function selectObject(object) {
   }
 }
 
-var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":"1","lineColor":"9fb4f4","sourceMode":"lighter","seamlessAnimation":true},{"fillImageSource":"img/darkmountain.jpg"}, \
+var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":"1","lineColor":"9fb4f4","sourceMode":"lighter","seamlessAnimation":true},{"fillImageSource":"img/darkmountain.jpg", "fillImagePage": "http://gorettmisstag.tumblr.com/post/99916508796/by-anthony-hurd"}, \
 [["flower","12",1],["flower",6,2]],[{"obj":[{"shapePoints":[{"x":-0.5590233628997393,"y":-2.0863035929598417},{"x":12.1485961292003,"y":-128.88002328150233},{"x":-49.11165462656021,"y":-78.63714243359995},{"x":0,"y":-132.16734734352232}], \
 "rotation":5.754529970058761,"scale":0.834656832,"position":{"x":250,"y":250}},{"shapePoints":[{"x":-30.122221832793045,"y":-17.391072883752692},{"x":85.9704641350211,"y":-161.39240506329114},{"x":10.021097046413503,"y":-69.62025316455697},{"x":0,"y":-227.27272727272725}], \
 "rotation":0,"scale":0.948,"position":{"x":250,"y":250}}],"timing":1.5},{"obj":[{"shapePoints":[{"x":-66.54834810398798,"y":-248.36181628386313},{"x":49.62409043622804,"y":-209.6660121056433},{"x":-2.8280655533554153,"y":-179.2534302318673},{"x":0,"y":-216.07629402658225}], \

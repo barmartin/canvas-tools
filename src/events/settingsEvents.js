@@ -64,11 +64,11 @@ define(function(require) {
     
     this.backgroundImageExists = false;
     this.fillImageExists = false;
-        if(typeof this.resourceList.backgroundImageSource === 'string'){
-      this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
+    if(typeof this.resourceList.backgroundImageSource === 'string'){
+      this.addBackgroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImagePage, this.resourceList.backgroundImageLabel);
     }
     if(typeof this.resourceList.fillImageSource === 'string'){
-      this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImageLabel, this.resourceList.fillImagePage)
+      this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImagePage, this.resourceList.fillImageLabel)
     }
     this.selectedObject = 0;
     this.segment = 0;

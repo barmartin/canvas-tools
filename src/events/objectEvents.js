@@ -81,15 +81,19 @@ define(function(require) {
   }
 
   // Add a new fill image.  Label and Page are optional arguments
-  kit.prototype.addFillImage = function (src, label, page) {
-    this.fillImage = new FillImage(src, label, page);
+  kit.prototype.addFillImage = function (src, page, label) {
+    this.fillImage = new FillImage(src, page);
+    this.fillImage.onload = function () {
+      window.kit.redraw();
+    }
     this.resourceList.fillImageSource = src;
-    this.resourceList.fillImageLabel = label;
     this.resourceList.fillImagePage = page;
+    this.resourceList.fillImageLabel = label;
   };
 
   // Add a new background image.  Label and Page are optional arguments
-  kit.prototype.addBackGroundImage = function (src, label, page) {
+  kit.prototype.addBackgroundImage = function (src, page, label) {
+    kit.backgroundImageExists = false;
     this.backgroundImage = new Image();
     this.backgroundImage.onload = function () {
       window.kit.backgroundImageExists = true;
@@ -97,8 +101,9 @@ define(function(require) {
     };
     this.backgroundImage.src = src;
     this.resourceList.backgroundImageSource = src;
-    this.resourceList.backgroundImageLabel = label;
     this.resourceList.backgroundImagePage = page;
+    this.resourceList.backgroundImageLabel = label;
+    this.redraw();
   };
 
   // Update the amount of Petals in the flower

@@ -1,4 +1,4 @@
-/*! cKit.js v0.3.2 November 13, 2014 */
+/*! cKit.js v0.3.3 November 17, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -1060,9 +1060,6 @@ var sceneEvents = function (require, core, constants, util, PetalFlower, Vector)
       for (var i = 0; i < this.objList.length; i++) {
         this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
       }
-      this.keyFrames[this.segment].timing = parseFloat(document.getElementById('length').value);
-      var val = document.getElementById('rotation').value;
-      this.keyFrames[this.segment].obj[this.selectedObject].rotation = parseFloat(val) * constants.TWOPIDIV360;
     };
     kit.prototype.removeSegment = function () {
       if (this.keyFrames.length < 2) {
@@ -1212,13 +1209,17 @@ var objectEvents = function (require, core, constants, util, Vector, PetalFlower
       this.redraw();
       window.updateInterface();
     };
-    kit.prototype.addFillImage = function (src, label, page) {
-      this.fillImage = new FillImage(src, label, page);
+    kit.prototype.addFillImage = function (src, page, label) {
+      this.fillImage = new FillImage(src, page);
+      this.fillImage.onload = function () {
+        window.kit.redraw();
+      };
       this.resourceList.fillImageSource = src;
-      this.resourceList.fillImageLabel = label;
       this.resourceList.fillImagePage = page;
+      this.resourceList.fillImageLabel = label;
     };
-    kit.prototype.addBackGroundImage = function (src, label, page) {
+    kit.prototype.addBackgroundImage = function (src, page, label) {
+      kit.backgroundImageExists = false;
       this.backgroundImage = new Image();
       this.backgroundImage.onload = function () {
         window.kit.backgroundImageExists = true;
@@ -1226,8 +1227,9 @@ var objectEvents = function (require, core, constants, util, Vector, PetalFlower
       };
       this.backgroundImage.src = src;
       this.resourceList.backgroundImageSource = src;
-      this.resourceList.backgroundImageLabel = label;
       this.resourceList.backgroundImagePage = page;
+      this.resourceList.backgroundImageLabel = label;
+      this.redraw();
     };
     kit.prototype.updatePetalCount = function () {
       var kVal = document.getElementById('k').value;
@@ -1321,10 +1323,10 @@ var settingsEvents = function (require, core, constants, util, PetalFlower, Vect
       this.backgroundImageExists = false;
       this.fillImageExists = false;
       if (typeof this.resourceList.backgroundImageSource === 'string') {
-        this.addBackGroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImageLabel, this.resourceList.backgroundImagePage);
+        this.addBackgroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImagePage, this.resourceList.backgroundImageLabel);
       }
       if (typeof this.resourceList.fillImageSource === 'string') {
-        this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImageLabel, this.resourceList.fillImagePage);
+        this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImagePage, this.resourceList.fillImageLabel);
       }
       this.selectedObject = 0;
       this.segment = 0;
@@ -1337,7 +1339,9 @@ var src_app = function (require, core, constants, Vector, CPoint, Transform, Fil
     var kit = core;
     var _globalInit = function () {
       window.kit = new kit();
-      window.initInterface();
+      setTimeout(function () {
+        window.initInterface();
+      }, 60);
     };
     if (document.readyState === 'complete') {
       _globalInit();
