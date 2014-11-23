@@ -1,32 +1,38 @@
 {
-  "name": "ck",
+  "name": "canvas-tools",
   "repository": {
     "type": "git",
-    "url": "https://github.com/barmartin/ck.js.git"
+    "url": "https://github.com/thebarry/canvas-tools"
   },
-  "version": "0.3.4",
-  "devDependencies": {
-    "grunt": "~0.4.2",
-    "amdclean": "~0.3.3",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-less": "~0.11.4"
-  },
-  "licenses": [
-    {
-      "type": "LGPL",
-      "url": "https://www.gnu.org/licenses/lgpl-2.1.html"
-    }
-  ],
+  "version": "0.4.0",
   "dependencies": {
-    "reqwest": "~0.9.6"
-  },
-  "files": [
-    "license.txt",
-    "lib/ck.min.js",
-    "lib/ck.js"
-  ]
+    "grunt": "^0.4.5",
+    "amdclean": "~0.3.3",
+    "grunt-contrib-less": "~0.11.4",
+    "grunt-autoprefixer": "^0.7.3",
+    "grunt-bower-task": "~0.4.0",
+    "grunt-concurrent": "^0.5.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-connect": "^0.7.1",
+    "grunt-contrib-copy": "^0.5.0",
+    "grunt-contrib-cssmin": "^0.9.0",
+    "grunt-contrib-htmlmin": "^0.3.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-requirejs": "~0.4.4",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-watch": "^0.5.3",
+    "grunt-filerev": "^0.2.1",
+    "grunt-google-cdn": "^0.4.0",
+    "grunt-newer": "^0.7.0",
+    "grunt-ngmin": "^0.0.3",
+    "grunt-preprocess": "~4.0.0",
+    "grunt-svgmin": "^0.4.0",
+    "grunt-usemin": "^2.1.1",
+    "jshint-stylish": "^0.2.0",
+    "load-grunt-tasks": "^0.4.0",
+    "time-grunt": "^0.3.1"
+  }
 }
 
 
