@@ -21,20 +21,20 @@ Shaders<br/>
 
 <h4> Development </h4>
 Just did a complete rebuild of the project to use AngularAMD <br/>
-It may be easier to understand the project from commit 4571e648fae1374cf91eb4568a22527d5c7be721 <br/>
+If you want to develop without AngularJS you can use commit 4571e648fae1374cf91eb4568a22527d5c7be721 <br/>
 
 <p> After cloning the project run </p>
 <div class="highlight highlight-bash">
-	<pre>bower install <br/>
-		npm install <br/>
-		<br/>
-		To run development server: <br/>
-		grunt devel <br/>
+<pre>bower install
+npm install
 
-		To build /dist and run production
-			grunt build <br/>
-			grunt serve-www
-		</pre>
+--To run development server--
+grunt devel
+
+--To build /dist and run production--
+grunt build 
+grunt serve-www
+</pre>
 </div>
 
 
