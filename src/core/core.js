@@ -11,11 +11,9 @@ define(function (require) {
     this.constants = constants;
     this._u = _u;
 
-    this.canvas = document.getElementById('myCanvas');
-    this.context = this.canvas.getContext('2d');
-
     // EVENTS
-    this.canvasMode = 'static';
+    //this.canvasMode = 'static';
+    this.initialized = false;
 
     // ANIMATION
     this.keyFrames = [];
@@ -77,6 +75,8 @@ define(function (require) {
 
     // Setup Canvas Events, Initialize Objects and Context
     this.initializeCanvas = function() {
+      this.canvas = document.getElementById('canvas');
+      this.context = this.canvas.getContext('2d');
       // Setup the canvas event binding
       this.bindEvents();
       // Setup the canvas
@@ -86,18 +86,15 @@ define(function (require) {
       if(this.debugMode===true) {
         var dataz = window.getSampleJSON();
         this.loadData(dataz, false);
-        // this.addFillImage('http://41.media.tumblr.com/5a22f64bd4564fa750b150e0358d1ded/tumblr_na82n1PmJl1t02n2vo1_500.jpg', 'Color Wheel Ray', 'http://annaporreca.tumblr.com/post/84120798025/sunrise-sunset');
-        // this.addBackGroundImage('  ', 'Ray Scope', 'http://serescosmicos.tumblr.com/post/94587874401');
-        // this.addFillImage('http://38.media.tumblr.com/b07bed8de1b02eb756b997872d9560b5/tumblr_nd96zsHxum1tpen5so1_1280.jpg', 'Dark Mountain', 'http://universeobserver.tumblr.com/post/101015776326/gorettmisstag-by-anthony-hurd');
-        // this.addBackGroundImage('http://33.media.tumblr.com/9383f1a92b139f8e2aab5c7d52528e4d/tumblr_ndg4fznxkO1syynngo1_500.jpg', '', 'http://lucysbasement.tumblr.com/post/100007359383');
       }
+      this.initialized = true;
       this.redraw();
     }
 
     // Setup Canvas Events, Initialize Objects and Context
-    this.initializeCanvas();
   }
-
+  // Update the Angular Interface (injected function)
+  kit.prototype.digest = function() {}
   // Initialize Objects and Set the First KeyFrame
   // Only run when the package is initialized
   kit.prototype.build = function() {
@@ -114,6 +111,9 @@ define(function (require) {
 
   // This function is used on every scene change
   kit.prototype.redraw = function() {
+    if(!this.initialized) {
+      return;
+    }
     // Clear the canvas
     this.context.save();
     this.context.setTransform(1, 0, 0, 1, 0, 0);

@@ -15,6 +15,7 @@ define(function(require) {
   }
 
   // Set all objects configuration with current keyframe
+  // TODO Disconnect DOM from package
   kit.prototype.getState = function() {
     for(var i = 0; i<this.objList.length; i++){
       this.keyFrames[this.segment].obj[i] = this.objList[i].getState();
@@ -44,9 +45,63 @@ define(function(require) {
     this.redraw();
   }
 
+  // Add a new fill image.  Label and Page are optional arguments
+  kit.prototype.addFillImage = function (src) {
+    this.fillImage = new FillImage(src);
+    this.resourceList.fillImageSource = src;
+  };
+
+  // Add a new background image.  Label and Page are optional arguments
+  kit.prototype.addBackgroundImage = function (src) {
+    this.backgroundImage = new Image();
+    this.backgroundImage.onload = function () {
+      window.kit.backgroundImageExists = true;
+      window.kit.redraw();
+    };
+    this.backgroundImage.src = src;
+    this.resourceList.backgroundImageSource = src;
+  };
+
+  // Update the amount of Petals in the flower
+  kit.prototype.updatePetalCount = function(petals) {
+    var object = this.objList[this.selectedObject];
+    if(object instanceof PetalFlower) {
+      this.objList[this.selectedObject] = new PetalFlower(this, petals, object.radialAccent, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR,
+                                                          this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight));
+      this.objTypes[this.selectedObject][1] = petals;
+      this.objList[this.selectedObject].updateRadialPoint();
+      this.setState();
+      this.redraw();
+    }
+  }
+
+  // Update the crossover width of each petal
+  // RadialAccent < 1 creates gaps between petal
+  // RadialAccent > 1 creates wider Petals
+  kit.prototype.updateRadialAccent = function(radialScalar) {
+    this.objTypes[this.selectedObject][2] = radialScalar;
+    var thisObject = this.objList[this.selectedObject];
+    if(radialScalar > 0&&radialScalar < thisObject.petalCount) {
+      thisObject.accentRadialPoint(radialScalar);
+      this.setState();
+      this.redraw();
+    }
+  }
+
+  // Methods for the UI
+  kit.prototype.selectObject = function(obj) {
+    obj=parseFloat(obj);
+    if(this.selectedObject!==obj&&obj<this.objList.length
+      && obj<this.constants.MAX_OBJECTS&&obj>=0) {
+      this.selectedObject = obj;
+      this.redraw();
+      this.digest();
+    }
+  }
+
   // Create a new object of the default type, update all keyframes with init configuration
   // Select the new object
-  kit.prototype.addObject = function(){
+  kit.prototype.addObject = function() {
     if(this.objList.length >= constants.MAX_OBJECTS) {
       return;
     }
@@ -60,8 +115,8 @@ define(function(require) {
     var ind = this.objList.length-1;
     this.selectedObject = ind;
     this.redraw();
+    this.digest();
   }
-
   // Remove the object currently selected
   kit.prototype.removeObject = function(){
     if(this.objList.length<2) {
@@ -77,68 +132,15 @@ define(function(require) {
       this.selectedObject--;
     }
     this.redraw();
-    window.updateInterface();
+    this.digest();
   }
 
-  // Add a new fill image.  Label and Page are optional arguments
-  kit.prototype.addFillImage = function (src, page, label) {
-    this.fillImage = new FillImage(src, page);
-    this.fillImage.onload = function () {
-      window.kit.redraw();
-    }
-    this.resourceList.fillImageSource = src;
-    this.resourceList.fillImagePage = page;
-    this.resourceList.fillImageLabel = label;
-  };
-
-  // Add a new background image.  Label and Page are optional arguments
-  kit.prototype.addBackgroundImage = function (src, page, label) {
-    kit.backgroundImageExists = false;
-    this.backgroundImage = new Image();
-    this.backgroundImage.onload = function () {
-      window.kit.backgroundImageExists = true;
-      window.kit.redraw();
-    };
-    this.backgroundImage.src = src;
-    this.resourceList.backgroundImageSource = src;
-    this.resourceList.backgroundImagePage = page;
-    this.resourceList.backgroundImageLabel = label;
+  kit.prototype.getImage = function() {
+    this.setTempModes(constants.EDIT_NONE, false);
     this.redraw();
-  };
-
-  // Update the amount of Petals in the flower
-  kit.prototype.updatePetalCount = function() {
-    var kVal = document.getElementById('k').value;
-    if (isNaN(kVal)) {
-      return;
-    }
-    var object = this.objList[this.selectedObject];
-    if(object instanceof PetalFlower) {
-      this.objList[this.selectedObject] = new PetalFlower(this, kVal, object.radialAccent, this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR,
-                                                          this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight));
-      this.objTypes[this.selectedObject][1] = kVal;
-      this.objList[this.selectedObject].updateRadialPoint();
-      this.setState();
-      this.redraw();
-    }
-  }
-
-  // Update the crossover width of each petal
-  // RadialAccent < 1 creates gaps between petal
-  // RadialAccent > 1 creates wider Petals
-  kit.prototype.accentRadial = function() {
-    var radialScalar = document.getElementById('radialScalar').value;
-    if (isNaN(radialScalar)) {
-      return;
-    }
-    radialScalar = _u.validateFloat(radialScalar);
-    this.objTypes[this.selectedObject][2] = radialScalar;
-    var thisObject = this.objList[this.selectedObject];
-    if(radialScalar > 0&&radialScalar < thisObject.petalCount) {
-      thisObject.accentRadialPoint(radialScalar);
-      this.setState();
-      this.redraw();
-    }
+    window.open(this.canvas.toDataURL('image/png'));
+    this.restoreModes();
+    this.redraw();
   }
 
   return kit

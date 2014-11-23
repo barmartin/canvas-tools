@@ -7,7 +7,6 @@ define(function (require) {
   require('Transform');
   require('FillImage');
   require('PetalFlower');
-  require('mainLoop');
   require('canvasEvents');
   require('sceneEvents');
   require('objectEvents');
@@ -15,10 +14,9 @@ define(function (require) {
 
   var _globalInit = function() {
     window.kit = new kit();
-    // Wait for angular to load templates
-    setTimeout(function(){
-      window.initInterface();
-    }, 60);
+    initKeyboard();
+    kit.encoder = new GIFEncoder();
+    setTimeout(window.initInterface, 400);
   };
 
   if (document.readyState === 'complete') {

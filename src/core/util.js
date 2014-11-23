@@ -55,13 +55,31 @@ define(function(require) {
       return parseInt(str, 16);
     },
 
-    // TODO: Int or Default 
+    /* TODO: Int or Default 
     validateInt: function(obj) {
       return parseInt(obj);
     },
     // TODO validation
     validateFloat: function(obj) {
       return parseFloat(obj);
+    },*/
+
+    parseIntOrDefault: function(i, def) {
+      i = parseInt(i);
+      if(Number.isInteger(i)) {
+        return i;
+      } else {
+        return def;
+      }
+    },
+
+    parseFloatOrDefault: function(f, def) {
+      f = parseFloat(f);
+      if(isNaN(f)) {
+        return def;
+      } else {
+        return f;
+      }
     },
 
     degreesToRadians: function(angle) {
@@ -133,10 +151,10 @@ define(function(require) {
 
     debugConsole: function(text) {
       var HUD = document.getElementById('console')
-      if(HUD.firstChild) {
+      /*if(HUD.firstChild) {
         HUD.removeChild(HUD.firstChild);
       }
-      HUD.appendChild( document.createTextNode(text) );
+      HUD.appendChild( document.createTextNode(text) );*/
     }
 
     // NOT BEING USED

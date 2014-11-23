@@ -1,19 +1,26 @@
 {
-  "boss": true,
+  "globals": {
+    "define": false,
+    "require": false,
+    "angular": false
+  },
+  "node": true,
+  "esnext": true,
+  "bitwise": true,
+  "camelcase": true,
   "curly": true,
   "eqeqeq": true,
-  "eqnull": true,
   "immed": true,
+  "indent": 4,
   "latedef": "nofunc",
-  "newcap": false,
+  "newcap": true,
   "noarg": true,
   "quotmark": "single",
+  "plusplus": true,
   "undef": true,
-  "unused": "vars",
-  "asi": true,
-
-  "node": true,
-  
-  "curly": true,
-  "indent": 2
+  "unused": true,
+  "strict": true,
+  "trailing": true,
+  "smarttabs": true,
+  "white": true
 }

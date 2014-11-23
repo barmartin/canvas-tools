@@ -84,6 +84,7 @@ define(function(require) {
       });
     }
     kit.getState();
+    kit.digest();
   }
   
   kit.prototype.move = function(event){

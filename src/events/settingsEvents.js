@@ -23,7 +23,6 @@ define(function(require) {
       if(this.objTypes[i][0] === 'flower') {
         this.objList.push(new PetalFlower(this, this.objTypes[i][1], this.objTypes[i][2], this.canvasHeight/constants.DEFAULT_INNER_RADIUS_SCALAR, 
                                           this.canvasHeight/constants.DEFAULT_OUTER_RADIUS_SCALAR, Vector.create(this.midWidth, this.midHeight)));
-      } else if(this.objTypes[i][0] === 'polar') {
       }
     }
 
@@ -65,14 +64,24 @@ define(function(require) {
     this.backgroundImageExists = false;
     this.fillImageExists = false;
     if(typeof this.resourceList.backgroundImageSource === 'string'){
-      this.addBackgroundImage(this.resourceList.backgroundImageSource, this.resourceList.backgroundImagePage, this.resourceList.backgroundImageLabel);
+      this.addBackgroundImage(this.resourceList.backgroundImageSource)
     }
     if(typeof this.resourceList.fillImageSource === 'string'){
-      this.addFillImage(this.resourceList.fillImageSource, this.resourceList.fillImagePage, this.resourceList.fillImageLabel)
+      this.addFillImage(this.resourceList.fillImageSource);
     }
     this.selectedObject = 0;
     this.segment = 0;
     this.setState();
+  }
+
+  kit.prototype.setTempModes = function(editMode, toggleCurveColor) {
+    this.settingShelf = {'editMode': this.editMode, 'toggleCurveColor': this.toggleCurveColor };
+    this.editMode = editMode; 
+    this.toggleCurveColor = toggleCurveColor;
+  }
+  kit.prototype.restoreModes = function() {
+    this.editMode = this.settingShelf.editMode; 
+    this.toggleCurveColor = this.settingShelf.toggleCurveColor;
   }
 
   return kit

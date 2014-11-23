@@ -18,13 +18,23 @@ GIF Encoding (WIP)<br/>
 Animating Text<br/>
 Image Scaling<br/>
 Shaders<br/>
-Shims<br/>
-Improve and abstract UI/Package interfaces<br/>
 
-Currently testing AngularJS for the example page.
-Must be run through a server.
-After cloning the easiest way to run it is using,
-python -m SimpleHTTPServer 8080
-inside [PROJECT-ROOT]/examples
-Then you can see the page at localhost:8080
+<h4> Development </h4>
+Just did a complete rebuild of the project to use AngularAMD <br/>
+It may be easier to understand the project from commit 4571e648fae1374cf91eb4568a22527d5c7be721 <br/>
+
+<p> After cloning the project run </p>
+<div class="highlight highlight-bash">
+	<pre>bower install <br/>
+		npm install <br/>
+		<br/>
+		To run development server: <br/>
+		grunt devel <br/>
+
+		To build /dist and run production
+			grunt build <br/>
+			grunt serve-www
+		</pre>
+</div>
+
 
