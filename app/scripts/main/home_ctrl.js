@@ -3,6 +3,11 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
   angularAMD.controller('interfaceController', ['$scope', '$state', function ($scope, $state) {
   	// 1:shape, 2:animation, 3:loading
     $scope.panelTab = '1';
+
+    $scope.initializeUI = function() {
+      initInterface();
+    }
+
     $scope.kit = kit;
 
     // This injected function allows the canvas package to trigger a UI refresh
@@ -11,6 +16,7 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
     	  $scope.$digest();
       }
     }
+
     $scope.isPanelActive = function (panelName) {
       if ($scope.panelTab === panelName) {
         return 'active';

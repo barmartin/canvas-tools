@@ -1,4 +1,4 @@
-/*! cKit.js v0.4.2 November 24, 2014 */
+/*! cKit.js v0.4.4 November 24, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -120,13 +120,7 @@ var util = function (require, constants) {
         return obj;
       },
       getKeys: function (obj) {
-        var keys = [];
-        for (var key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            keys.push(key);
-          }
-        }
-        return keys;
+        return Object.keys(obj);
       },
       range: function (st, end) {
         var r = [];
@@ -1413,7 +1407,6 @@ var src_app = function (require, core, constants, Vector, CPoint, Transform, Fil
       window.kit = new kit();
       initKeyboard();
       kit.encoder = new GIFEncoder();
-      setTimeout(window.initInterface, 400);
     };
     if (document.readyState === 'complete') {
       _globalInit();

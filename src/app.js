@@ -16,7 +16,7 @@ define(function (require) {
     window.kit = new kit();
     initKeyboard();
     kit.encoder = new GIFEncoder();
-    setTimeout(window.initInterface, 400);
+    // initInterface() now runs from Angular
   };
 
   if (document.readyState === 'complete') {

@@ -153,7 +153,7 @@ function getSampleJSON() {
   return $.parseJSON(sampleJSON);
 }
 var sampleJSON = '[{"backgroundColor":"010201","backgroundAlpha":"1","lineColor":"9fb4f4","sourceMode":"lighter","seamlessAnimation":true}, \
-{"fillImageSource":"styles/img/darkmountain.jpg"},[["flower",6,2],["flower",12,1]],[{"obj":[{"shapePoints":[{"x":-7.9017,"y":-4.5621},{"x":-14.5,"y":-48}, \
+{"fillImageSource":"styles/img/darkmountain.jpg", "fillImagePage": "http://gorettmisstag.tumblr.com/post/99916508796/by-anthony-hurd"},[["flower",6,2],["flower",12,1]],[{"obj":[{"shapePoints":[{"x":-7.9017,"y":-4.5621},{"x":-14.5,"y":-48}, \
 {"x":-12.5,"y":-113},{"x":0,"y":-212}],"rotation":0,"scale":1,"position":{"x":250,"y":250}},{"shapePoints":[{"x":-59.6218,"y":-222.5118},{"x":-238.5,"y":-215}, \
 {"x":-35.5,"y":-234},{"x":0,"y":-207}],"rotation":0,"scale":1,"position":{"x":250,"y":250}}],"timing":1.5},{"obj":[{"shapePoints":[{"x":-46.7674,"y":-27.0011}, \
 {"x":-10.6255,"y":46.4042},{"x":15.0538,"y":-38.0741},{"x":0,"y":-228.406}],"rotation":1.0472,"scale":1,"position":{"x":250,"y":250}},{"shapePoints":[{"x":-59.5707,"y":-222.3209}, \
