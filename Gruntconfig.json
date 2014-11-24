@@ -27,7 +27,7 @@
     "bootstrap/fonts/glyphicons-halflings-regular.*"
   ],
   "buildFiles": [
-    "images/**", "views/**", "scripts/ext/require.js"
+    "styles/img/**", "views/**", "scripts/ext/require.js"
   ]
 
 }

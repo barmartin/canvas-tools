@@ -101,9 +101,9 @@ define(function(require) {
       _u.each( object.shapePoints, function( thisPoint ){
         // Only drag one control point at a time 
         if( thisPoint.inDrag ) {
-          var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
+          var newPoint = new CPoint(kit, _u.reduceSig(actualPosition.x, constants.MAX_CP_SIGS), _u.reduceSig(actualPosition.y, constants.MAX_CP_SIGS), object, index);
           newPoint.inDrag = true;
-          object.updatePetal( index, newPoint );
+          object.updatePetal(index, newPoint);
           kit.redraw();
           return;
         } 

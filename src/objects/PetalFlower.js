@@ -3,7 +3,7 @@ define(function(require) {
   var CPoint = require('CPoint');
   var Vector = require('Vector');
   var Transform = require('Transform');
-  var u = require('util');
+  var _u = require('util');
 
   var PetalFlower = function(kit, petals, radialAccent, innerRadius, outerRadius, center) {
     // Reference to parent package
@@ -70,7 +70,7 @@ define(function(require) {
     var flower = this;
     var kit = this.kit;
     kit.context.beginPath();
-    u.each( this.allPetals, function(Petal) {
+    _u.each( this.allPetals, function(Petal) {
       /*  Highlight specific curve needs to be redone after fillImage func added
        *  Line should go over the image clip, may need two loops
       if(index === 0 && kit.toggleCurveColor && !kit.fillImageExists) {
@@ -131,7 +131,7 @@ define(function(require) {
     for (var i = 1; i < this.petalCount; i++) {
       var newPetal = [];
       var thisAngle = i * this.increment;
-      u.each(this.firstPetal, function(point) {
+      _u.each(this.firstPetal, function(point) {
         var thisPoint = Vector.rotate(0, 0, point, thisAngle);
         newPetal.push(thisPoint);
       });
@@ -154,6 +154,8 @@ define(function(require) {
     } else if (index === 0) {
       var innerRadius = Vector.distance(Vector.create(0, 0), Vector.create(newPoint.x, newPoint.y));
       newCoords = Vector.getPoint(0, 0, innerRadius, this.firstInnerAngle);
+      newCoords.x = _u.reduceSig(newCoords.x, constants.MAX_CP_SIGS);
+      newCoords.y = _u.reduceSig(newCoords.y, constants.MAX_CP_SIGS);
       this.firstPetal[ 0 ].x = newCoords.x;
       this.firstPetal[ 0 ].y = newCoords.y;
       this.firstPetal[ 6 ].x = -newCoords.x;
@@ -178,9 +180,6 @@ define(function(require) {
    */
   PetalFlower.prototype.updateTransform = function(index, newPoint) {
     var newCoords = Vector.create(newPoint.x, newPoint.y);
-    if(index===1){
-      
-    }
     this.transformPoints[index].x = newCoords.x;
     this.transformPoints[index].y = newCoords.y;
   }
@@ -255,7 +254,7 @@ define(function(require) {
     this.firstInnerAngle = -0.5 * this.increment * this.radialAccent;
     var kit = this.kit;
     var flower = this;
-    u.each(kit.keyFrames, function(keyFrame){
+    _u.each(kit.keyFrames, function(keyFrame){
       var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
       var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
       var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
@@ -274,7 +273,7 @@ define(function(require) {
     this.firstInnerAngle = -0.5 * this.increment * scale;
     var kit = this.kit;
     var flower = this;
-    u.each(kit.keyFrames, function(keyFrame){
+    _u.each(kit.keyFrames, function(keyFrame){
       var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
       var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
       var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
@@ -288,7 +287,7 @@ define(function(require) {
     // Using custom transform to translate without scaling control point size
     this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
     var flower = this;
-    u.each(this.shapePoints, function(controlPoint) {
+    _u.each(this.shapePoints, function(controlPoint) {
       var newPoint = new CPoint(flower.kit, controlPoint.x*flower.scale, controlPoint.y*flower.scale, flower, controlPoint.index);
       newPoint.draw();
     });
@@ -306,7 +305,7 @@ define(function(require) {
 
   PetalFlower.prototype.getState = function() {
     var cps = [];
-    u.each(this.shapePoints, function(point){
+    _u.each(this.shapePoints, function(point){
       cps.push( Vector.create(point.x, point.y) );
     });
     return { 'shapePoints': cps,
@@ -324,7 +323,7 @@ define(function(require) {
     this.scale = state.scale;
 
     kit.index = 0;
-    u.each(this.shapePoints, function(cp) {
+    _u.each(this.shapePoints, function(cp) {
       cp.x = state.shapePoints[kit.index].x;
       cp.y = state.shapePoints[kit.index].y;
       kit.index++;      

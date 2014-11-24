@@ -1,4 +1,4 @@
-/*! cKit.js v0.4.1 November 23, 2014 */
+/*! cKit.js v0.4.2 November 24, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -16,6 +16,7 @@ var constants = function (require) {
       DEFAULT_OUTER_RADIUS_SCALAR: 2.2,
       CONTROL_POINT_RADIUS: 6,
       DEFAULT_LENGTH: 1.5,
+      MAX_CP_SIGS: 4,
       BACKGROUND_COLOR: '010201',
       BACKGROUND_ALPHA: '1',
       LINE_COLOR: '9fb4f4',
@@ -83,6 +84,10 @@ var util = function (require, constants) {
         } else {
           return f;
         }
+      },
+      reduceSig: function (num, sig) {
+        var mult = Math.pow(10, sig);
+        return Math.round(num * mult + 0.00001) / mult;
       },
       degreesToRadians: function (angle) {
         return constants.TWOPIDIV360 * angle;
@@ -312,7 +317,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
     var CPoint = CPoint;
     var Vector = Vector;
     var Transform = Transform;
-    var u = util;
+    var _u = util;
     var PetalFlower = function (kit, petals, radialAccent, innerRadius, outerRadius, center) {
       this.kit = kit;
       this.petalCount = petals;
@@ -359,7 +364,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       var flower = this;
       var kit = this.kit;
       kit.context.beginPath();
-      u.each(this.allPetals, function (Petal) {
+      _u.each(this.allPetals, function (Petal) {
         if (flower.rotation === 0) {
           kit.context.moveTo(Petal[0].x, Petal[0].y);
           kit.context.bezierCurveTo(Petal[1].x, Petal[1].y, Petal[2].x, Petal[2].y, Petal[3].x, Petal[3].y);
@@ -399,7 +404,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       for (var i = 1; i < this.petalCount; i++) {
         var newPetal = [];
         var thisAngle = i * this.increment;
-        u.each(this.firstPetal, function (point) {
+        _u.each(this.firstPetal, function (point) {
           var thisPoint = Vector.rotate(0, 0, point, thisAngle);
           newPetal.push(thisPoint);
         });
@@ -415,6 +420,8 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       } else if (index === 0) {
         var innerRadius = Vector.distance(Vector.create(0, 0), Vector.create(newPoint.x, newPoint.y));
         newCoords = Vector.getPoint(0, 0, innerRadius, this.firstInnerAngle);
+        newCoords.x = _u.reduceSig(newCoords.x, constants.MAX_CP_SIGS);
+        newCoords.y = _u.reduceSig(newCoords.y, constants.MAX_CP_SIGS);
         this.firstPetal[0].x = newCoords.x;
         this.firstPetal[0].y = newCoords.y;
         this.firstPetal[6].x = -newCoords.x;
@@ -432,8 +439,6 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
     };
     PetalFlower.prototype.updateTransform = function (index, newPoint) {
       var newCoords = Vector.create(newPoint.x, newPoint.y);
-      if (index === 1) {
-      }
       this.transformPoints[index].x = newCoords.x;
       this.transformPoints[index].y = newCoords.y;
     };
@@ -480,7 +485,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       this.firstInnerAngle = -0.5 * this.increment * this.radialAccent;
       var kit = this.kit;
       var flower = this;
-      u.each(kit.keyFrames, function (keyFrame) {
+      _u.each(kit.keyFrames, function (keyFrame) {
         var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
         var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
         var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
@@ -494,7 +499,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       this.firstInnerAngle = -0.5 * this.increment * scale;
       var kit = this.kit;
       var flower = this;
-      u.each(kit.keyFrames, function (keyFrame) {
+      _u.each(kit.keyFrames, function (keyFrame) {
         var point = keyFrame.obj[kit.selectedObject].shapePoints[0];
         var radius = Vector.distance(Vector.zeroVector(), Vector.create(point.x, point.y));
         var newPosition = Vector.getPolarPoint(Vector.zeroVector(), radius, flower.firstInnerAngle);
@@ -506,7 +511,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       this.kit.context.save();
       this.kit.context.transform(1, 0, 0, 1, this.center.x, this.center.y);
       var flower = this;
-      u.each(this.shapePoints, function (controlPoint) {
+      _u.each(this.shapePoints, function (controlPoint) {
         var newPoint = new CPoint(flower.kit, controlPoint.x * flower.scale, controlPoint.y * flower.scale, flower, controlPoint.index);
         newPoint.draw();
       });
@@ -522,7 +527,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
     };
     PetalFlower.prototype.getState = function () {
       var cps = [];
-      u.each(this.shapePoints, function (point) {
+      _u.each(this.shapePoints, function (point) {
         cps.push(Vector.create(point.x, point.y));
       });
       return {
@@ -538,7 +543,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
       this.center = state.position;
       this.scale = state.scale;
       kit.index = 0;
-      u.each(this.shapePoints, function (cp) {
+      _u.each(this.shapePoints, function (cp) {
         cp.x = state.shapePoints[kit.index].x;
         cp.y = state.shapePoints[kit.index].y;
         kit.index++;
@@ -814,7 +819,7 @@ var canvasEvents = function (require, core, Vector, constants, util, CPoint) {
       if (kit.editMode === kit.constants.EDIT_SHAPE) {
         _u.each(object.shapePoints, function (thisPoint) {
           if (thisPoint.inDrag) {
-            var newPoint = new CPoint(kit, actualPosition.x, actualPosition.y, object, index);
+            var newPoint = new CPoint(kit, _u.reduceSig(actualPosition.x, constants.MAX_CP_SIGS), _u.reduceSig(actualPosition.y, constants.MAX_CP_SIGS), object, index);
             newPoint.inDrag = true;
             object.updatePetal(index, newPoint);
             kit.redraw();
@@ -1168,6 +1173,15 @@ var sceneEvents = function (require, core, constants, util, PetalFlower, CPoint,
     kit.prototype.selectLast = function () {
       this.segment = this.keyFrames.length - 1;
       this.setState();
+    };
+    kit.prototype.getSegment = function () {
+      if (!this.initialized) {
+        return 0;
+      } else if (this.animationMode) {
+        return (this.segment + this.keyFrames.length - 1) % this.keyFrames.length;
+      } else {
+        return this.segment;
+      }
     };
     return kit;
   }({}, core, constants, util, PetalFlower, CPoint, Vector);

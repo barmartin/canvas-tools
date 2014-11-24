@@ -361,6 +361,18 @@ define(function(require) {
     this.segment = this.keyFrames.length-1;
     this.setState();
   }
+  // Segment is the frame being animated into
+  // Timing is pulled from the previous segment
+  // Currently considering altering this functionality
+  kit.prototype.getSegment = function() {
+    if(!this.initialized) {
+      return 0;
+    } else if(this.animationMode) {
+      return (this.segment+this.keyFrames.length-1)%this.keyFrames.length;
+    } else {
+      return this.segment;
+    }
+  }
 
   return kit
 });  

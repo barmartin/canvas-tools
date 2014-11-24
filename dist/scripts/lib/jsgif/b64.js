@@ -1,2 +1,0 @@
-function encode64(a){for(var b,c,d,e,f,g,h,i="",j=0,k=a.length,l="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";k>j;)b=a.charCodeAt(j++),c=a.charCodeAt(j++),d=a.charCodeAt(j++),e=b>>2,f=(3&b)<<4|c>>4,g=(15&c)<<2|d>>6,h=63&d,isNaN(c)?g=h=64:isNaN(d)&&(h=64),i=i+l.charAt(e)+l.charAt(f)+l.charAt(g)+l.charAt(h);return i}
-//# sourceMappingURL=b64.map

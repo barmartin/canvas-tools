@@ -82,6 +82,12 @@ define(function(require) {
       }
     },
 
+    reduceSig: function(num, sig) {
+      var mult = Math.pow(10, sig);
+      // Floating point fix + 0.00001
+      return Math.round(num*mult + 0.00001)/mult;
+    },
+
     degreesToRadians: function(angle) {
       return constants.TWOPIDIV360*angle;
     },

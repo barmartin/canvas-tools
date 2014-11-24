@@ -142,7 +142,7 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
 		$scope.$watch(function () {
 		  return kit.segment;
 		}, function (value) {
-    	$scope.segment = value;
+    	$scope.segment = kit.getSegment();
     });
    	$scope.selectFirst = function() {
     	kit.selectFirst();
@@ -164,22 +164,17 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
     	kit.removeLast();
     }
 
-    // Segment is the frame being animated into
-    // Timing is pulled from the previous segment
-    // Currently considering altering this functionality
+
+
     $scope.length = 1;
     $scope.lengthChange = function() {
       if(kit.initialized) {
-        kit.keyFrames[segment].timing = kit._u.parseFloatOrDefault($scope.length, 1);
+        kit.keyFrames[kit.getSegment()].timing = kit._u.parseFloatOrDefault($scope.length, 1);
       }
     }
     $scope.$watch(function () {
       if(kit.initialized) {
-        var thisSegment = kit.segment;
-        if(kit.animationMode) {
-          thisSegment = (thisSegment+kit.keyFrames.length-1)%kit.keyFrames.length;
-        }
-        return kit.keyFrames[thisSegment].timing;
+        return kit.keyFrames[kit.getSegment()].timing;
       } else {
         return 1;
       }
@@ -190,17 +185,19 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
     $scope.rotation = 0;
     $scope.rotationChange = function() {
       if(kit.initialized) {
-        kit.objList[kit.selectedObject].rotation = (kit._u.parseFloatOrDefault($scope.rotation, 0)*kit.constants.PI/180)%(2*kit.constants.PI);
+        var newRotation = kit._u.reduceSig((kit._u.parseFloatOrDefault($scope.rotation, 0)*kit.constants.PI/180)%(2*kit.constants.PI), 5);
+        kit.objList[kit.selectedObject].rotation = newRotation;
+        kit.keyFrames[kit.getSegment()].obj[kit.selectedObject].rotation = newRotation;
       }
     }
     $scope.$watch(function () {
       if(kit.initialized) {
-        return (kit.objList[kit.selectedObject].rotation/kit.constants.PI*180)%360
+        return kit.objList[kit.selectedObject].rotation;
       } else {
         return 0;
       }
     }, function (value) {
-      $scope.rotation = value;
+      $scope.rotation = kit._u.reduceSig((value/kit.constants.PI*180)%360, 2);
     });
 
     $scope.seamlessAnimation = kit.seamlessAnimation;
