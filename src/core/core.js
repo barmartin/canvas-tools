@@ -56,7 +56,7 @@ define(function (require) {
     this.controlPointRadius = constants.CONTROL_POINT_RADIUS;
 
     this.editMode = constants.EDIT_SHAPE;
-    this.toggleCurveColor = false;
+    this.highlightCurve = false;
     this.seamlessAnimation = true;
     this.fieldFocus = false;
     this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'editMode': this.editMode};

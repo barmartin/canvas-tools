@@ -112,7 +112,7 @@ define(function(require) {
       kit.context.globalCompositeOperation = kit.sourceMode;
       kit.context.clip();
       kit.fillImage.draw(new Transform(this.center, this.scale, this.rotation), this);
-      if(kit.toggleCurveColor===true) {
+      if(kit.highlightCurve===true) {
         // Restore composition mode in the case the line highlight mode is toggled
         kit.context.globalCompositeOperation = 'source-over';
         kit.context.lineWidth = 1.9;

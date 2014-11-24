@@ -311,6 +311,22 @@ define(function(require) {
     this.redraw();
   }
 
+  // This method is not currently in use
+  kit.prototype.playSegment = function() {
+    if(kit.keyFrames.length < 2) {
+        return;
+    }
+    kit.animationMode = true;
+    if(kit.segment !== 0) {
+      kit.segment--;
+    }
+    kit.setState();
+    kit.segment++;
+    kit.setTime = 0;
+    kit.loopStartTime = new Date().getTime();
+    kit.segmentLoop();
+  }
+
   /*
    * Used to set the canvas state with the keyframe
    *

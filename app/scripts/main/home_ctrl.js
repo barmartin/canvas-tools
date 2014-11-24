@@ -48,7 +48,7 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
       kit.selectObject(newValue);
 		};
     $scope.maxObjects = function () {
-      if ($scope.kit.objList.length === constants.MAX_OBJECTS) {
+      if($scope.kit.objList.length === constants.MAX_OBJECTS) {
         return 'disabled';
       }
     };
@@ -86,6 +86,33 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
     $scope.removeObject = function() {
     	kit.removeObject();
     }
+    
+    $scope.backgroundAlpha = kit.backgroundAlpha;
+    $scope.backgroundAlphaChange = function() {
+      kit.setAlpha($scope.backgroundAlpha);
+      kit.redraw();
+      $scope.unfocus();
+    }
+    $scope.$watch(function () {
+      return kit.backgroundAlpha;
+    }, function (value) {
+      $scope.backgroundAlpha = value;
+    });
+
+    // Composition mode drop-down
+    $scope.sources = constants.SOURCE_MODES;
+    $scope.sourceKeys = kit._u.getKeys(constants.SOURCE_MODES);
+    $scope.sourceMode = '';
+    $scope.updateCompositionMode = function() {
+      kit.sourceMode = $scope.sourceMode;
+      kit.redraw();
+    }
+    $scope.$watch(function () {
+      return kit.sourceMode;
+    }, function (value) {
+      $scope.sourceMode = kit.sourceMode;
+    });
+
     $scope.getImage = function() {
       kit.getImage();
     }
@@ -98,7 +125,8 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
       $scope.editMode = kit.editMode;
     });
     $scope.setEditMode = function(newValue) {
-      kit.setEditMode(newValue);
+      kit.editMode = newValue;
+      kit.redraw();
     };
 
     // Animation
@@ -175,6 +203,15 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
       $scope.rotation = value;
     });
 
+    $scope.seamlessAnimation = kit.seamlessAnimation;
+    $scope.seamlessChange = function() {
+      kit.seamlessAnimation = $scope.seamlessAnimation;
+    }
+    $scope.highlightCurve = kit.highlightCurve;
+    $scope.highlightCurveChange = function() {
+      kit.highlightCurve = $scope.highlightCurve;
+      kit.redraw();
+    }
 
 
     // Loading
@@ -185,6 +222,9 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
       kit.loadData(dataz, false);
     }
     $scope.loadData = function() {
+      if($scope.fieldData==='') {
+        return;
+      }
       var dataz = $.parseJSON($scope.fieldData);
       kit.loadData(dataz, false);
     }
@@ -263,75 +303,8 @@ define(['angularAMD', 'ui-bootstrap'], function (angularAMD) {
       $scope.fillImagePage = value;
     });
 
-    /* TODO last UI of functionality to transfer into AngularAMD
-    $('#shapeColor').prop("checked", kit.toggleCurveColor);
-    $('#shapeColor').click( function() {
-      if(this.checked) {
-        kit.toggleCurveColor = true;
-      } else {
-        kit.toggleCurveColor = false;
-      }
-      kit.redraw();
-      return true;
-    });
-
-    $('#myCanvas').mousedown(function(event) {
-      event.preventDefault();
-    });
-
-    $('#bgAlpha').change(function() {
-      var newAlpha = parseFloat($(this).val());
-      if( kit._u.dnexist(newAlpha) || newAlpha > 1 ) {
-        kit.backgroundAlpha = 1.0;
-        $(this).val('1.0');
-      } else if( newAlpha < 0) {
-        kit.backgroundAlpha = 0.0;
-        $(this).val('0.0');
-      } else {
-        kit.backgroundAlpha = newAlpha;
-      }
-      kit.redraw();
-    });
-
-    var index = 0;
-    var dropdownHTML = '';
-    kit._u.each(kit.constants.SOURCE_MODES, function(label, mode) {
-      dropdownHTML += '<option value="'+index+'">'+label+'</option>\n'
-      index++;
-    });
-    $('#sourceMode').html(dropdownHTML).change(function() {
-      var key = kit._u.getKeys(kit.constants.SOURCE_MODES)[this.value];
-      kit.sourceMode = key;
-      kit.redraw();
-    });
-    $('#seamless').click( function() {
-      if(this.checked) {
-        kit.seamlessAnimation = true;
-      } else {
-        kit.seamlessAnimation = false;
-      }
-      kit.redraw();
-      return true;
-    });
-    $('#playSegment').click(function() {
-      kit.animationMode = true;
-      if(kit.segment === 0) {
-        if(kit.keyFrames.length < 2) {
-          return;
-        }
-      } else {
-        kit.segment--;
-      }
-      kit.setState();
-      kit.segment++;
-      kit.setTime = 0;
-      kit.loopStartTime = new Date().getTime();
-      $(this).attr('disabled', true);
-      $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
-      $('#stop').attr('disabled', false);
-      kit.segmentLoop();
-    });
-    
+    // TODO
+    /*
     $('#makeGIF').click(function() {
       $('#playSegment, #playAll, #makeGIF').attr('disabled', true);
       kit.gifInit();

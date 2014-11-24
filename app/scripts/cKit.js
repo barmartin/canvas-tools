@@ -1,4 +1,4 @@
-/*! cKit.js v0.0.0 November 23, 2014 */
+/*! cKit.js v0.4.0 November 23, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -384,7 +384,7 @@ var PetalFlower = function (require, CPoint, Vector, Transform, util) {
         kit.context.globalCompositeOperation = kit.sourceMode;
         kit.context.clip();
         kit.fillImage.draw(new Transform(this.center, this.scale, this.rotation), this);
-        if (kit.toggleCurveColor === true) {
+        if (kit.highlightCurve === true) {
           kit.context.globalCompositeOperation = 'source-over';
           kit.context.lineWidth = 1.9;
           kit.context.stroke();
@@ -589,7 +589,7 @@ var core = function (require, constants, util, PetalFlower, Vector) {
       this.maxRadius = Math.sqrt(this.midWidth * this.midWidth + this.midHeight * this.midHeight);
       this.controlPointRadius = constants.CONTROL_POINT_RADIUS;
       this.editMode = constants.EDIT_SHAPE;
-      this.toggleCurveColor = false;
+      this.highlightCurve = false;
       this.seamlessAnimation = true;
       this.fieldFocus = false;
       this.settingShelf = {
@@ -1126,6 +1126,20 @@ var sceneEvents = function (require, core, constants, util, PetalFlower, CPoint,
       this.setState();
       this.redraw();
     };
+    kit.prototype.playSegment = function () {
+      if (kit.keyFrames.length < 2) {
+        return;
+      }
+      kit.animationMode = true;
+      if (kit.segment !== 0) {
+        kit.segment--;
+      }
+      kit.setState();
+      kit.segment++;
+      kit.setTime = 0;
+      kit.loopStartTime = new Date().getTime();
+      kit.segmentLoop();
+    };
     kit.prototype.setState = function () {
       for (var i = 0; i < this.objList.length; i++) {
         this.objList[i].setState(this.keyFrames[this.segment].obj[i]);
@@ -1279,6 +1293,18 @@ var objectEvents = function (require, core, constants, util, Vector, PetalFlower
       this.redraw();
       window.open(this.canvas.toDataURL('image/png'));
       this.restoreModes();
+      this.redraw();
+    };
+    kit.prototype.setAlpha = function (newAlpha) {
+      newAlpha = _u.parseFloatOrDefault(newAlpha, 1);
+      console.log(newAlpha);
+      if (newAlpha > 1) {
+        this.backgroundAlpha = 1;
+      } else if (newAlpha < 0) {
+        this.backgroundAlpha = 0;
+      } else {
+        this.backgroundAlpha = newAlpha;
+      }
       this.redraw();
     };
     return kit;

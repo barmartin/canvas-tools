@@ -143,5 +143,18 @@ define(function(require) {
     this.redraw();
   }
 
+  kit.prototype.setAlpha = function(newAlpha) {
+    newAlpha = _u.parseFloatOrDefault(newAlpha, 1.0);
+    console.log(newAlpha);
+    if( newAlpha > 1 ) {
+      this.backgroundAlpha = 1.0;
+    } else if( newAlpha < 0) {
+      this.backgroundAlpha = 0.0;
+    } else {
+      this.backgroundAlpha = newAlpha;
+    }
+    this.redraw();
+  };
+
   return kit
 });  

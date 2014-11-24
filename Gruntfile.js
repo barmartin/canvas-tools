@@ -255,6 +255,18 @@ module.exports = function (grunt) {
     },
 
     watch: {
+      www: {
+        files: ['<%= cvars.app %>/**/*'],
+        tasks: [],
+        options: {
+          spawn: false,
+          livereload: true}
+      },
+      main: {
+        files: ['src/**/*.js'],
+        tasks: ['jshint', 'requirejs'],
+        options: {}
+      },
       less: {
         files: ['app/styles/less/main.less'],
         tasks: ['less'],
@@ -262,16 +274,6 @@ module.exports = function (grunt) {
           spawn: false,
           livereload: true
         }
-      },
-      www: {
-        files: ['<%= cvars.app %>/**/*'],
-        tasks: [],
-        options: {}
-      },
-      main: {
-        files: ['src/**/*.js'],
-        tasks: ['jshint', 'requirejs'],
-        options: {}
       },
     },
     connect: {
