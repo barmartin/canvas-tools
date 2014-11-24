@@ -319,6 +319,10 @@ module.exports = function (grunt) {
     'copy:build'
   ]);
 
+    grunt.registerTask('serve-www', [
+        'setup-www', 'open',
+        'connect:serve-www'
+    ]);
 
   /**
    * deploy task

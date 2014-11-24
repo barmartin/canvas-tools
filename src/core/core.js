@@ -24,8 +24,8 @@ define(function (require) {
     this.loopStartTime = 0;
     this.setTime = 0;
     this.pauseTime = 0;
-    this.frameDelay = 60;
-    this.gifFramerate = 200;
+    this.frameDelay = 30;
+    this.gifFramerate = 100;
     this.delta = -this.frameDelay;
 
     this.sceneMode = constants.SCENE_NORMAL;

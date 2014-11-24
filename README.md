@@ -28,7 +28,8 @@ grunt devel
 
 --To build /dist and run production--
 grunt build 
-grunt serve-www
+--in /dist run--
+python -m SimpleHttpServer 8080
 </pre>
 </div>
 
