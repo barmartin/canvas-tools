@@ -26,7 +26,7 @@ npm install
 --To run development server--
 grunt devel
 
---Prod server is a WIP, run:--
+--Prod server--
 grunt deploy 
 --in /Dist--
 python -m SimpleHttpServer 8080
@@ -40,8 +40,3 @@ Image Scaling<br/>
 Shaders<br/>
 All Keyframe Transform<br/>
 Document how to use barebone cKit.js for a widget with JSON data without the UI<br/>
-
-
-
-
-
