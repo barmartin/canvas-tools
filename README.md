@@ -26,9 +26,9 @@ npm install
 --To run development server--
 grunt devel
 
---To build /dist and run production--
+--Prod server is a WIP (need to setup some file dups)--
 grunt build 
---in /dist run--
+--in /Dist--
 python -m SimpleHttpServer 8080
 </pre>
 </div>
