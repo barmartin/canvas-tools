@@ -1,4 +1,4 @@
-/*! cKit.js v0.4.0 November 23, 2014 */
+/*! cKit.js v0.4.1 November 23, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -1297,7 +1297,6 @@ var objectEvents = function (require, core, constants, util, Vector, PetalFlower
     };
     kit.prototype.setAlpha = function (newAlpha) {
       newAlpha = _u.parseFloatOrDefault(newAlpha, 1);
-      console.log(newAlpha);
       if (newAlpha > 1) {
         this.backgroundAlpha = 1;
       } else if (newAlpha < 0) {
