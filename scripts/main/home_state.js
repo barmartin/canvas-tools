@@ -1,0 +1,2 @@
+define(["angularAMD"],function(a){a.config(["$stateProvider","$urlRouterProvider",function(a,b){a.state("home.state",{url:"/state",templateUrl:"views/home/state.html"}).state("home.animation",{url:"/animation",templateUrl:"views/home/animation.html"}).state("home.loading",{url:"/loading",templateUrl:"views/home/loading.html"}),b.when("/home","/home/state")}])});
+//# sourceMappingURL=home_state.map
