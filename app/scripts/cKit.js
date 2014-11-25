@@ -1214,13 +1214,6 @@ var objectEvents = function (require, core, constants, util, Vector, PetalFlower
         0
       ];
     };
-    kit.prototype.setRotation = function (val) {
-      this.objList[this.selectedObject].rotation = val;
-      this.keyFrames[this.segment].obj[this.selectedObject].rotation = val;
-      this.objList[this.selectedObject].allPetals = [];
-      this.objList[this.selectedObject].createPetals();
-      this.redraw();
-    };
     kit.prototype.addFillImage = function (src) {
       this.fillImage = new FillImage(src);
       this.resourceList.fillImageSource = src;
@@ -1312,6 +1305,12 @@ var objectEvents = function (require, core, constants, util, Vector, PetalFlower
       } else {
         this.backgroundAlpha = newAlpha;
       }
+      this.redraw();
+    };
+    kit.prototype.setRotation = function (newRotation) {
+      newRotation = _u.reduceSig(_u.parseFloatOrDefault(newRotation, 0) * constants.PI / 180 % (2 * constants.PI), 5);
+      this.objList[this.selectedObject].rotation = newRotation;
+      this.keyFrames[this.getSegment()].obj[this.selectedObject].rotation = newRotation;
       this.redraw();
     };
     return kit;

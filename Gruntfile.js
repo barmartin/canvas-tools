@@ -152,11 +152,11 @@ module.exports = function (grunt) {
           optimize: 'none',
           dir: '<%= cvars.build %>/<%= cvars.appjs %>/',
           modules: [
-            { name: 'app' },
+            { name: 'app' }/*,
             {
               name: 'main/home_ctrl',
               exclude: ['common']
-            }
+            }*/
           ]
         }
       },

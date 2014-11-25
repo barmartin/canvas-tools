@@ -9,7 +9,6 @@ define(['angularAMD'], function (angularAMD) {
         if ('stateName' in attr) {
           state = attr.stateName + ' ' + state;
         }
-
         elm.text(state);
       }
     };

@@ -9,8 +9,7 @@ require.config({
     'angular-ui-router': 'ext/angular-ui-router',
     'angularAMD': 'ext/angularAMD',
     'ngload': 'ext/ngload',
-    'angular-resource': 'ext/angular-resource',
-    'cKit': 'cKit'
+    'angular-resource': 'ext/angular-resource'
   },
 
   // Add angular modules that does not support AMD out of the box, put it in a shim

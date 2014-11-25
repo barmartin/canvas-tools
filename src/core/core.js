@@ -78,6 +78,8 @@ define(function (require) {
       this.canvas = document.getElementById('canvas');
       this.context = this.canvas.getContext('2d');
       // Setup the canvas event binding
+      // testing imageSmothing
+      // this.context.imageSmoothingEnabled = false;
       this.bindEvents();
       // Setup the canvas
       this.build();

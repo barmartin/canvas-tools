@@ -8,15 +8,12 @@ define(['common'], function (angularAMD) {
       .state('home', angularAMD.route({
         url: '/home',
         templateUrl: 'views/home.html',
-        controllerUrl: 'main/home_ctrl'
-      }))
-    ;
+        // controllerUrl: 'main/interface/interface-ctrl'
+      }));
 
     // Else
     $urlRouterProvider
       .otherwise('/home');
-
-
   }]);
 
   return angularAMD.bootstrap(app);

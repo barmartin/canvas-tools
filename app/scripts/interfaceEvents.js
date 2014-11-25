@@ -1,14 +1,14 @@
 // This is the final initialization that needs to happen after Angular loads
 // Digest triggers an update of the Angular UI
 function initInterface() {
-  window.kit.initializeCanvas();
+  kit.initializeCanvas();
   initColorPickers();
   kit.digest();
 }
 
 // COLOR PICKER
 var currentSelector;
-window.dhx_globalImgPath='styles/img/cp/';
+var dhx_globalImgPath='styles/img/cp/';
 var paletteWidth = 45;
 var paletteHeight = 45;
 

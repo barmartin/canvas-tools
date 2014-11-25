@@ -37,13 +37,13 @@ define(function(require) {
 
   // Set the current rotation in radians
   // Value passed to method should already be in radians
-  kit.prototype.setRotation = function(val) {
+  /*kit.prototype.setRotation = function(val) {
     this.objList[this.selectedObject].rotation = val;
     this.keyFrames[this.segment].obj[this.selectedObject].rotation = val;
     this.objList[this.selectedObject].allPetals = [];
     this.objList[this.selectedObject].createPetals();
     this.redraw();
-  }
+  }*/
 
   // Add a new fill image.  Label and Page are optional arguments
   kit.prototype.addFillImage = function (src) {
@@ -88,7 +88,10 @@ define(function(require) {
     }
   }
 
-  // Methods for the UI
+  /* Methods for the UI
+   * Redraw and Digest where needed
+   *
+   */
   kit.prototype.selectObject = function(obj) {
     obj=parseFloat(obj);
     if(this.selectedObject!==obj&&obj<this.objList.length
@@ -154,6 +157,13 @@ define(function(require) {
     }
     this.redraw();
   };
+
+  kit.prototype.setRotation = function(newRotation) {
+    newRotation = _u.reduceSig((_u.parseFloatOrDefault(newRotation, 0)*constants.PI/180)%(2*constants.PI), 5);
+    this.objList[this.selectedObject].rotation = newRotation;
+    this.keyFrames[this.getSegment()].obj[this.selectedObject].rotation = newRotation;
+    this.redraw();
+  }
 
   return kit
 });  
