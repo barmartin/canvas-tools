@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/thebarry/canvas-tools"
   },
-  "version": "0.4.4",
+  "version": "0.4.5",
   "dependencies": {
     "grunt": "^0.4.5",
     "amdclean": "~0.3.3",

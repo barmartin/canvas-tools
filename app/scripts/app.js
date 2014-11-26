@@ -6,14 +6,14 @@ define(['common'], function (angularAMD) {
 
     $stateProvider
       .state('home', angularAMD.route({
-        url: '/home',
+        url: '',
         templateUrl: 'views/home.html',
         // controllerUrl: 'main/interface/interface-ctrl'
       }));
 
     // Else
     $urlRouterProvider
-      .otherwise('/home');
+      .otherwise('');
   }]);
 
   return angularAMD.bootstrap(app);

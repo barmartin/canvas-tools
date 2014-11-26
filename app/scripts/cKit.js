@@ -1,4 +1,4 @@
-/*! cKit.js v0.4.4 November 24, 2014 */
+/*! cKit.js v0.4.5 November 25, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {

@@ -28,7 +28,7 @@ grunt devel
 
 --Prod server--
 grunt deploy 
---in /Dist--
+--in /dist--
 python -m SimpleHttpServer 8080
 </pre>
 </div>
