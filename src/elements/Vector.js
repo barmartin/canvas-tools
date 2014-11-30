@@ -55,7 +55,7 @@ define(function(require) {
     getDegrees : function(center, point) {
       var xDelta = point.x-center.x;
       var yDelta = center.y-point.y;
-      var degrees = Math.atan2(xDelta, yDelta)*constants.TWOPIDIV360;
+      var degrees = Math.atan2(xDelta, yDelta)/constants.TWOPIDIV360;
       if(degrees<0){
         degrees+=360;
       }

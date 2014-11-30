@@ -1,4 +1,4 @@
-/*! cKit.js v0.4.5 November 25, 2014 */
+/*! cKit.js v0.4.5 November 29, 2014 */
 var constants = function (require) {
     var PI = Math.PI;
     return {
@@ -202,7 +202,7 @@ var Vector = function (require, constants) {
       getDegrees: function (center, point) {
         var xDelta = point.x - center.x;
         var yDelta = center.y - point.y;
-        var degrees = Math.atan2(xDelta, yDelta) * constants.TWOPIDIV360;
+        var degrees = Math.atan2(xDelta, yDelta) / constants.TWOPIDIV360;
         if (degrees < 0) {
           degrees += 360;
         }
@@ -828,9 +828,8 @@ var canvasEvents = function (require, core, Vector, constants, util, CPoint) {
               object.center = position;
             } else if (index === 1) {
               var angleVector = Vector.create(position.x - object.center.x, position.y - object.center.y);
-              var angle = Vector.getRadians(Vector.create(0, 0), angleVector);
+              var angle = Vector.getDegrees(Vector.create(0, 0), angleVector);
               kit.setRotation(angle);
-              kit._u.debugConsole(angle);
             } else if (index === 2) {
               var newX = position.x - object.center.x;
               object.setScale(newX);

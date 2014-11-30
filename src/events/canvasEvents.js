@@ -106,7 +106,7 @@ define(function(require) {
           object.updatePetal(index, newPoint);
           kit.redraw();
           return;
-        } 
+        }
         index++;
       });
     } else if(kit.editMode===kit.constants.EDIT_TRANSFORM) {
@@ -118,9 +118,8 @@ define(function(require) {
             object.center=position;
           } else if(index===1) {
             var angleVector = Vector.create(position.x-object.center.x, position.y-object.center.y)
-            var angle = Vector.getRadians(Vector.create(0, 0), angleVector);
+            var angle = Vector.getDegrees(Vector.create(0, 0), angleVector);
             kit.setRotation(angle);
-            kit._u.debugConsole(angle);
           } else if(index===2) {
             var newX = position.x-object.center.x;
             object.setScale(newX);
