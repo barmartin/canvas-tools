@@ -3,3 +3,7 @@ bower_components/
 node_modules/
 dist/
 build/
+.idea*
+*.map
+*.js.map
+typings/

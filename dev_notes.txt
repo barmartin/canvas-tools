@@ -1,0 +1,4 @@
+Current Stack:
+    Fix Petalflower image kal (places it gets clipped from transforms)
+    Rotation -> Degrees in UI
+    Alphas -> Image Alphas (global)

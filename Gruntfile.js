@@ -5,128 +5,50 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
 
-  /**
-   * Define Configuration Variables.
-   * Note: cwd is './setup' so the `setup` variable defined below is only to be used
-   *       when cwd has been changed to `app` and grunt needs to reference './setup'
-   */
-  var gruntConfig = grunt.file.readJSON('Gruntconfig.json');
-
-  // Grunt Config
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-    cvars: gruntConfig.configVars,
-    bower: {
-      setup: {
-        options: { install: true, copy: false }
-      }
-    },
+    build: "dist",
+
+    app: "src/app",
+    kit: "src/canvas",
+    assets: "src/assets",
+
     copy: {
       setup: {
         files: [
-          // Javascript with standard .min.js naming convention
+          /*{
+            cwd: '<%= assets %>',
+            expand: true,
+            dest: '<%= build %>',
+            src: 'scripts/**'
+          },*/
           {
-            cwd: 'bower_components', expand: true, flatten: true,
-            dest: '<%= cvars.app %>/<%= cvars.appjs %>/ext/',
-            src: gruntConfig.bowerFiles
-          },
-          // CSS with standard .min.css naming convention
-          {
-            cwd: 'bower_components', expand: true, flatten: true,
-            dest: '<%= cvars.app %>/<%= cvars.appcss %>/ext/',
-            src: gruntConfig.cssFiles
-          },
-          // CSS Fonts
-          {
-            cwd: 'bower_components', expand: true, flatten: true,
-            dest: '<%= cvars.app %>/<%= cvars.appcss %>/fonts/',
-            src: gruntConfig.cssFonts
+            cwd: 'src/assets',
+            expand: true,
+            dest: '<%= build %>/assets',
+            src: ["styles/img/**", "styles/ext/**"]
           }
         ]
       },
-      build: {
+      templates: {
         files: [
           {
-            cwd: '<%= cvars.app %>/', expand: true,
-            dest: '<%= cvars.build %>/',
-            src: gruntConfig.buildFiles
-          }
-        ]
-      },
-      deploy: {
-        files: [
-          {
-            cwd: '<%= cvars.build %>/', expand: true,
-            dest: '<%= cvars.dist %>/',
-            src: ['<%= cvars.appcss %>/**', 'images/**']
+            cwd: '<%= app %>',
+            expand: true,
+            dest: '<%= build %>',
+            src: "**/*.html"
           }
         ]
       }
     },
-    clean: {
-      options: { force: true },
-      build: ['<%= cvars.build %>'],
-      'post-requirejs': ['<%= cvars.build %>/<%= cvars.appjs %>/ext'],
-      deploy: [
-        '<%= cvars.dist %>/*'
-      ]
-    },
-    cssmin: {
-      build: {
-        files: {
-          '<%= cvars.build %>/<%= cvars.appcss %>/main.css': [
-            '<%= cvars.app %>/<%= cvars.appcss %>/ext/bootstrap.css',
-            '<%= cvars.app %>/<%= cvars.appcss %>/main.css'
-          ]
-        }
-      }
-    },
-    preprocess: {
-      build: {
-        src : '<%= cvars.app %>/index.html',
-        dest : '<%= cvars.build %>/index.build.html'
-      }
-    },
-    htmlmin: {
-      // See https://github.com/yeoman/grunt-usemin/issues/44 for using 2 passes
-      build: {
-        options: {
-          removeComments: true,
-          // https://github.com/yeoman/grunt-usemin/issues/44
-          //collapseWhitespace: true,
-          collapseBooleanAttributes: true,
-          removeAttributeQuotes: true,
-          removeRedundantAttributes: true,
-          removeEmptyAttributes: true,
-          // Cannot remove empty elements with angular directives
-          removeEmptyElements: false
-        },
-        files: [
-          { '<%= cvars.build %>/index.html': '<%= cvars.build %>/index.build.html' },
-          {
-            cwd: '<%= cvars.app %>/views/', expand: true, flatten: false,
-            dest: '<%= cvars.build %>/views/',
-            src: ['*.html']
-          }
-        ]
+    concat: {
+      options: {
+        separator: ';'
       },
-      deploy: {
-        options: {
-          collapseWhitespace: true
-        },
-        files: [
-          { '<%= cvars.dist %>/index.html': '<%= cvars.build %>/index.html' },
-          {
-            cwd: '<%= cvars.build %>/<%= cvars.appjs %>/main/templates/', expand: true,
-            dest: '<%= cvars.dist %>/<%= cvars.appjs %>/main/templates/',
-            src: ['*.html']
-          },
-          {
-            cwd: '<%= cvars.build %>/views/', expand: true,
-            dest: '<%= cvars.dist %>/views/',
-            src: ['**/*.html']
-          }
-        ]
+      dist: {
+        src: ['node_modules/angular/angular.js', 'node_modules/angular-ui-router/release/angular-ui-router.js',
+          'node_modules/jquery/dist/jquery.js', 'node_modules/jsxgraph/JSXCompressor/jsxcompressor.min.js',
+          'src/assets/scripts/lib/dhtmlxcommon.js', 'src/assets/scripts/lib/dhtmlxcolorpicker.js'],
+        dest: '<%= build %>/scripts/lib.js'
       }
     },
     less: {
@@ -137,207 +59,82 @@ module.exports = function (grunt) {
           optimization: 2
         },
         files: {
-          'app/styles/main.css': 'app/styles/less/main.less'
+          'dist/assets/styles/main.css': 'src/assets/styles/less/main.less'
         }
       }
     },
-    requirejs: {
-      // this creates the build dir for devel mode
-      build: {
+
+    // this builds cKit.js
+    typescript: {
+      kit: {
+        src: ['canvasReferences.ts', '<%= kit %>/**/*.ts'],
+        dest: 'dist/scripts/cKit.js',
         options: {
-          baseUrl: '<%= cvars.app %>/<%= cvars.appjs %>',
-          mainConfigFile: '<%= cvars.app %>/<%= cvars.appjs %>/main.js',
-          removeCombined: true,
-          findNestedDependencies: true,
-          optimize: 'none',
-          dir: '<%= cvars.build %>/<%= cvars.appjs %>/',
-          modules: [
-            { name: 'app' }/*,
-            {
-              name: 'main/home_ctrl',
-              exclude: ['common']
-            }*/
-          ]
+          module: 'amd', //or commonjs
+          target: 'es5', //or es3
+          sourceMap: true,
+          declaration: true
         }
       },
-      // this builds cKit.js
-      unmin: {
+      // this builds app.js
+      app: {
+        src: ['references.ts', '<%= app %>/**/*.ts', '!**/*.d.ts'],
+        dest: 'dist/scripts/app.js',
         options: {
-          baseUrl: '.',
-          findNestedDependencies: true,
-          include: ['src/app'],
-          onBuildWrite: function( name, path, contents ) {
-            return require('amdclean').clean({
-              code: contents,
-              escodegen: {
-                'comment': true,
-                'format': {
-                  'indent': {
-                    'style': '  ',
-                    'adjustMultilineComment': true
-                  }
-                }
-              }
-            });
-          },
-          optimize: 'none',
-          out: 'app/scripts/cKit.js',
-          paths: {
-            'app': 'src/app',
-            'core': 'src/core/core',
-            'util': 'src/core/util',
-            'constants': 'src/core/constants',
-            'CPoint': 'src/elements/CPoint',
-            'Vector': 'src/elements/Vector',
-            'Transform': 'src/elements/Transform',
-            'FillImage': 'src/objects/FillImage',
-            'PetalFlower': 'src/objects/PetalFlower',
-            'canvasEvents': 'src/events/canvasEvents',
-            'sceneEvents': 'src/events/sceneEvents',
-            'objectEvents': 'src/events/objectEvents',
-            'settingsEvents': 'src/events/settingsEvents'
-          },
-          useStrict: true,
-          wrap: {
-            start: '/*! cKit.js v<%= pkg.version %> <%= grunt.template.today("mmmm dd, yyyy") %> */\n',
-            end: ''
-          }
-        }
-      },
-      // this build cKit.min.js
-      min: {
-        options: {
-          baseUrl: '.',
-          findNestedDependencies: true,
-          include: ['src/app'],
-          onBuildWrite: function( name, path, contents ) {
-            return require('amdclean').clean(contents);
-          },
-          optimize: 'uglify2',
-          out: 'app/scripts/cKit.min.js',
-          paths: '<%= requirejs.unmin.options.paths %>',
-          useStrict: true,
-          wrap: {
-            start: '/*! cKit.min.js v<%= pkg.version %> <%= grunt.template.today("mmmm dd, yyyy") %> */\n',
-            end: ''
-          }
-        }
-      }
-    },
-    uglify: {
-      deploy: {
-        options: {
-          preserveComments: 'some',
-          sourceMapIncludeSources: true,
-          sourceMap: true
-        },
-        files: [
-          {
-            cwd: '<%= cvars.build %>/<%= cvars.appjs %>/', expand: true,
-            dest: '<%= cvars.dist %>/<%= cvars.appjs %>/',
-            src: '**/*.js'
-          }
-        ]
-      }
-    },
-    jshint: {
-      build: {
-        options: {
-          jshintrc: '.jshintrc'
-        },
-        files: {
-          src: [
-            //'<%= cvars.app %>/<%= cvars.appjs %>/*.js',
-            //'<%= cvars.app %>/<%= cvars.appjs %>/main/*.js',
-          ]
+          module: 'amd', //or commonjs
+          target: 'es5', //or es3
+          sourceMap: true,
+          declaration: true
         }
       }
     },
 
     watch: {
-      www: {
-        files: ['<%= cvars.app %>/**/*'],
-        tasks: [],
-        options: {
-          spawn: false,
-          livereload: true}
+      appTS: {
+        files: ['references.ts', '<%= app %>/**/*.ts'],
+        tasks: ['typescript:app']
       },
-      main: {
-        files: ['src/**/*.js'],
-        tasks: ['jshint', 'requirejs'],
-        options: {}
+      kitTS: {
+        files: ['canvasReferences.ts', '<%= kit %>/**/*.ts'],
+        tasks: ['typescript:kit']
       },
       less: {
-        files: ['app/styles/less/main.less'],
-        tasks: ['less'],
-        options: {
-          spawn: false,
-          livereload: true
-        }
+        files: ['<%= assets %>/**/*.less'],
+        tasks: ['less']
       },
-    },
-    connect: {
-      server: {
-        livereload: true,
-        options: {
-          port: gruntConfig.configVars.port,
-          base: '<%= cvars.app %>'
-        }
+      templates: {
+        files: ['<%= app %>/**/*.html'],
+        tasks: ['copy:templates']
+      },
+
+      libJS: {
+        files: ['node_modules/**/*.js'],
+        tasks: ['concat']
+      },
+
+      /* Working on removing some of these anonymous assets */
+      www: {
+        files: ['<%= assets %>/**/*'],
+        tasks: ['copy:setup']
       }
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-less');
   /**
-   * setup task
-   * Run the initial setup, sourcing all needed upstream dependencies
-   */
-  grunt.registerTask('setup', ['bower:setup', 'copy:setup']);
-
-
-  /**
-   * devel task
-   * Launch webserver and watch for changes
-   */
-  grunt.registerTask('devel', [
-    'connect:server', 'watch'
-  ]);
-
-  /**
-   * build task
-   * Use r.js to build the project
+   * Copies files to /dist
+   * Rebuilds cKit.js and app.js
+   * Compiles less into /dist
    */
   grunt.registerTask('build', [
-    'jshint:build',
-    'clean:build',
-    'preprocess:build',
-    'htmlmin:build',
-    'cssmin:build',
-    // Require is: Build, Unmin, Min
-    'requirejs',
-    'clean:post-requirejs',
-    'copy:build'
+    'typescript',
+    'less',
+    'copy:setup',
+    'concat',
+    'copy:templates'
   ]);
 
-    grunt.registerTask('serve-www', [
-        'setup-www', 'open',
-        'connect:serve-www'
-    ]);
-
-  /**
-   * deploy task
-   * Deploy to dist_www directory
-   */
-  grunt.registerTask('deploy', [
+  grunt.registerTask('default', [
     'build',
-    'clean:deploy',
-    'htmlmin:deploy',
-    'copy:deploy',
-    'uglify:deploy'
+    'watch'
   ]);
-
-  grunt.registerTask('hello', function () {
-    grunt.log.write('hello task called with: ', gruntConfig);
-  });
-
 };

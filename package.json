@@ -1,38 +1,29 @@
 {
   "name": "canvas-tools",
+  "version": "0.4.6",
+  "license": "GPL-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/thebarry/canvas-tools"
   },
-  "version": "0.4.5",
   "dependencies": {
     "grunt": "^0.4.5",
-    "amdclean": "~0.3.3",
-    "grunt-contrib-less": "~0.11.4",
-    "grunt-autoprefixer": "^0.7.3",
-    "grunt-bower-task": "~0.4.0",
-    "grunt-concurrent": "^0.5.0",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-concat": "^0.4.0",
-    "grunt-contrib-connect": "^0.7.1",
+    "grunt-typescript": "^0.6.2",
+    "grunt-contrib-watch": "^0.6.1",
     "grunt-contrib-copy": "^0.5.0",
-    "grunt-contrib-cssmin": "^0.9.0",
-    "grunt-contrib-htmlmin": "^0.3.0",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-requirejs": "~0.4.4",
-    "grunt-contrib-uglify": "^0.4.0",
-    "grunt-contrib-watch": "^0.5.3",
-    "grunt-filerev": "^0.2.1",
-    "grunt-google-cdn": "^0.4.0",
-    "grunt-newer": "^0.7.0",
-    "grunt-ngmin": "^0.0.3",
-    "grunt-preprocess": "~4.0.0",
-    "grunt-svgmin": "^0.4.0",
-    "grunt-usemin": "^2.1.1",
-    "jshint-stylish": "^0.2.0",
-    "load-grunt-tasks": "^0.4.0",
-    "time-grunt": "^0.3.1"
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-less": "~0.11.4",
+    "load-grunt-tasks": "^3.2.0",
+    "angular": "^1.4.2",
+    "angular-ui-router": "^0.2.15",
+    "jquery": "^2.1.4"
+  },
+
+  "devDependencies": {
+    "napa": "^1.2.0"
+  },
+
+  "scripts": {
+    "install": "napa jsxgraph/jsxgraph"
   }
 }
-
-
