@@ -1,0 +1,48 @@
+        <!--div class="row">
+          <div class="col-xs-5 label">Highlight Curve</div>
+          <div class="col-xs-7">
+            <input type="checkbox" ng-change="highlightCurveChange()" ng-model="highlightCurve">
+          </div>
+        </div-->
+        <div class="row combined">
+          <div class="col-xs-5 label tall-label">Background</div>
+          <div class="col-xs-7">
+            <div class="left label tall-label">Color:</div>
+            <div id="bg-color" class="cHolder left"></div>
+            <div class="label tall-label left ml-20">Alpha</div>
+            <div class="left ml-10">
+              <input class="form-field" size="2" scene-element="backgroundAlpha"
+                   ng-focus="fieldFocus()" ng-blur="backgroundAlphaChange()"/>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5">
+            <div id="cpc-bg" class="cpc" style="display:none">
+            </div>&nbsp;
+          </div>
+          <div class="col-xs-7">
+            <select ng-options="image.id as image.label for image in imageList" ng-model="selectedBackground" ng-change="updateBackground(); convert-to-number">
+              <option value="">Select Background Image</option>
+            </select>
+          </div>
+        </div>
+
+          <!--div class="row">
+            <div class="col-xs-5 label">Highlight Curve</div>
+            <div class="col-xs-7">
+              <input type="checkbox" ng-change="highlightCurveChange()" ng-model="highlightCurve">
+            </div>
+          </div-->
+
+        <div class="row">
+          <span class="col-xs-5 label mt-0">Layer Composition</span>
+          <div class="col-xs-7">
+            <select ng-change="updateCompositionMode()" ng-model="sourceMode" ng-options="sources[key] for key in sourceKeys">
+            </select>
+          </div>
+        </div>
+        <div class="row last">
+          <div ng-click="loadSample()" class="btn btn-default ml-20">Load Sample Scene</div>
+          <div ng-click="clearScene()" class="btn btn-default ml-10">Clear Scene</div>
+        </div>

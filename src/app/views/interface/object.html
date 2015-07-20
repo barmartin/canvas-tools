@@ -1,0 +1,50 @@
+      <div class="row">
+          <div class="col-xs-5 label"> Petal Count</div>
+          <div class="col-xs-7">
+            <input class="form-field" type="text" size="2" object-element="petals" ng-blur="unfocus()" ng-focus="fieldFocus()">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5 label">Radial Accent</div>
+          <div class="col-xs-7">
+            <input class="form-field" type="text" size="2" object-element="accent" ng-blur="unfocus()" ng-focus="fieldFocus()">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5 label">Rotation</div>
+          <div class="col-xs-7">
+            <input class="form-field" type="text" object-element="rotation" ng-blur="unfocus()" ng-focus="fieldFocus()" size="6"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5 label">Scale</div>
+          <div class="col-xs-7">
+            <input class="form-field" type="text" object-element="scale" ng-blur="unfocus()" ng-focus="fieldFocus()" size="6"/>
+          </div>
+        </div>
+
+
+      <div class="row combined">
+        <div class="col-xs-5 label tall-label">Line&nbsp;</div>
+        <div class="col-xs-7">
+          <div class="left label tall-label">Color:</div>
+          <div id="line-color" class="cHolder left"></div>
+        </div>
+      </div>
+        <div class="row">
+          <div class="col-xs-5">
+            <div id="cpc-line" class="cpc" style="display:none"></div>
+            &nbsp;
+          </div>
+          <div class="col-xs-7">
+            <select ng-options="image.id as image.label for image in imageList" ng-model="selectedFill" ng-change="updateFill();" convert-to-number>
+              <option value="">Select Fill Image</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row last">
+          <div class="col-xs-5">
+            <div ng-click="removeObject()" class="btn btn-default" id="removeObject">Remove Selected Object</div>
+          </div>
+        </div>

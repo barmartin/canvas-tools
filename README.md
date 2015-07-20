@@ -15,28 +15,27 @@ Edit Modes: (q) -> shape, (w) -> transforms, (e) -> none<br/>
 <a href="http://thebarry.github.io/canvas-tools/" target="_blank">Demo Here</a>
 
 <h3> Development </h3>
-Just did a complete rebuild of the project to use AngularAMD <br/>
-If you want to develop without AngularJS you can use commit 4571e648fae1374cf91eb4568a22527d5c7be721 <br/>
+This version is Typescript/AngularJS <br/>
+cKit.js is no longer bound to the Angular App, which means you may run the animation widget via patch code free of a UI
+<br/>
 
 <p> After cloning the project run </p>
 <div class="highlight highlight-bash">
-<pre>bower install
-npm install
+<pre> npm install; npm install; tsd reinstall;
+grunt
+</pre>
 
---To run development server--
-grunt devel
-
---Prod server--
-grunt deploy 
---in /dist--
-python -m SimpleHttpServer 8080
+<pre>
+pushd dist; python -m SimpleHTTPServer 8080; popd;
 </pre>
 </div>
 
 <h4>Improvements & Features To be Completed</h4>
+Make a keyframe GUI <br/>
 GIF Encoding (WIP)<br/>
 Animating Text<br/>
-Image Scaling<br/>
 Shaders<br/>
-All Keyframe Transform<br/>
-Document how to use barebone cKit.js for a widget with JSON data without the UI<br/>
+Document & subroutine a barebone cKit.js for a widget with patch data without the UI<br/>
+Code minification grunt build<br/>
+
+

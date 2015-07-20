@@ -1,0 +1,32 @@
+        <div class="row">
+          <div class="col-xs-5 medium-label label">Edit Mode</div>
+          <div class="col-xs-7 input-group">
+            <div class="btn-group edit-mode">
+              <div ng-click="setEditMode(0)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(0)" btn-radio="0" id="edit-shape">Shape</div>
+              <div ng-click="setEditMode(1)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(1)" btn-radio="1" id="edit-transform">Transform</div>
+              <div ng-click="setEditMode(2)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(2)" btn-radio="2">None</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5 label" title="Length of this Segment (seconds)">Length</div>
+          <div class="col-xs-7">
+            <input class="form-field" type="text" scene-element="timing" ng-focus="fieldFocus()" size="5"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-5 label" title="Length before the first keyframe starts at the beginning of the cycle. (seconds)">Initial Pause</div>
+          <div class="col-xs-7 tall">
+            <input class="form-field" size="2" scene-element="pauseTime"
+                   ng-focus="fieldFocus()" ng-blur="unfocus()"/>
+          </div>
+        </div>
+        <div class="row last">
+          <div ng-click="removeKeyframe()" class="btn btn-default ml-20" id="removeSegment">Remove Keyframe</div>
+          <div ng-click="removeLast()" class="btn btn-default ml-10" id="removeLast">Remove Last Keyframe</div>
+        </div>
+        <!--div class="row last">
+          <span class="large-lab">GIF functionality is WIP</span> <span class="col large-lab"><i>Firefox & server local image fills only</i></span>
+          <div class="clearfix"></div>
+          <div class="btn btn-default" id="makeGIF">Gif</div>
+        </div-->
