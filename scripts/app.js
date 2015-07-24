@@ -74,7 +74,7 @@ var cKit;
             services.initLibUI = initLibUI;
             // COLOR PICKER
             var currentSelector = '';
-            window.dhx_globalImgPath = 'assets/styles/img/cp/';
+            window.dhx_globalImgPath = 'canvas-tools/assets/styles/img/cp/';
             function initColorPickers() {
                 var kit = cKit.kit;
                 var linePicker = new dhtmlXColorPicker('cpc-line', false, false, false, false);
@@ -270,28 +270,28 @@ var cKit;
                 return {
                     restrict: 'A',
                     controller: 'objectController',
-                    templateUrl: 'views/interface/object.html'
+                    templateUrl: 'canvas-tools/views/interface/object.html'
                 };
             }
             function scenePanel() {
                 return {
                     restrict: 'A',
                     controller: 'sceneController',
-                    templateUrl: '../../views/interface/scene.html'
+                    templateUrl: 'canvas-tools/views/interface/scene.html'
                 };
             }
             function animationPanel() {
                 return {
                     restrict: 'A',
                     controller: 'animationController',
-                    templateUrl: 'views/interface/animation.html'
+                    templateUrl: 'canvas-tools/views/interface/animation.html'
                 };
             }
             function loadingPanel() {
                 return {
                     restrict: 'A',
                     controller: 'loadingController',
-                    templateUrl: 'views/interface/loading.html'
+                    templateUrl: 'canvas-tools/views/interface/loading.html'
                 };
             }
             function uiPanelController($scope, kitService) {
@@ -767,7 +767,7 @@ var cKit;
                 var home = {
                     name: 'home',
                     url: '/',
-                    templateUrl: '/views/home.html'
+                    templateUrl: 'canvas-tools/views/home.html'
                 };
                 $stateProvider.state(home);
             }
