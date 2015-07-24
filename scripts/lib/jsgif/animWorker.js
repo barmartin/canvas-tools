@@ -1,2 +1,0 @@
-importScripts("LZWEncoder.js","NeuQuant.js","GIFEncoder.js"),self.onmessage=function(a){var b,c,d,e,f,g;b=a.data.frame_index,c=a.data.frame_length,d=a.data.height,e=a.data.width,g=a.data.imageData,f=a.data.delay;var h=new GIFEncoder;h.setRepeat(0),h.setQuality(1),h.setSize(e,d),h.setDelay(f),0==b?h.start():(h.cont(),h.setProperties(!0,!1)),h.addFrame(g,!0),c==b&&h.finish(),self.postMessage({frame_index:b,frame_data:h.stream().getData()})};
-//# sourceMappingURL=animWorker.map

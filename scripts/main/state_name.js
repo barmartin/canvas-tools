@@ -1,2 +1,0 @@
-define(["angularAMD"],function(a){a.directive("stateName",["$state",function(a){return{restrict:"A",link:function(b,c,d){var e=a.current.name;"stateName"in d&&(e=d.stateName+" "+e),c.text(e)}}}])});
-//# sourceMappingURL=state_name.map

@@ -1,0 +1,237 @@
+/*!
+ * Preboot v2
+ *
+ * Open sourced under MIT license by @mdo.
+ * Some variables and mixins from Bootstrap (Apache 2 license).
+ */
+html,
+body {
+  color: #eee;
+}
+body,
+footer {
+  background-color: #000;
+}
+.container {
+  height: 100%;
+  width: 100%;
+}
+.widget {
+  margin-left: 50px;
+}
+.interface {
+  width: 420px;
+  float: left;
+  color: #9e97f2;
+  margin-bottom: 20px;
+}
+.panel {
+  min-width: 525px;
+}
+.panel-group {
+  margin-top: 10px;
+}
+.panel-default {
+  border-color: #d4d4d4;
+}
+.panel-default > .panel-heading {
+  background-color: #293053;
+  color: #9e97f2;
+}
+.panel-default > .panel-heading:hover {
+  cursor: pointer;
+  background-color: #2B466B;
+}
+.panel-body {
+  background-color: #171a23;
+  color: #000;
+  padding: 15px 15px 5px;
+}
+.interface .row {
+  padding: 7px;
+  margin-right: 0;
+}
+.tab-pane {
+  margin-left: 10px;
+  padding: 10px 10px 10px 10px;
+}
+.segment-selector {
+  background-color: #7dc2a6;
+  border-radius: 5px;
+  float: left;
+  padding: 6px;
+}
+.segment-selector .butn {
+  background-repeat: no-repeat;
+}
+.segment-selector #btn-first {
+  background-image: url('img/pan/first.png');
+}
+.segment-selector #btn-prev {
+  background-image: url('img/pan/prev.png');
+}
+.segment-selector #btn-next {
+  background-image: url('img/pan/next.png');
+}
+.segment-selector #btn-last {
+  background-image: url('img/pan/last.png');
+}
+.segment-selector .segment {
+  float: left;
+  margin: 5px 10px;
+  color: #000;
+  font-size: 18px;
+  font-weight: 400;
+}
+.dhtmlxcolorpicker input.cs_Hex_MiniX,
+.dhtmlxcolorpicker input.cs_Input_MiniX {
+  height: 15px;
+  line-height: 12px;
+}
+.dhtmlxcolorpicker .cs_ButtonOk,
+.dhtmlxcolorpicker .cs_ButtonCancel,
+.dhtmlxcolorpicker .cs_ButtonOk_Hover,
+.dhtmlxcolorpicker .cs_ButtonCancel_Hover {
+  line-height: 16px;
+}
+.cHolder {
+  border: 1px solid #ddd;
+  margin-right: 4px;
+  width: 45px;
+  height: 45px;
+}
+.corner {
+  position: absolute;
+  top: 60px;
+  left: 10px;
+}
+.corner .row {
+  position: relative;
+}
+#cpc-bodybg {
+  position: absolute;
+  top: 200px;
+  left: 10px;
+}
+.canvasContainer {
+  margin-right: 60px;
+}
+#myCanvas:active,
+#myCanvas:focus {
+  cursor: pointer;
+}
+.label {
+  font-size: 18px;
+  margin-top: 5px;
+  font-weight: 400;
+  color: #9e97f2;
+}
+.x-tall {
+  margin-top: 15px;
+}
+.tall-label {
+  margin-top: 13px;
+}
+.tall-label2 {
+  margin-top: 12px;
+}
+.tall {
+  margin-top: 7px;
+}
+.medium-tall {
+  margin-top: 8px;
+}
+input,
+button,
+select,
+textarea {
+  display: block;
+  font-size: 18px;
+  font-weight: 200;
+}
+.row {
+  border-bottom: 1px solid #d4d4d4;
+  padding: 10px;
+}
+.row.last {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+.row.combined {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+button.grp {
+  margin-top: 10px;
+  float: left;
+}
+button,
+.btn {
+  color: #222;
+  font-weight: 200;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 10px 13px;
+  border-radius: 4px;
+  border-color: #327160;
+  border-width: 0 0 2px;
+  border-style: solid;
+  background-color: #7dc2a6;
+}
+/* image type buttons */
+.butn {
+  cursor: pointer;
+  width: 33px;
+  height: 43px;
+  float: left;
+  margin: 0 1px;
+}
+button:hover,
+.btn:hover,
+.btn-group .btn:hover {
+  background-color: #329485;
+}
+.btn-group > .btn.active {
+  background-color: #d6f0e3;
+}
+.btn-default.disabled {
+  background-color: #77665c;
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  padding: 10px 30px;
+  width: 100%;
+  border-top: 1px solid #d4d4d4;
+}
+.left {
+  float: left;
+}
+.inline {
+  display: inline;
+}
+.mt-0 {
+  margin-top: 0;
+}
+.mt-10 {
+  margin-top: 10px;
+}
+.mb-20 {
+  margin-bottom: 20px;
+}
+.mb-40 {
+  margin-bottom: 40px;
+}
+.mb-60 {
+  margin-bottom: 60px;
+}
+.ml-10 {
+  margin-left: 10px;
+}
+.ml-20 {
+  margin-left: 20px;
+}
+.pt-0 {
+  padding-top: 0;
+}

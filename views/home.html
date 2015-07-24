@@ -1,1 +1,113 @@
-<div class="row row-offcanvas row-offcanvas-right"><div class="col-xs-12 col-sm-6"><div class="content"><canvas id="canvas" width="500" height="500"></canvas></div></div><div data-interface-menu></div></div><div class="corner"><div id="bodybg-color" class="cHolder"></div><div id="bodybg-color-cp" class="cp"></div><div id="cpc-bodybg" class="cpc" style="display:none"></div></div><footer><a href="https://github.com/thebarry/canvas-tools/">Canvas Tools - Github Page</a> <span style="float: right; font-size: 70%">Optimized for Chrome & Safari</span></footer>
+<!--div ng-include="'main/templates/nav.html'" ng-controller="navMenuController as navController" class="navbar navbar-inverse" role="navigation"></div-->
+<div class="app-content">
+  <div class="col-xs-12 col-sm-8">
+    <div class="widget">
+        <canvas id="canvas" width="1200" height="1200"></canvas>
+    </div>
+  </div>
+  <!--div class="col-xs-12 col-sm-4 sidebar-offcanvas interface" id="sidebar">
+    <ul class="nav nav-tabs">
+      <li ng-model="panelTab" ng-click="setPanel('1')" ng-class="isPanelActive('1')"><a>Object</a></li>
+      <li ng-model="panelTab" ng-click="setPanel('2')" ng-class="isPanelActive('2')"><a>Scene</a></li>
+      <li ng-model="panelTab" ng-click="setPanel('3')" ng-class="isPanelActive('3')"><a>Animation</a></li>
+      <li ng-model="panelTab" ng-click="setPanel('4')" ng-class="isPanelActive('4')"><a>Loading</a></li>
+    </ul>
+    <div class="tab-content">
+      <div ng-class="isPanelActive('1')" class="tab-pane" object-panel ng-init="initializeUI()"></div>
+      <div ng-class="isPanelActive('2')" class="tab-pane" scene-panel></div>
+      <div ng-class="isPanelActive('3')" class="tab-pane" animation-panel></div>
+      <div ng-class="isPanelActive('4')" class="tab-pane" loading-panel></div>
+    </div>
+  </div>
+</div-->
+  <div class="col-xs-12 col-sm-4" ng-controller="uiPanelController">
+    <div id="accordion" class="panel-group mb-60">
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix" ng-click="togglePanel('animationPanel')">
+          <div class="left">
+            <h4 class="panel-title x-tall">
+              Animation
+            </h4>
+          </div>
+          <div ng-click="stop()" stop-events class="btn btn-default left ml-20 tall">Stop</div>
+          <div ng-click="play()" stop-events class="btn btn-default left ml-10 tall">Play All</div>
+          <div stop-events class="segment-selector ml-20">
+            <div ng-click="selectFirst()" class="butn" id="btn-first"></div>
+            <div ng-click="selectPrev()" class="butn" id="btn-prev"></div>
+            <div class="label segment" label-only scene-element="segment">{{segment}}</div>
+            <div ng-click="selectNext()" class="butn" id="btn-next"></div>
+            <div ng-click="selectLast()" class="butn" id="btn-last"></div>
+          </div>
+        </div>
+        <div class="panel-collapse" ng-class="{'collapse':!isActive('animationPanel')}">
+          <div class="panel-body">
+            <div animation-panel></div>
+          </div>
+        </div>
+      </div> <!-- Animation Panel -->
+
+      <div class="panel panel-default">
+        <div class="panel-heading" ng-click="togglePanel('objectPanel')">
+          <div class="left">
+            <h4 class="panel-title tall-label">
+              Object
+            </h4>
+          </div>
+          <div stop-events class="btn-group left ml-20">
+            <div ng-model="objectSelector" ng-click="selectObject(0)" class="btn btn-default" ng-class="objectSelectorClasses(0)" btn-radio="0">1</div>
+            <div ng-model="objectSelector" ng-click="selectObject(1)" class="btn btn-default" ng-class="objectSelectorClasses(1)" btn-radio="1">2</div>
+            <div ng-model="objectSelector" ng-click="selectObject(2)" class="btn btn-default" ng-class="objectSelectorClasses(2)" btn-radio="2">3</div>
+            <div ng-model="objectSelector" ng-click="selectObject(3)" class="btn btn-default" ng-class="objectSelectorClasses(3)" btn-radio="3">4</div>
+          </div>
+          <div stop-events ng-click="addObject()" ng-class="maxObjects()" class="btn btn-default ml-10"> + </div>
+          <div class="btn-group edit-mode ml-20">
+            <div ng-click="setEditMode(0)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(0)" btn-radio="0" id="edit-shape">Shape</div>
+            <div ng-click="setEditMode(1)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(1)" btn-radio="1" id="edit-transform">Transform</div>
+            <div ng-click="setEditMode(2)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(2)" btn-radio="2">None</div>
+          </div>
+        </div>
+        <div class="panel-collapse" ng-class="{'collapse':!isActive('objectPanel')}">
+          <div class="panel-body">
+            <div object-panel></div>
+          </div>
+        </div>
+      </div> <!-- Object Panel -->
+
+      <div class="panel panel-default">
+        <div class="panel-heading" ng-click="togglePanel('scenePanel')">
+          <h4 class="panel-title">
+            Scene
+          </h4>
+        </div>
+        <div class="panel-collapse" ng-class="{'collapse':!isActive('scenePanel')}">
+          <div class="panel-body">
+            <div scene-panel></div>
+          </div>
+        </div>
+      </div> <!-- Scene Panel -->
+
+      <div class="panel panel-default">
+        <div class="panel-heading" ng-click="togglePanel('loadingPanel')">
+          <div class="left">
+            <h4 class="panel-title tall-label">
+              Resources
+            </h4>
+          </div>
+          <div stop-events class="btn btn-default ml-20" ng-click="loadSample()" class="ml-20">Sample Scene</div>
+          <div stop-events class="btn btn-default ml-10" ng-click="clearScene()" class="ml-10">Clear Scene</div>
+        </div>
+        <div class="panel-collapse" ng-class="{'collapse':!isActive('loadingPanel')}">
+          <div class="panel-body">
+            <div loading-panel></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- Loading/Resources Panel -->
+
+  <!--div class="corner">
+    <div id="bodybg-color" class="cHolder"></div>
+    <div id="bodybg-color-cp" class="cp"></div>
+    <div id="cpc-bodybg" class="cpc" style="display:none">
+    </div>
+  </div-->
