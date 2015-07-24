@@ -20,21 +20,23 @@ module cKit.app.ui.state {
     $scope.sourceKeys = _u.getKeys(constants.SOURCE_MODES);
     $scope.sourceMode = 'lighter';
     $scope.updateCompositionMode = function () {
-      kit.sourceMode = $scope.sourceMode;
-      kit.redraw();
+      kit.setSceneAttribute('sourceMode', $scope.sourceMode);
     };
+    $scope.$watch(function() {
+      return kit.getSceneAttribute('sourceMode');
+    }, function(value) {
+      $scope.sourceMode = value;
+    });
+
+    $scope.$watch(function() {
+      return kit.getSceneAttribute('backgroundImage');
+    }, function(value) {
+      $scope.selectedBackground = value;
+    });
 
     $scope.updateBackground = function() {
-      //console.log('update background:' + $scope.selectedBackground);
-      kit.setBackgroundImage($scope.selectedBackground);
+      kit.setSceneAttribute('backgroundImage', $scope.selectedBackground);
     };
-
-    /* SourceMode is only modded in UI....
-    $scope.$watch(function () {
-      return kit.sourceMode;
-    }, function (value) {
-      $scope.sourceMode = kit.sourceMode;
-    }); */
 
     $scope.getImage = function () {
       kit.getImage();

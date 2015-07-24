@@ -50,7 +50,7 @@ module cKit.stage {
     }
 
     clearStage() {
-      this.stageConfig.backgroundImage = null;
+      this.stageConfig = new StageConfig(this.kit)
       this.segment = 0;
       // this.keyframeStage = new KeyframeStage();
       this.keyframes = [new Keyframe(this.getState(), 0)];
@@ -218,8 +218,7 @@ module cKit.stage {
       for (var i = 0; i<frames.length; i++) {
         /* TODO -mvp */
         //this.keyframes.push(new Keyframe(frames[i].stageStates.timestamp));
-        var thisFrame = frames[i];
-        this.keyframes.push(new Keyframe(thisFrame.objStates, thisFrame.timestamp));
+        this.keyframes.push(new Keyframe(frames[i].objStates, frames[i].timestamp));
       }
       this.loadState(this.segment);
       this.kit.redraw();
@@ -355,6 +354,23 @@ module cKit.stage {
       this.keyframes[this.segment] = new Keyframe(keyStates, this.keyframes[this.segment].timestamp);
     }
 
+    /* Iterate through keyframes and save all keyframes to current state of object */
+    clearStates(objectIndex:number = -1) {
+      /* all objects  (not yet tested because it isn't used yet) */
+      if(objectIndex === -1) {
+        for (var i = 0; i < this.keyframes.length; i++) {
+          for(var j = 0; j < this.kit.resourceList.objects.length; j++) {
+            this.keyframes[i].objStates[j] = this.kit.resourceList.objects[i].exportFrame();
+          }
+        }
+      } else {
+        /* Specified object */
+        for (var i = 0; i < this.keyframes.length; i++) {
+          this.keyframes[i].objStates[objectIndex] = this.kit.resourceList.objects[objectIndex].exportFrame();
+        }
+      }
+    }
+
     loadState(segment: number) {
       if(segment>=this.keyframes.length) {
         console.log('ERROR');
@@ -403,7 +419,7 @@ module cKit.stage {
       if(this.segment===this.keyframes.length-1) {
         return this.stageConfig.getAttribute('seamlessAnimationTime');
       } else {
-        return this.stageConfig.uiTranslators['segmentLength'].export(this.keyframes[this.segment+1].timestamp - this.keyframes[this.segment].timestamp);
+        return this.stageConfig.uiTranslators['pauseTime'].export(this.keyframes[this.segment+1].timestamp - this.keyframes[this.segment].timestamp);
       }
     }
 
@@ -429,7 +445,13 @@ module cKit.stage {
     /* if > 0, final keyframe is added which animates smoothly to initial keyframe */
     seamlessAnimationTime:number = constants.DEFAULT_TIMING;
 
+    backgroundColor:string = constants.BACKGROUND_COLOR;
+    backgroundAlpha:number = constants.BACKGROUND_ALPHA;
     backgroundImage:elements.ImageResource;
+
+    lineColor:string = constants.LINE_COLOR;
+
+    sourceMode: string;
 
     /* if frameDelay > iff time it took to process this loop wait the diff */
     frameRate:number = constants.DEFAULT_FRAME_RATE;
@@ -438,44 +460,60 @@ module cKit.stage {
       this.kit = kit;
       this.uiTranslators = {};
       this.uiTranslators['frameRate'] =
-          new elements.UINumber(1, 0, elements.CONSTRAINTS.MINMAX, 10000, 0);
-      this.uiTranslators['segmentLength'] =
-          new elements.UINumber(.001, 2, elements.CONSTRAINTS.MINMAX, Number.MAX_VALUE, 0);
+          new elements.UINumber('Frame Rate', 1, 0, elements.CONSTRAINTS.MINMAX, 10000, 0);
+      this.uiTranslators['pauseTime'] =
+          new elements.UINumber('Initial Pause', .001, 2, elements.CONSTRAINTS.MINMAX, Number.MAX_VALUE, 0);
+      this.uiTranslators['seamlessAnimationTime'] =
+          new elements.UINumber('Loop Close Time', .001, 2, elements.CONSTRAINTS.MINMAX, Number.MAX_VALUE, 0);
+      this.uiTranslators['seamlessAnimationTime'].display = false;
+      this.uiTranslators['sourceMode'] =
+          new elements.UIString('Source Mode', elements.UIStringContraints.LIST, _u.getKeys(constants.SOURCE_MODES));
+      this.uiTranslators['sourceMode'].display = false;
+      this.uiTranslators['lineColor'] = new elements.UIString('Line Color');
+      this.uiTranslators['lineColor'].display = false;
+      this.uiTranslators['backgroundColor'] = new elements.UIString('Background Color');
+      this.uiTranslators['backgroundColor'].display = false;
+      this.uiTranslators['backgroundAlpha'] = new elements.UINumber('Background Alpha', 1, 2, elements.CONSTRAINTS.MINMAX, 1, 0);
+      this.sourceMode = constants.SOURCE_MODES[_u.getKeys(constants.SOURCE_MODES)[0]];
     }
 
     setAttribute(target: string, value: number) {
-      var translator;
-      if(target === 'pauseTime') {
-        translator = this.uiTranslators['segmentLength'];
+      if(target==='backgroundImage') {
+        if(this.kit.resourceList.images.length>value)
+          this.backgroundImage = this.kit.resourceList.images[value];
       } else {
-        translator = this.uiTranslators[target];
-      }
-      if(_u.exists(translator)) {
-        this[target] = translator.import(value);
+        var translator = this.uiTranslators[target];
+        if (_u.exists(translator)) {
+          this[target] = translator.import(value);
+        }
       }
     }
     getAttribute(target:string) {
-      var translator;
-      if(target === 'pauseTime' || target === 'seamlessAnimationTime') {
-        translator = this.uiTranslators['segmentLength'];
+      if(target==='backgroundImage') {
+        return this.kit.resourceList.images.indexOf(this.backgroundImage);
       } else {
-        translator = this.uiTranslators[target];
-      }
-      if(_u.exists(translator)) {
-        return translator.export(this[target]);
+        var translator = this.uiTranslators[target];
+        if (_u.exists(translator)) {
+          return translator.export(this[target]);
+        }
       }
     }
 
     exportStageConfig() {
-      return {
-        pauseTime: this.pauseTime,
-        seamlessAnimationTime: this.seamlessAnimationTime,
-        frameRate: this.frameRate,
-        backgroundImage: this.kit.resourceList.images.indexOf(this.backgroundImage)
-      }
+      var dic:any = {};
+      Object.keys(this.uiTranslators).forEach(item=>dic[item]=this[item]);
+      dic.backgroundImage = this.kit.resourceList.images.indexOf(this.backgroundImage);
+      return dic;
     }
 
     importStageConfig(config) {
+      Object.keys(config).forEach(item=>{
+        if(item==='backgroundImage') {
+          this.kit.resourceList.images[config.backgroundImage];
+        } else {
+          this[item] = config[item];
+        }
+      });
       this.pauseTime = config.pauseTime;
       this.seamlessAnimationTime = config.seamlessAnimationTime;
       this.frameRate = config.frameRate;

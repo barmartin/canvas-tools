@@ -1,14 +1,4 @@
         <div class="row">
-          <div class="col-xs-5 medium-label label">Edit Mode</div>
-          <div class="col-xs-7 input-group">
-            <div class="btn-group edit-mode">
-              <div ng-click="setEditMode(0)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(0)" btn-radio="0" id="edit-shape">Shape</div>
-              <div ng-click="setEditMode(1)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(1)" btn-radio="1" id="edit-transform">Transform</div>
-              <div ng-click="setEditMode(2)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(2)" btn-radio="2">None</div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-xs-5 label" title="Length of this Segment (seconds)">Length</div>
           <div class="col-xs-7">
             <input class="form-field" type="text" scene-element="timing" ng-focus="fieldFocus()" size="5"/>

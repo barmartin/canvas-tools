@@ -1,8 +1,8 @@
-module cKit.app.ui.objectElement {
-  export var NAME = "cKit.app.ui.objectElement";
+module cKit.app.directives.objectElement {
+  export var NAME = "cKit.app.directives.objectElement";
 
   function link(scope, element, attrs) {
-    var target = element.attr('object-element');
+    var target = attrs['objectElement'];
     element.val(scope.kit.getObjectAttribute(target));
     scope.$watch(function() {
       return scope.kit.getObjectAttribute(target)},
@@ -17,7 +17,7 @@ module cKit.app.ui.objectElement {
   function objectElement() {
     return {
       restrict: "A",
-      link: link
+      link: link,
     }
   }
 
@@ -26,4 +26,4 @@ module cKit.app.ui.objectElement {
     mod.directive("objectElement", objectElement);
   }
 }
-cKit.app.ui.objectElement.run();
+cKit.app.directives.objectElement.run();

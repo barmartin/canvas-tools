@@ -1,5 +1,5 @@
-module caffeine.common.directives.stopEvents {
-  export var NAME = "caffeine.common.directives.stopEvents";
+module cKit.app.directives.stopEvents {
+  export var NAME = "cKit.app.directives.stopEvents";
 
   var requires = [];
   var restrict = "AE";
@@ -26,4 +26,4 @@ module caffeine.common.directives.stopEvents {
   }
 }
 
-caffeine.common.directives.stopEvents.run();
+cKit.app.directives.stopEvents.run();

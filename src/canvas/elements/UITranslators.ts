@@ -18,14 +18,20 @@ module cKit.elements {
   }
 
   export class UITranslatorBase {
+    label: string;
     type: number;
-    constructor(type) {
+    display: boolean = true;
+    constructor(type, label) {
       this.type = type;
+      this.label = label;
     }
   }
 
   /* The purpose of extending UITranslatorBase is to for these two methods */
   export interface UITranslator {
+    label: string;
+    type: number;
+    display: boolean;
     import(value:any);
     export(value:any);
   }
@@ -38,8 +44,8 @@ module cKit.elements {
     constrain: number;
     minimum: number;
     modOrMax: number;
-    constructor(multiplier:number = 1, maxSigFigs:number = 3, constrain:number = CONSTRAINTS.NONE, modOrMax:number = constants.TWOPI, minimum:number = 0) {
-      super(TYPES.NUMBER);
+    constructor(label:string, multiplier:number = 1, maxSigFigs:number = 3, constrain:number = CONSTRAINTS.NONE, modOrMax:number = constants.TWOPI, minimum:number = 0) {
+      super(TYPES.NUMBER, label);
       this.multiplier = multiplier;
       this.maxSigFigs = maxSigFigs;
       this.constrain = constrain;
@@ -74,8 +80,8 @@ module cKit.elements {
     constrain: number;
     minimum: number;
     modOrMax: number;
-    constructor(multiplier: number = 1, maxSigFigs:number = 3, constrain:number = CONSTRAINTS.NONE, modOrMax:number = 0, minimum:number = 0) {
-      super(TYPES.VECTOR);
+    constructor(label: string, multiplier: number = 1, maxSigFigs:number = 3, constrain:number = CONSTRAINTS.NONE, modOrMax:number = 0, minimum:number = 0) {
+      super(TYPES.VECTOR, label);
       this.multiplier = multiplier;
       this.maxSigFigs = maxSigFigs;
       this.constrain = constrain;
@@ -102,15 +108,32 @@ module cKit.elements {
     }
   }
 
+  export enum UIStringContraints {
+    NONE,
+    LIST
+  }
+
   export class UIString extends UITranslatorBase implements UITranslator {
-    constructor() {
-      super(TYPES.STRING);
+    constraint: number;
+    possibleValues: Array<string>;
+    constructor(label:string, constraint=UIStringContraints.NONE, possibleValues=[]) {
+      super(TYPES.STRING, label);
+      this.constraint = constraint;
+      this.possibleValues = possibleValues;
     }
     export(value: string) {
       return value;
     }
     import(value: string) {
-      return value;
+      if(this.constraint===UIStringContraints.NONE) {
+        return value;
+      } else {
+        if(this.possibleValues.indexOf(value)!==-1) {
+          return value;
+        } else {
+          return this.possibleValues[0];
+        }
+      }
     }
   }
 }

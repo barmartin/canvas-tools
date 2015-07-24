@@ -1,5 +1,5 @@
-module cKit.app.ui.sceneElement {
-  export var NAME = "cKit.app.ui.sceneElement";
+module cKit.app.directives.sceneElement {
+  export var NAME = "cKit.app.directives..sceneElement";
 
   function link(scope, element, attrs) {
     var target = element.attr('scene-element');
@@ -52,4 +52,4 @@ module cKit.app.ui.sceneElement {
     mod.directive("sceneElement", sceneElement);
   }
 }
-cKit.app.ui.sceneElement.run();
+cKit.app.directives.sceneElement.run();

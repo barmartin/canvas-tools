@@ -83,10 +83,10 @@ module cKit.events {
         }
       });
     } else if(kit.editMode===controlModes.EDIT_TRANSFORM) {
-      _u.each(object.transformPoints, function( thisPoint ){
+      object.transformPoints.forEach( (thisPoint, index) => {
         if( thisPoint.inDrag === true ){
           thisPoint.inDrag = false;
-          if(thisPoint.index===2) {
+          if(index===2) {
             thisPoint.x = object.scaleDistance;
           }
           kit.redraw();
@@ -109,7 +109,7 @@ module cKit.events {
       object.cPoints.forEach( (thisPoint : CPoint, index: number)=> {
         // Only drag one control point at a time
         if( thisPoint.inDrag ) {
-          if(object.id==='imageLayer' && index === 4) {
+          if(object.type==='imageLayer' && index === 4) {
             object.center = position;
           } else {
             var actualPosition = object.reverseTransformPoint(position);
