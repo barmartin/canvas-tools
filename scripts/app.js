@@ -74,7 +74,7 @@ var cKit;
             services.initLibUI = initLibUI;
             // COLOR PICKER
             var currentSelector = '';
-            window.dhx_globalImgPath = 'canvas-tools/assets/styles/img/cp/';
+            window.dhx_globalImgPath = 'assets/styles/img/cp/';
             function initColorPickers() {
                 var kit = cKit.kit;
                 var linePicker = new dhtmlXColorPicker('cpc-line', false, false, false, false);
