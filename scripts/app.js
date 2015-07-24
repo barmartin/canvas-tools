@@ -767,7 +767,7 @@ var cKit;
                 var home = {
                     name: 'home',
                     url: '/',
-                    templateUrl: 'canvas-tools/views/home.html'
+                    templateUrl: 'views/home.html'
                 };
                 $stateProvider.state(home);
             }
