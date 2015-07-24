@@ -1,9 +1,7 @@
-*.DS_STORE
-bower_components/
 node_modules/
+typings/
 dist/
-build/
-.idea*
 *.map
 *.js.map
-typings/
+.idea/
+*.DS_STORE

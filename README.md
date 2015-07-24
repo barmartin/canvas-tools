@@ -8,8 +8,7 @@ canvas-tools
 Hasn't been debugged properly yet, but its strongly typed and classed <br/>
 It should be fairly easy to add custom objects inheriting from baseObject.ts <br/>
 The main issue that should probably be addressed before posting as a library <br/>
-is backward compatibility with the patch i/o, it breaks often when adding capability
-
+is backward compatibility with the patch i/o, it breaks often when adding capability <br/>
 
 <h4>Notes on Use</h4>
 Modifying the configuration changes the current keyframe selected in the animation frame. <br/>
@@ -20,7 +19,7 @@ A: stops animation<br/>
 1-4 selects one of up to four objects in the scene.<br/>
 Edit Modes: (q) -> shape, (w) -> transforms, (e) -> none<br/>
 
-<a href="http://thebarry.github.io/canvas-tools/" target="_blank">Demo Here</a>
+<a href="http://thebarry.github.io/canvas-tools/#/" target="_blank">Demo Here</a>
 
 <h3> Development </h3>
 This version is Typescript/AngularJS <br/>
@@ -40,12 +39,14 @@ cKit.js is no longer bound to the Angular App, which means you may run the anima
 </div>
 
 <h4>Improvements & Features To be Completed</h4>
-Patcher backward capability will hopefully be addressed from 0.5.0 on <br/>
+Bugs happening with line color -> global settings <br/>
+Bugs happening with transform -> image placement outside (efficiency) radius
+Patcher backward capability will hopefully be addressed (this) 0.5.0 on <br/>
 Make a keyframe GUI <br/>
-GIF Encoding (WIP)<br/>
-Text -> Fonts, proper fill/gradients<br/>
-Shaders for geometry<br/>
-4 -> 10+ scene object support <br/>
+GIF Encoding (WIP) <br/>
+Text -> Fonts, proper fill/gradients (WIP) <br/>
+Shaders for geometry <br/>
+4 -> 10+ scene object support (WIP) <br/>
 Document & subroutine a barebone cKit.js for a widget with patch data without the UI<br/>
 Code minification grunt build<br/>
 Tesselations layering for all object types <br/>
