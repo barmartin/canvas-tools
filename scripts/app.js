@@ -270,28 +270,28 @@ var cKit;
                 return {
                     restrict: 'A',
                     controller: 'objectController',
-                    templateUrl: 'canvas-tools/views/interface/object.html'
+                    templateUrl: 'views/interface/object.html'
                 };
             }
             function scenePanel() {
                 return {
                     restrict: 'A',
                     controller: 'sceneController',
-                    templateUrl: 'canvas-tools/views/interface/scene.html'
+                    templateUrl: 'views/interface/scene.html'
                 };
             }
             function animationPanel() {
                 return {
                     restrict: 'A',
                     controller: 'animationController',
-                    templateUrl: 'canvas-tools/views/interface/animation.html'
+                    templateUrl: 'views/interface/animation.html'
                 };
             }
             function loadingPanel() {
                 return {
                     restrict: 'A',
                     controller: 'loadingController',
-                    templateUrl: 'canvas-tools/views/interface/loading.html'
+                    templateUrl: 'views/interface/loading.html'
                 };
             }
             function uiPanelController($scope, kitService) {
