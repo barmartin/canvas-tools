@@ -20,10 +20,10 @@ module cKit.app {
       cKit.app.ui.loading.NAME,
       cKit.app.services.NAME,
 
-      caffeine.common.directives.stopEvents.NAME,
-
-      cKit.app.ui.objectElement.NAME,
-      cKit.app.ui.sceneElement.NAME,
+      cKit.app.directives.stopEvents.NAME,
+      cKit.app.directives.filters.NAME,
+      cKit.app.directives.objectElement.NAME,
+      cKit.app.directives.sceneElement.NAME,
 
       cKit.app.nav.NAME,
       cKit.app.ui.NAME

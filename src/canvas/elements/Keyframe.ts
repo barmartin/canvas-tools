@@ -6,7 +6,10 @@ module cKit.elements {
     timestamp: number;
 
     constructor(objStates: Array<KeyState>, timestamp: number) {
-      this.objStates = objStates;
+      this.objStates = [];
+      objStates.forEach( (keyState: KeyState) => {
+        this.objStates.push(new KeyState(keyState.cPStates, keyState.attributes));
+      });
       this.timestamp = timestamp;
     }
 
@@ -20,10 +23,19 @@ module cKit.elements {
 
   export class KeyState {
     cPStates: Array<Vector>;
-    attributes: Dictionary<any>;
+    attributes: Dictionary<any> = {};
     constructor(cpStates: Array<Vector>, attributes: Dictionary<any>) {
-      this.cPStates = cpStates;
-      this.attributes = attributes;
+      this.cPStates = [];
+      cpStates.forEach( (item) => {
+        this.cPStates.push(new Vector(item.x, item.y));
+      });
+      Object.keys(attributes).forEach( (key) => {
+        if(key==='center') {
+          this.attributes[key] = new Vector(attributes[key].x, attributes[key].y);
+        } else {
+          this.attributes[key] = attributes[key];
+        }
+      });
     }
   }
 }

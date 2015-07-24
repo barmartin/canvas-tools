@@ -15,6 +15,7 @@
 /// <reference path="src/canvas/objects/baseInterface.ts" />
 /// <reference path="src/canvas/objects/PetalFlower.ts" />
 /// <reference path="src/canvas/objects/ImageLayer.ts" />
+/// <reference path="src/canvas/objects/Text.ts" />
 
 /// <reference path="src/canvas/stage/Resources.ts" />
 /// <reference path="src/canvas/stage/Stage.ts" />

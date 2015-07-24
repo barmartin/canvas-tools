@@ -20,7 +20,7 @@ module cKit.stage {
     }
 
     addObject(itemConfig) {
-      if(itemConfig.id === 'petalFlower') {
+      if(itemConfig.id === 'petalFlower' || itemConfig.id === 'PETAL_FLOWER') {
         this.objects.push(new objects.PetalFlower(this.kit, itemConfig.states.petals, itemConfig.states.accent));
         if(_u.exists(itemConfig.states.fillImage) && itemConfig.states.fillImage != null) {
           this.objects[this.objects.length - 1].fillImage = this.images[itemConfig.states.fillImage];
@@ -31,8 +31,20 @@ module cKit.stage {
         } else {
           this.objects.push(new objects.ImageLayer(this.kit));
         }
+      } else if(itemConfig.id === 'textLayer') {
+        this.objects.push(new objects.Text(this.kit));
       }
       return this.objects.length-1;
+    }
+
+    changeObjectType(selectedObject, itemType) {
+      if(itemType === 'petalFlower') {
+        this.objects[selectedObject] = new objects.PetalFlower(this.kit);
+      } else if(itemType === 'imageLayer') {
+        this.objects[selectedObject] = new objects.ImageLayer(this.kit);
+      } else if(itemType === 'textLayer') {
+        this.objects[selectedObject] = new objects.Text(this.kit);
+      }
     }
 
     removeObject(index: number) {

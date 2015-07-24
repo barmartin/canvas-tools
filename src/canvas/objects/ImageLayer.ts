@@ -7,27 +7,13 @@ module cKit.objects {
 
   /* objPoint is a reference to the point inside the pedal */
   export class ImageLayer extends baseObject {
-    url: string;
-    label: string;
-    image: any;
-    loaded: boolean = false;
-
-    scaleDistance:any;
-    lastScale:number;
-
     constructor(kit, imageResource: elements.ImageResource = null) {
       super(kit);
-      this.id = 'imageLayer';
-      this.label = "Image Layer";
-      if(imageResource) {
-        this.image = imageResource;
-      } else {
-        this.image = {};
-      }
+      this.type = 'imageLayer';
 
-      // Transform variables
-      this.scaleDistance = this.kit.midWidth/2;
-      this.lastScale = 1;
+      if(imageResource) {
+        this.fillImage = imageResource;
+      }
 
       var quarterHeight = this.kit.canvasHeight/4;
       var quarterWidth = this.kit.canvasWidth/4;
@@ -35,11 +21,6 @@ module cKit.objects {
           new CPoint(quarterWidth, -quarterHeight),
           new CPoint(quarterWidth, quarterHeight),
           new CPoint(-quarterWidth, quarterHeight));
-
-      var rotatePoint = new CPoint(0, -this.kit.midHeight / 2.5);
-      rotatePoint.rotate(this.rotation);
-      this.transformPoints.push(new CPoint(0,0), rotatePoint, new CPoint(this.scaleDistance, 0));
-
     }
 
     draw() {
@@ -56,8 +37,8 @@ module cKit.objects {
       });
       kit.context.closePath();
       kit.context.stroke();
-      if(this.image.loaded) {
-        kit.context.drawImage(this.image.image, this.cPoints[0].x, this.cPoints[0].y, this.cPoints[1].x-this.cPoints[0].x, this.cPoints[2].y - this.cPoints[1].y);
+      if(this.fillImage.loaded) {
+        kit.context.drawImage(this.fillImage.image, this.cPoints[0].x, this.cPoints[0].y, this.cPoints[1].x-this.cPoints[0].x, this.cPoints[2].y - this.cPoints[1].y);
       }
     }
 

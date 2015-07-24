@@ -1,5 +1,5 @@
       <div class="row combined">
-          <textarea class="form-field" rows="8" cols="50" ng-model="fieldData" ng-focus="fieldFocus()" ng-blur="unfocus();"></textarea>
+          <textarea class="form-field ml-10" rows="8" cols="50" ng-model="fieldData" ng-focus="fieldFocus()" ng-blur="unfocus();"></textarea>
         </div>
         <div class="row">
           <div class="btn btn-default ml-20" ng-click="loadPatch()">Load Patch</div>
@@ -8,7 +8,7 @@
         <div class="row">
           <!--              -->
           <div class="col-xs-5">
-            <select class="label" ng-options="image.id as image.label for image in imageList" ng-model="selectedRemovalImage">
+            <select class="tall" ng-options="image.id as image.label for image in getImageList()" ng-model="selectedRemovalImage">
               <option value="">Select Image to Remove</option>
             </select>
           </div>
@@ -18,13 +18,13 @@
         </div>
         <div class="row last">
           <div class="label">Add Image </div>
-          <input type="text" ng-model="newImageUrl" ng-focus="fieldFocus()" ng-blur="unfocus()"
+          <input type="text" class="form-field ml-10" ng-model="newImageUrl" ng-focus="fieldFocus()" ng-blur="unfocus()"
           placeholder="http://freestockanimals.com/assets/images/doge.png" value="" size="45"/>
           <div class="label">Source Page</div>
-          <input class="form-field" type="text" ng-model="newImagePage" ng-focus="fieldFocus()" ng-blur="unfocus()"
+          <input class="form-field ml-10" type="text" ng-model="newImagePage" ng-focus="fieldFocus()" ng-blur="unfocus()"
                  placeholder="http://freestockanimals.com/cat-page" size="45"/>
           <div class="label">Image Label</div>
-          <input class="form-field" type="text" ng-model="newImageLabel" ng-focus="fieldFocus()" ng-blur="unfocus()"
+          <input class="form-field ml-10" type="text" ng-model="newImageLabel" ng-focus="fieldFocus()" ng-blur="unfocus()"
                  placeholder="green cat" size="45"/>
-          <div class="btn btn-default ml-20"  class="grp" ng-click="addImage();">Add Image</div>
+          <div class="btn btn-default ml-20 mt-10" ng-click="addImage();">Add Image</div>
         </div>

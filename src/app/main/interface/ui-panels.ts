@@ -37,12 +37,14 @@ module cKit.app.ui {
     var self = this;
     var kit = kitService;
     $scope.kit = kit;
+
     function dig() {
       if(!$scope.$$phase) {
         $scope.$digest();
       }
       /* UI updates possibly needed after keypush UI or cKit auto changes */
-      $scope.selectedFill = kit.getFillImageId()==-1?'':kit.getFillImageId();
+      //var fI = kit.getObjectAttribute('fillImage');
+      //$scope.selectedFill = (fI)==-1?'':fI;
     };
     /* Inject Method to update UI when canvas package changes */
     kit.setDigestFunc(dig);
@@ -104,9 +106,27 @@ module cKit.app.ui {
       }
     };
 
+    // Edit Mode: Shape, Transform, None
+    $scope.editMode = kit.editMode;
+    $scope.$watch(function () {
+      return kit.editMode;
+    }, function (value) {
+      $scope.editMode = value;
+    });
+    $scope.setEditMode = function (newValue) {
+      kit.editMode = newValue;
+      kit.redraw();
+    };
+    $scope.editSelectorClasses = function (val) {
+      if (val === kit.editMode) {
+        return 'active';
+      } else {
+        return '';
+      }
+    };
+
     $scope.selectObject = function (newValue) {
       kit.selectObject(newValue);
-      $scope.selectedFill = kit.getFillImageId()==-1?'':kit.getFillImageId();
     };
     $scope.maxObjects = function () {
       if ($scope.kit.objectCount() === kit.getConfigSetting('max-objects')) {
@@ -144,7 +164,12 @@ module cKit.app.ui {
       kit.removeLast();
     };
 
-
+    $scope.getImageList = kit.getImageList.bind(kit);
+    /*$scope.$watch(function() {
+      return kit.getImageList();
+    }, function(value) {
+      $scope.imageList = kit.getImageList();
+    });*/
 
     return this;
   }

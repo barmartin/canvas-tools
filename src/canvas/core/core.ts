@@ -16,6 +16,7 @@ module cKit {
 
     encoder:any;
     digest:any;
+    colorFunc:any;
 
     /* TODO make configurable & move into a general canvas config Class */
     canvas:any;
@@ -26,14 +27,6 @@ module cKit {
 
     midWidth:number = this.canvasWidth/2;
     midHeight:number = this.canvasHeight/2;
-
-    bodybg:string = constants.BODY_BACKGROUND_COLOR;
-    backgroundColor:string = constants.BACKGROUND_COLOR;
-    lineColor:string = constants.LINE_COLOR;
-    backgroundAlpha:number = constants.BACKGROUND_ALPHA;
-
-    /* image blending mode */
-    sourceMode:string;
 
     /* control point edit mode */
     editMode:number = controlModes.EDIT_SHAPE;
@@ -53,9 +46,14 @@ module cKit {
 
     debugMode:boolean;
 
+    /* Generic type needs to be changed in object inherited from baseObject
+     * or you won't be able to create it from the interface
+     */
     objectTypes: Dictionary<string> = {
-      PETAL_FLOWER: "Petal Flower",
-      IMAGE_LAYER: "Image Layer"
+      petalFlower: "Petal Flower",
+      imageLayer: "Image Layer",
+      textLayer: "Text"//,
+      //GENERIC: "Generic"
     };
 
     /* attaching for external libs to use if needed */
@@ -69,8 +67,6 @@ module cKit {
       this.digest = function () {
       };
 
-      var key = _u.getKeys(constants.SOURCE_MODES)[0];
-      this.sourceMode = constants.SOURCE_MODES[key];
       // SETUP ID to all interface elements and setter methods in package
       this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'editMode': this.editMode};
 
@@ -113,6 +109,9 @@ module cKit {
       this.digest = newFunc;
     }
 
+    setColorFunc(newFunc) {
+      this.colorFunc = newFunc;
+    }
 
     build() {
       var kit = this;
@@ -130,13 +129,13 @@ module cKit {
       this.context.restore();
 
       // Reset stroke style in case of highlighted shape
-      this.context.strokeStyle = '#' + this.lineColor;
+      this.context.strokeStyle = '#' + this.stage.stageConfig.lineColor;
 
       if (this.stage.stageConfig.backgroundImage && this.stage.stageConfig.backgroundImage.loaded) {
         this.context.drawImage(this.stage.stageConfig.backgroundImage.image, 0, 0, this.canvasWidth, this.canvasHeight);
       } else {
-        var rgb = _u.toRGB(this.backgroundColor);
-        this.context.fillStyle = 'rgba(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ', ' + this.backgroundAlpha + ')';
+        var rgb = _u.toRGB(this.stage.stageConfig.backgroundColor);
+        this.context.fillStyle = 'rgba(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ', ' + this.stage.stageConfig.backgroundAlpha + ')';
         this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
       }
 
@@ -170,13 +169,32 @@ module cKit {
       }
     }
 
+    getSelectedObject() {
+      return this.resourceList.objects[this.selectedObject];
+    }
+
+    getSelectedObjectType() {
+      return this.resourceList.objects[this.selectedObject].type;
+    }
+
+    getObjectTypes() {
+      return this.objectTypes;
+    }
+
+    updateObjectType(objectType: string) {
+      if(objectType!==this.resourceList.objects[this.selectedObject].type) {
+        this.resourceList.changeObjectType(this.selectedObject, objectType);
+        this.stage.clearStates(this.selectedObject);
+        this.redraw();
+      }
+    }
+
     // Create a new object of the default type, update all keyframes with init configuration
     // Select the new object
     addObject() {
       if (this.resourceList.objects.length >= constants.MAX_OBJECTS) {
         return;
       }
-      // var newObject = new objects.ImageLayer(this, this.resourceList.images[0]);
       var index = this.resourceList.addObject(this.defaultObject);
       for (var i = 0; i < this.stage.keyframes.length; i++) {
         this.stage.keyframes[i].objStates.push(this.resourceList.objects[index].exportFrame());
@@ -188,14 +206,11 @@ module cKit {
 
     // Remove the object currently selected
     removeObject() {
-      var kit = this;
       if (this.resourceList.objects.length < 2) {
         return;
       }
 
       this.resourceList.removeObject(this.selectedObject);
-      //_u.removeArrayEntry(this.objList, this.selectedObject);
-      // _u.removeArrayEntry(this.objTypes, this.selectedObject);
       var kit = this;
       _u.each(this.stage.keyframes, function (keyframe) {
         _u.removeArrayEntry(keyframe.objStates, kit.selectedObject);
@@ -222,6 +237,9 @@ module cKit {
         this.stage.stageConfig.backgroundImage = null;
       }
       images.splice(index, 1);
+      images.forEach( (item, index) => {
+        item.id = index;
+      });
       this.redraw();
       this.digest();
     }
@@ -234,24 +252,23 @@ module cKit {
       this.redraw();
     }
 
-    getFillImageId() {
+    /*getFillImageId() {
       var img = this.resourceList.objects[kit.selectedObject].fillImage;
       if(_u.dnexist(img) || img === null) {
         return -1;
       } else {
         return this.resourceList.images.indexOf(img);
       }
-    }
+    } */
 
-    getBackgroundImageId() {
+    /*getBackgroundImageId() {
       var img = this.stage.stageConfig.backgroundImage;
       if(_u.dnexist(img) || img === null) {
         return -1;
       } else {
         return this.resourceList.images.indexOf(img);
       }
-    }
-
+    }*/
 
     /*
      * Used to set the canvas state with the keyframe interpolation scene states
@@ -288,7 +305,6 @@ module cKit {
       this.digest();
     }
 
-
     /* Below this point are completed methods re-written for 0.2.0  */
     /* These are all for interface use */
     clearScene() {
@@ -321,11 +337,12 @@ module cKit {
     }
 
     getImageList() {
-      var listImages = [];
-      this.resourceList.images.forEach(function (value, index) {
-        listImages.push({ id: index, label: value.label });
-      });
-      return listImages;
+      //var listImages = [];
+      //this.resourceList.images.forEach(function (value, index) {
+      //  listImages.push({ id: index, label: value.label });
+      //});
+      //return listImages;
+      return this.resourceList.images;
     }
 
     /* Animation UI get ers and set ers
@@ -337,20 +354,8 @@ module cKit {
     setSceneAttribute(target, value) {
       if (target === 'timing') {
         this.stage.setSegmentTiming(value);
-      } else if (target==='seamlessAnimationTime' || target === 'pauseTime') {
-        this.stage.stageConfig.setAttribute(target, value);
-      } else if(target === 'backgroundAlpha') {
-        this.backgroundAlpha = util.parseFloatOrDefault(value, 1);
-        if (this.backgroundAlpha > 1) {
-          this.backgroundAlpha = 1;
-        } else if (this.backgroundAlpha < 0) {
-          this.backgroundAlpha = 0;
-        }
-        this.redraw();
       } else {
-        this[target] = value;
-        // var value = this.resourceList.objects[this.selectedObject].setAttribute(target, value);
-        // this.stage.setValue(target, this.stage.segment, this.selectedObject, value);
+        this.stage.stageConfig.setAttribute(target, value);
         this.redraw();
       }
     }
@@ -365,34 +370,16 @@ module cKit {
          * this mod is super confusing and causes need for this accessor too much
          */
       } else if (target === 'segment') {
-        if (this.stage.animationMode) {
-          return (this.stage.segment + this.stage.keyframes.length - 1) % this.stage.keyframes.length;
-        } else {
-          return this.stage.segment;
-        }
-      } else if (target === 'pauseTime') {
+        return this.stage.segment;
+      } else {
         return this.stage.stageConfig.getAttribute(target);
-      } else {
-        /* exposes everything, re-do if closures ever become important */
-        return this[target];
       }
-    }
-
-    setBackgroundImage(index) {
-      if(index === '' || index == null) {
-        this.stage.stageConfig.backgroundImage = null;
-      } else {
-        var index = _u.parseIntOrDefault(index, 0);
-        if (this.resourceList.images.length > index) {
-          this.stage.stageConfig.backgroundImage = this.resourceList.images[index];
-        }
-      }
-      this.redraw();
     }
 
     setFillImage(index) {
       if(index === '' || index == null) {
-        this.resourceList.objects[this.selectedObject].fillImage = null;
+        /* TODO frax this casting */
+        this.resourceList.objects[this.selectedObject].fillImage = <elements.ImageResource>{};
       } else {
         var index = _u.parseIntOrDefault(index, 0);
         if (this.resourceList.images.length > index) {
@@ -401,7 +388,6 @@ module cKit {
       }
       this.redraw();
     }
-
 
     selectFirst() {
       this.stage.segment = 0;
@@ -471,17 +457,19 @@ module cKit {
     }
 
     getConfigSetting(setting:string):any {
-      if(setting==='height') {
-        return this.canvasHeight.toString();
-      } else if(setting==='width') {
-        return this.canvasWidth.toString();
-      } else if(setting==='max-objects') {
+      //if(setting==='height') {
+      //  return this.canvasHeight.toString();
+      //} else if(setting==='width') {
+      //  return this.canvasWidth.toString();
+      //} else
+      if(setting==='max-objects') {
         return constants.MAX_OBJECTS;
       } else if(setting==='source-modes') {
         return constants.SOURCE_MODES;
-      } else {
-        return 'UNKOWN';
       }
+      //} else {
+      //  return 'UNKOWN';
+      //}
     }
 
     // JSON LOADING & PATCHOUT
@@ -491,8 +479,6 @@ module cKit {
         keyframes: this.stage.exportKeyframes(),
         stageConfig: this.stage.stageConfig.exportStageConfig(),
         resources: this.resourceList.export()
-        /*'backgroundColor': this.backgroundColor, 'backgroundAlpha': this.backgroundAlpha, 'lineColor': this.lineColor,
-         'sourceMode': this.sourceMode, 'seamlessAnimation': this.stage.stageConfig.seamlessAnimation*/
       };
     }
 
@@ -502,23 +488,19 @@ module cKit {
       /* StageConfig requires the resourceList */
       this.stage.stageConfig.importStageConfig(data.stageConfig);
       this.importSceneConfig(data.sceneSettings);
+      this.colorFunc();
       this.digest();
+      this.redraw();
     }
 
     exportSceneConfig() {
       return {
-        settingShelf: this.settingShelf,
-        backgroundColor: this.backgroundColor,
-        backgroundAlpha: this.backgroundAlpha,
-        lineColor: this.lineColor
+        settingShelf: this.settingShelf
       }
     }
 
     importSceneConfig(config) {
       this.settingShelf = config.settingShelf;
-      this.backgroundColor = config.backgroundColor;
-      this.backgroundAlpha = config.backgroundAlpha;
-      this.lineColor = config.lineColor;
     }
   }
   export var kit = new CanvasKit();

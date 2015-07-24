@@ -32,19 +32,10 @@ module cKit.app.ui.loading {
       kit.clearScene();
     };
 
-    $scope.imageList = kit.getImageList();
-    $scope.$watch(function() {
-      return kit.resourceList.images.length;
-    }, function(value) {
-      $scope.imageList = kit.getImageList();
-    });
-
     $scope.selectedRemovalImage = "";
     $scope.removeImage = function() {
       kit.removeImage($scope.selectedRemovalImage);
       $scope.selectedRemovalImage = "";
-      $scope.selectedBackground = (kit.getBackgroundImageId())==-1?'':kit.getBackgroundImageId();
-      $scope.selectedFill = kit.getFillImageId()==-1?'':kit.getFillImageId();
     };
 
     $scope.addImage = function(){

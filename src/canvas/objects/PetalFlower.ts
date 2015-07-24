@@ -31,12 +31,11 @@ module cKit.objects {
       if(outerRadius === -1) {
         outerRadius = kit.canvasWidth*constants.DEFAULT_OUTER_RADIUS_SCALAR;
       }
-      this.uiTranslators['petals'] = new elements.UINumber(1, 0, elements.CONSTRAINTS.MINMAX, 300, 1);
-      this.uiTranslators['accent'] = new elements.UINumber(1, 3, elements.CONSTRAINTS.MINMAX, petals, 0);
+      this.uiTranslators['petals'] = new elements.UINumber('Petals', 1, 0, elements.CONSTRAINTS.MINMAX, 300, 1);
+      this.uiTranslators['accent'] = new elements.UINumber('Accent', 1, 3, elements.CONSTRAINTS.MINMAX, petals, 0);
       this.stateAttributes = this.stateAttributes.concat(['petals', 'accent']);
 
-      this.id = 'petalFlower';
-      this.label = "Petal Flower";
+      this.type = 'petalFlower';
 
       // Instantiation Variables
       this.petals = petals;
@@ -69,9 +68,6 @@ module cKit.objects {
       this.firstPetal.push(new Vector(-cp3.x, cp3.y));
       this.firstPetal.push(new Vector(-cp2.x, cp2.y));
       this.firstPetal.push(new Vector(-cp.x, cp.y));
-      var rotatePoint = new CPoint(0, -this.kit.midHeight / 2.5);
-      rotatePoint.rotate(this.rotation);
-      this.transformPoints.push(new CPoint(0, 0), rotatePoint, new CPoint(this.scaleDistance, 0));
 
       /*
        * Use first Petal as a template for the rest of the Petals
@@ -129,7 +125,7 @@ module cKit.objects {
 
       kit.context.closePath();
       if (this.fillImage && this.fillImage.loaded) {
-        kit.context.globalCompositeOperation = kit.sourceMode;
+        kit.context.globalCompositeOperation = kit.stage.stageConfig.sourceMode;
         kit.context.clip();
         this.drawPetalFill(new elements.Transform(this.center, this.scale, this.rotation));
         /*if (kit.highlightCurve === true) {
@@ -336,7 +332,7 @@ module cKit.objects {
           // default fix
           var val = util.parseIntOrDefault(newValue, constants.DEFAULT_RAYS);
           this.petals = val;
-          this.uiTranslators['accent'] = new elements.UINumber(1, 3, elements.CONSTRAINTS.MINMAX, this.petals, 0);
+          this.uiTranslators['accent'] = new elements.UINumber('Accent', 1, 3, elements.CONSTRAINTS.MINMAX, this.petals, 0);
           this.updateIncrement();
           this.updateRadialPoint();
           this.rebuild();

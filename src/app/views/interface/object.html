@@ -1,27 +1,18 @@
-      <div class="row">
-          <div class="col-xs-5 label"> Petal Count</div>
-          <div class="col-xs-7">
-            <input class="form-field" type="text" size="2" object-element="petals" ng-blur="unfocus()" ng-focus="fieldFocus()">
-          </div>
+      <div class="row pt-0">
+        <div class="col-xs-5 label mt-0">Change Object Type</div>
+        <div class="col-xs-7">
+          <select ng-options="k as v for (k, v) in objectTypes" ng-model="selectedObjectType" ng-change="changeObjectType()"></select>
         </div>
-        <div class="row">
-          <div class="col-xs-5 label">Radial Accent</div>
-          <div class="col-xs-7">
-            <input class="form-field" type="text" size="2" object-element="accent" ng-blur="unfocus()" ng-focus="fieldFocus()">
-          </div>
+      </div>
+      <div class="row" ng-repeat="(attributeName, attribute) in kit.getSelectedObject().uiTranslators | objectFilter: 'display'">
+        <div class="col-xs-5 label"> {{attribute.label}} </div>
+        <div ng-if="attribute.type == 0" class="col-xs-7">
+          <input class="form-field" type="text" size="6" object-element="{{attributeName}}" ng-blur="unfocus()" ng-focus="fieldFocus()">
         </div>
-        <div class="row">
-          <div class="col-xs-5 label">Rotation</div>
-          <div class="col-xs-7">
-            <input class="form-field" type="text" object-element="rotation" ng-blur="unfocus()" ng-focus="fieldFocus()" size="6"/>
-          </div>
+        <div ng-if="attribute.type == 1" class="col-xs-7">
+          <input class="form-field" type="text" size="24" object-element="{{attributeName}}" ng-blur="unfocus()" ng-focus="fieldFocus()">
         </div>
-        <div class="row">
-          <div class="col-xs-5 label">Scale</div>
-          <div class="col-xs-7">
-            <input class="form-field" type="text" object-element="scale" ng-blur="unfocus()" ng-focus="fieldFocus()" size="6"/>
-          </div>
-        </div>
+      </div>
 
 
       <div class="row combined">
@@ -37,7 +28,7 @@
             &nbsp;
           </div>
           <div class="col-xs-7">
-            <select ng-options="image.id as image.label for image in imageList" ng-model="selectedFill" ng-change="updateFill();" convert-to-number>
+            <select ng-options="image.id as image.label for image in getImageList()" ng-model="selectedFill" ng-change="updateFill();" convert-to-number>
               <option value="">Select Fill Image</option>
             </select>
           </div>

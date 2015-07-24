@@ -22,8 +22,7 @@ module cKit.objects {
     animationAttributes: Array<string>;
     stateAttributes: Array<string>;
 
-    id: string;
-    label: string;
+    type: string;
 
     /* used for mouse events */
     lastScale:number;
@@ -33,23 +32,23 @@ module cKit.objects {
     cPoints: Array<CPoint>;
     transformPoints: Array<CPoint>;
 
-    fillImage: elements.ImageResource;
+    fillImage: elements.ImageResource = null;
 
     constructor(kit: any) {
       this.kit = kit;
       this.center = new Vector(kit.midWidth, kit.midHeight);
 
       this.uiTranslators = {
-        rotation: new UINumber(180 / Math.PI, 2, CONSTRAINTS.MOD, constants.TWOPI),
-        scale: new UINumber(1, 2, CONSTRAINTS.MINMAX, 9999, 0),
-        center: new UIVector(1, 3, CONSTRAINTS.NONE),
+        rotation: new UINumber('Rotation', 180 / Math.PI, 2, CONSTRAINTS.MOD, constants.TWOPI),
+        scale: new UINumber('Scale', 1, 2, CONSTRAINTS.MINMAX, 9999, 0),
+        center: new UIVector('Center', 1, 3, CONSTRAINTS.NONE),
       };
+      this.uiTranslators['center'].display = false;
 
       this.animationAttributes = ['rotation', 'scale', 'center'];
       this.stateAttributes = ['fillImage', 'id'];
 
-      this.id = 'GENERIC';
-      this.label = "Generic";
+      this.type = 'generic';
 
       // Transform variables
       this.transformPoints = [];
@@ -59,13 +58,22 @@ module cKit.objects {
       this.scale = 1;
       this.lastScale = 1;
 
+      /* TODO frax this casting */
+      this.fillImage = <elements.ImageResource>{};
+
       // Main Control Points
       this.cPoints = [];
+
+      var rotatePoint = new CPoint(0, -this.kit.midHeight / 2.5);
+      rotatePoint.rotate(this.rotation);
+      this.transformPoints = [new CPoint(0, 0), rotatePoint, new CPoint(this.scaleDistance, 0)];
     }
 
     /* Get and Set UIAttribute are for the interface */
     getUIAttribute(target:string) : any {
-      if(_u.exists(this.uiTranslators[target])) {
+      if(target === 'fillImage') {
+        return this.kit.resourceList.images.indexOf(this.fillImage);
+      } else if(_u.exists(this.uiTranslators[target])) {
         return this.uiTranslators[target].export(this[target]);
       } else {
         return '';
@@ -191,11 +199,15 @@ module cKit.objects {
 
     exportAnimationAttributes() : any{
       var attrs = {};
-      this.animationAttributes.forEach(item => attrs[item] = this[item]);
+      this.animationAttributes.forEach(item => {
+        if(item==='center') {
+          attrs[item] = this['center'].clone();
+        } else {
+          attrs[item] = this[item];
+        }
+      });
       return attrs;
     }
-
-
 
     getStates() : Dictionary<any> {
       var attributes : Dictionary<any> = {};
@@ -210,7 +222,7 @@ module cKit.objects {
     }
 
     exportObject() : elements.ObjState {
-      return new elements.ObjState(this.id, this.getStates());
+      return new elements.ObjState(this.type, this.getStates());
     }
 
     exportFrame() : elements.KeyState {

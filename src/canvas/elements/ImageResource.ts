@@ -8,7 +8,9 @@ module cKit.elements {
     image: any;
     loaded: boolean = false;
 
-    constructor(kit, src, page, label) {
+    id: number; // Index
+
+    constructor(kit: CanvasKit, src, page, label) {
       this.kit = kit;
       this.src = src;
       this.page = page;
@@ -22,6 +24,8 @@ module cKit.elements {
       };
       this.image.addEventListener('load', till.bind(this), false);
       this.image.src = src;
+
+      this.id = kit.resourceList.images.length;
     }
     exportImage() {
       return {src: this.src, page: this.page, label: this.label};
