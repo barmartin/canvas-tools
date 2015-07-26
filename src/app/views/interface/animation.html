@@ -1,14 +1,14 @@
         <div class="row">
           <div class="col-xs-5 label" title="Length of this Segment (seconds)">Length</div>
           <div class="col-xs-7">
-            <input class="form-field" type="text" scene-element="timing" ng-focus="fieldFocus()" size="5"/>
+            <input class="form-field" type="text" ng-enter="blurField(event)" scene-element="timing" ng-focus="fieldFocus()" ng-blur="unfocus();" size="5"/>
           </div>
         </div>
         <div class="row">
           <div class="col-xs-5 label" title="Length before the first keyframe starts at the beginning of the cycle. (seconds)">Initial Pause</div>
           <div class="col-xs-7 tall">
             <input class="form-field" size="2" scene-element="pauseTime"
-                   ng-focus="fieldFocus()" ng-blur="unfocus()"/>
+                   ng-focus="fieldFocus()" ng-enter="blurField(event)"/>
           </div>
         </div>
         <div class="row last">

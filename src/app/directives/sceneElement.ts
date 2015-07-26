@@ -1,5 +1,5 @@
 module cKit.app.directives.sceneElement {
-  export var NAME = "cKit.app.directives..sceneElement";
+  export var NAME = "cKit.app.directives.sceneElement";
 
   function link(scope, element, attrs) {
     var target = element.attr('scene-element');

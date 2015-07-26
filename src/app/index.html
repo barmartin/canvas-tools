@@ -20,12 +20,21 @@
 
   <footer>
     <a href="https://github.com/thebarry/canvas-tools/">Canvas Tools - Github Page </a>
-    <span style="float: right; font-size: 70%">Optimized for Chrome & Safari</span>
+    <span class="right" style="font-size: 70%">Optimized for Chrome & Safari</span>
+    <input id="open_href" class="right minimalize black mr-20"></input>
   </footer>
 
   <script type="text/javascript" src="scripts/lib.js"></script>
   <script type="text/javascript" src="scripts/cKit.js"></script>
   <script type="text/javascript" src="scripts/app.js"></script>
 
+  <script type="text/javascript">
+    $('#open_href').on('change', function() {
+      window.open(
+          $( this ).val(),
+          '_blank' // <- This is what makes it open in a new window.
+      );
+    });
+  </script>
 </body>
 </html>

@@ -83,6 +83,11 @@ module cKit.app.ui {
       $scope.kit.fieldFocus = true;
     };
 
+    $scope.blurField = ($event) => {
+      $scope.kit.fieldFocus = false;
+      $event.target.blur();
+    };
+
     $scope.unfocus = function() {
       $scope.kit.fieldFocus = false;
     };

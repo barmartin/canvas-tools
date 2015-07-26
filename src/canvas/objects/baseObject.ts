@@ -33,6 +33,7 @@ module cKit.objects {
     transformPoints: Array<CPoint>;
 
     fillImage: elements.ImageResource = null;
+    lineColor: string = constants.LINE_COLOR;
 
     constructor(kit: any) {
       this.kit = kit;
@@ -42,10 +43,12 @@ module cKit.objects {
         rotation: new UINumber('Rotation', 180 / Math.PI, 2, CONSTRAINTS.MOD, constants.TWOPI),
         scale: new UINumber('Scale', 1, 2, CONSTRAINTS.MINMAX, 9999, 0),
         center: new UIVector('Center', 1, 3, CONSTRAINTS.NONE),
+        lineColor: new UIString('Line Color')
       };
       this.uiTranslators['center'].display = false;
+      this.uiTranslators['lineColor'].display = false;
 
-      this.animationAttributes = ['rotation', 'scale', 'center'];
+      this.animationAttributes = ['rotation', 'scale', 'center', 'lineColor'];
       this.stateAttributes = ['fillImage', 'id'];
 
       this.type = 'generic';
@@ -67,6 +70,11 @@ module cKit.objects {
       var rotatePoint = new CPoint(0, -this.kit.midHeight / 2.5);
       rotatePoint.rotate(this.rotation);
       this.transformPoints = [new CPoint(0, 0), rotatePoint, new CPoint(this.scaleDistance, 0)];
+    }
+
+    /* just set basics, no object to draw */
+    draw() {
+      this.kit.context.strokeStyle = '#' + this.lineColor;
     }
 
     /* Get and Set UIAttribute are for the interface */

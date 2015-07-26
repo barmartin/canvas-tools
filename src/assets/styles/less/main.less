@@ -19,9 +19,66 @@ body, footer {
   height: 100%;
   width: 100%;
 }
+
+input, select, button, .btn, textarea {
+  color: #000000;
+}
+
+button.grp{
+  margin-top: 10px;
+  float: left;
+}
+
+button, .btn {
+  color: #222;
+  font-weight: 300;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px 13px;
+  border-radius: 4px;
+  border-color: #327160;
+  border-width: 0 0 2px;
+  border-style: solid;
+  background-color: @button-color;
+}
+
+/* image type buttons */
+.butn {
+  cursor: pointer;
+  width: 33px;
+  height: 43px;
+  float: left;
+  margin:0 1px;
+}
+
+button:hover, .btn:hover, .btn-group .btn:hover {
+  background-color: @button-hover-color;
+}
+
+.btn-group > .btn.active {
+  background-color: #d6f0e3;
+}
+
+.btn-default.disabled {
+  background-color: #77665c;
+}
+
 .widget {
   margin-left: 50px;
 }
+
+.q {
+  border: 1px solid #eee;
+  border-radius: 50%;
+  width: 27px;
+  height: 27px;
+  cursor: help;
+  font-size: 19px;
+  font-weight: 300;
+  //padding: 5px 0 0 10px;
+  text-align: center;
+}
+
 .interface {
   width: 420px;
   float: left;
@@ -49,7 +106,6 @@ body, footer {
 }
 .panel-body {
   background-color: @deeper-blue;
-  color: #000;
   padding: 15px 15px 5px;
 }
 
@@ -172,45 +228,6 @@ input, button, select, textarea {
   border-bottom: none;
 }
 
-button.grp{
-  margin-top: 10px;
-  float: left;
-}
-
-button, .btn {
-  color: #222;
-  font-weight: 200;
-  font-size: 15px;
-  cursor: pointer;
-  padding: 10px 13px;
-  border-radius: 4px;
-  border-color: #327160;
-  border-width: 0 0 2px;
-  border-style: solid;
-  background-color: @button-color;
-}
-
-/* image type buttons */
-.butn {
-  cursor: pointer;
-  width: 33px;
-  height: 43px;
-  float: left;
-  margin:0 1px;
-}
-
-button:hover, .btn:hover, .btn-group .btn:hover {
-  background-color: @button-hover-color;
-}
-
-.btn-group > .btn.active {
-  background-color: #d6f0e3;
-}
-
-.btn-default.disabled {
-  background-color: #77665c;
-}
-
 footer {
   position: fixed;
   bottom: 0;
@@ -219,19 +236,49 @@ footer {
   border-top: 1px solid @border-color;
 }
 
+.cap {
+  text-transform: capitalize;
+}
+
 .left {
   float: left;
+}
+.right {
+  float: right;
+}
+
+.minimalize {
+  border-color: #2f2f2f;
+  color: #4a4a4a;
 }
 
 .inline {
   display: inline;
 }
 
+.i-b {
+  display: inline-block;
+}
+
+.black {
+  background-color: #000;
+}
+
+.m-0 {
+  margin: 0;
+}
 .mt-0 {
-  margin-top : 0;
+  margin-top: 0;
 }
 .mt-10 {
-  margin-top : 10px;
+  margin-top: 10px;
+}
+.mt-15 {
+  margin-top: 15px;
+}
+
+.mr-20 {
+  margin-right: 20px;
 }
 
 .mb-20 {

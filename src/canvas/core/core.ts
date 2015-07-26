@@ -64,8 +64,9 @@ module cKit {
       this.stage = new stage.Stage(this);
 
       // Triggered after any event that needs to refresh UI (injected)
-      this.digest = function () {
-      };
+      this.digest = () => {};
+      // Triggered after any event that needs to refresh color pickers UI (injected)
+      this.colorFunc = () => {};
 
       // SETUP ID to all interface elements and setter methods in package
       this.settingShelf = {'toggleCurveColor': this.toggleCurveColor, 'editMode': this.editMode};
@@ -75,6 +76,7 @@ module cKit {
       this.initList = [
         //{ id: 'imageLayer', index:3 },
         this.defaultObject
+        //, { id: 'textLayer' }
       ];
 
       // TESTING
@@ -147,6 +149,7 @@ module cKit {
         kit.context.restore();
       });
       // Always draw active control points on top (last)
+      this.context.strokeStyle = '#' + this.stage.stageConfig.lineColor;
       if (this.editMode === controlModes.EDIT_SHAPE) {
         this.resourceList.objects[kit.selectedObject].drawControlPoints();
       }
@@ -252,24 +255,6 @@ module cKit {
       this.redraw();
     }
 
-    /*getFillImageId() {
-      var img = this.resourceList.objects[kit.selectedObject].fillImage;
-      if(_u.dnexist(img) || img === null) {
-        return -1;
-      } else {
-        return this.resourceList.images.indexOf(img);
-      }
-    } */
-
-    /*getBackgroundImageId() {
-      var img = this.stage.stageConfig.backgroundImage;
-      if(_u.dnexist(img) || img === null) {
-        return -1;
-      } else {
-        return this.resourceList.images.indexOf(img);
-      }
-    }*/
-
     /*
      * Used to set the canvas state with the keyframe interpolation scene states
      * //Objects in the scene are used to store temporary states,
@@ -319,7 +304,9 @@ module cKit {
     setObjectAttribute(target, value) {
       if(_u.exists(this.resourceList.objects[this.selectedObject].uiTranslators[target])) {
         var value = this.resourceList.objects[this.selectedObject].setUIAttribute(target, value);
-        this.stage.setKeyframeAttribute(target, this.stage.segment, this.selectedObject, value);
+        if(this.resourceList.objects[this.selectedObject].animationAttributes.indexOf(target) !== -1) {
+          this.stage.setKeyframeAttribute(target, this.stage.segment, this.selectedObject, value);
+        }
         this.redraw();
       }
     }
@@ -392,6 +379,8 @@ module cKit {
     selectFirst() {
       this.stage.segment = 0;
       this.stage.loadState(0);
+      this.digest();
+      this.colorFunc();
       this.redraw();
     }
 
@@ -399,6 +388,8 @@ module cKit {
       if (this.stage.segment > 0) {
         this.stage.segment--;
         this.stage.loadState(this.stage.segment);
+        this.digest();
+        this.colorFunc();
         this.redraw();
       }
     }
@@ -409,12 +400,16 @@ module cKit {
         this.stage.newKeyframe();
       }
       this.stage.loadState(this.stage.segment);
+      this.digest();
+      this.colorFunc();
       this.redraw();
     }
 
     selectLast() {
       this.stage.segment = this.stage.keyframes.length - 1;
       this.stage.loadState(this.stage.segment);
+      this.digest();
+      this.colorFunc();
       this.redraw();
     }
 

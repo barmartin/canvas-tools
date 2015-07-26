@@ -41,14 +41,14 @@ module cKit.elements {
     multiplier: number;
     // .0414 -> 0.041 for maxSigFigs = 3
     maxSigFigs: number;
-    constrain: number;
+    constraint: number;
     minimum: number;
     modOrMax: number;
-    constructor(label:string, multiplier:number = 1, maxSigFigs:number = 3, constrain:number = CONSTRAINTS.NONE, modOrMax:number = constants.TWOPI, minimum:number = 0) {
+    constructor(label:string, multiplier:number = 1, maxSigFigs:number = 3, constraint:number = CONSTRAINTS.NONE, modOrMax:number = constants.TWOPI, minimum:number = 0) {
       super(TYPES.NUMBER, label);
       this.multiplier = multiplier;
       this.maxSigFigs = maxSigFigs;
-      this.constrain = constrain;
+      this.constraint = constraint;
       this.minimum = minimum;
       this.modOrMax = modOrMax;
     }
@@ -56,8 +56,8 @@ module cKit.elements {
       return _u.reduceSig(value*this.multiplier, this.maxSigFigs);
     }
     import(value: number) : number {
-      if(this.constrain) {
-        if(this.constrain===CONSTRAINTS.MINMAX) {
+      if(this.constraint) {
+        if(this.constraint===CONSTRAINTS.MINMAX) {
           return Math.max(Math.min(this.modOrMax, value/ this.multiplier), this.minimum);
         } else {
           value = (value/ this.multiplier)%this.modOrMax;
@@ -68,42 +68,6 @@ module cKit.elements {
         }
       } else {
         return value / this.multiplier;
-      }
-    }
-  }
-
-  export class UIVector extends UITranslatorBase implements UITranslator {
-    // Radian to Degrees ...
-    multiplier: number;
-    // .0414 -> 0.041 for maxSigFigs = 3
-    maxSigFigs: number;
-    constrain: number;
-    minimum: number;
-    modOrMax: number;
-    constructor(label: string, multiplier: number = 1, maxSigFigs:number = 3, constrain:number = CONSTRAINTS.NONE, modOrMax:number = 0, minimum:number = 0) {
-      super(TYPES.VECTOR, label);
-      this.multiplier = multiplier;
-      this.maxSigFigs = maxSigFigs;
-      this.constrain = constrain;
-      this.modOrMax = modOrMax;
-      this.minimum = minimum;
-    }
-    export(vector: Vector) : Vector {
-      return new Vector(_u.reduceSig(vector.y*this.multiplier, this.maxSigFigs),
-                        _u.reduceSig(vector.y*this.multiplier, this.maxSigFigs));
-    }
-    import(vector: Vector) {
-      if(this.constrain) {
-        if(this.constrain===CONSTRAINTS.MINMAX) {
-          return new Vector(Math.max(Math.min(this.modOrMax, vector.x / this.multiplier), this.minimum),
-              Math.max(Math.min(this.modOrMax, vector.y / this.multiplier), this.minimum));
-        } else {
-          // Not really sure if we might need this (yet) so I'm not writing it
-          // Mod vectors could be interesting for infinite roll across the canvas
-          return new Vector(0, 0);
-        }
-      } else {
-        return new Vector(vector.x / this.multiplier, vector.y / this.multiplier);
       }
     }
   }
@@ -133,6 +97,42 @@ module cKit.elements {
         } else {
           return this.possibleValues[0];
         }
+      }
+    }
+  }
+
+  export class UIVector extends UITranslatorBase implements UITranslator {
+    // Radian to Degrees ...
+    multiplier: number;
+    // .0414 -> 0.041 for maxSigFigs = 3
+    maxSigFigs: number;
+    constraint: number;
+    minimum: number;
+    modOrMax: number;
+    constructor(label: string, multiplier: number = 1, maxSigFigs:number = 3, constraint:number = CONSTRAINTS.NONE, modOrMax:number = 0, minimum:number = 0) {
+      super(TYPES.VECTOR, label);
+      this.multiplier = multiplier;
+      this.maxSigFigs = maxSigFigs;
+      this.constraint = constraint;
+      this.modOrMax = modOrMax;
+      this.minimum = minimum;
+    }
+    export(vector: Vector) : Vector {
+      return new Vector(_u.reduceSig(vector.y*this.multiplier, this.maxSigFigs),
+          _u.reduceSig(vector.y*this.multiplier, this.maxSigFigs));
+    }
+    import(vector: Vector) {
+      if(this.constraint) {
+        if(this.constraint===CONSTRAINTS.MINMAX) {
+          return new Vector(Math.max(Math.min(this.modOrMax, vector.x / this.multiplier), this.minimum),
+              Math.max(Math.min(this.modOrMax, vector.y / this.multiplier), this.minimum));
+        } else {
+          // Not really sure if we might need this (yet) so I'm not writing it
+          // Mod vectors could be interesting for infinite roll across the canvas
+          return new Vector(0, 0);
+        }
+      } else {
+        return new Vector(vector.x / this.multiplier, vector.y / this.multiplier);
       }
     }
   }
