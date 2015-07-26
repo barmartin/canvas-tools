@@ -20,7 +20,7 @@ module cKit.app {
       cKit.app.ui.loading.NAME,
       cKit.app.services.NAME,
 
-      cKit.app.directives.stopEvents.NAME,
+      cKit.app.directives.utilDirectives.NAME,
       cKit.app.directives.filters.NAME,
       cKit.app.directives.objectElement.NAME,
       cKit.app.directives.sceneElement.NAME,

@@ -28,7 +28,11 @@ cKit.js is no longer bound to the Angular App, which means you may run the anima
 
 <p> Global dev dependencies</p>
 <p>XCode comes with the general CLI tools needed</p>
-<pre>npm install tsd -g </pre>
+<p> Node is required </p>
+<pre>
+npm install -g grunt-cli
+npm install tsd -g 
+</pre>
 
 <p> After cloning the project run </p>
 <div class="highlight highlight-bash">
@@ -38,13 +42,14 @@ cKit.js is no longer bound to the Angular App, which means you may run the anima
 <p> The app is now published to http://localhost:8080/#/ </p> 
 </div>
 
-<h4>Improvements & Features To be Completed</h4>
-Bugs happening with line color -> global settings <br/>
+<h4>Issues to fix</h4>
 Bugs happening with transform -> image placement outside (efficiency) radius
 Patcher backward capability will hopefully be addressed (this) 0.5.0 on <br/>
-Make a keyframe GUI <br/>
+
+<h4>Features to add</h4>
+A keyframe GUI <br/>
 GIF Encoding (WIP) <br/>
-Text -> Fonts, proper fill/gradients (WIP) <br/>
+Text -> Fonts, fill gradients (WIP) <br/>
 Shaders for geometry <br/>
 4 -> 10+ scene object support (WIP) <br/>
 Document & subroutine a barebone cKit.js for a widget with patch data without the UI<br/>
@@ -55,4 +60,8 @@ Image Layers -> Background Image <br/>
 More efficient json -> patch algorithm (its stupid huge) <br/>
 ... too many features to list
 
-
+<h4> Silly thing </h4>
+Down at the bottom right there is a barely visible test field<br/>
+If you enter a link there and push return, it will open a new tab with the link<br/>
+Why chrome doesn't create a *new tab* on duplicate tab with a fresh history is beyond me <br/>
+If you still don't know why, track-pad scrolling often accidentally goes back, from whatever rss feed

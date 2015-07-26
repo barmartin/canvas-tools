@@ -34,6 +34,7 @@ module cKit.app.ui.object {
       kit.setFillImage($scope.selectedFill);
     };
 
+
     $scope.$watch( () => {
       return kit.getObjectAttribute('fillImage');
     }, (value) => {

@@ -82,6 +82,7 @@ module cKit.objects {
     }
 
     draw() {
+      super.draw();
       var index = 0;
       var flower = this;
       var kit = this.kit;
@@ -338,8 +339,9 @@ module cKit.objects {
           this.rebuild();
           return val;
         } else if (target === 'accent') {
-          var val = util.parseIntOrDefault(newValue, 1);
-          this.accentRadialPoint(this.uiTranslators['accent'].import(val));
+          var val = this.uiTranslators['accent'].import(util.parseIntOrDefault(newValue, 1));
+          this.accentRadialPoint(val);
+          return val;
         } else {
           return super.setUIAttribute(target, newValue);
         }

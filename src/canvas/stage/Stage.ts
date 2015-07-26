@@ -204,6 +204,14 @@ module cKit.stage {
             obFrom.attributes['center'].y * (1.0 - sig) + obTo.attributes['center'].y * sig);
         thisObj.scale = obFrom.attributes['scale'] * (1.0 - sig) + obTo.attributes['scale'] * sig;
         thisObj.setControlPoints(newCPs);
+
+        if(obFrom.attributes['lineColor']!==obTo.attributes['lineColor']) {
+          var lCF = obFrom.attributes['lineColor']; var lCT = obTo.attributes['lineColor'];
+          var newR = Math.floor((parseInt(lCF.substring(0, 2), 16)*(1.0-sig) + parseInt(lCT.substring(0, 2), 16)*sig)).toString(16);
+          var newG = Math.floor((parseInt(lCF.substring(2, 4), 16)*(1.0-sig) + parseInt(lCT.substring(2, 4), 16)*sig)).toString(16);
+          var newB = Math.floor((parseInt(lCF.substring(4, 6), 16)*(1.0-sig) + parseInt(lCT.substring(4, 6), 16)*sig)).toString(16);
+          thisObj.lineColor = newR + newG + newB;
+        }
       }
     }
     exportKeyframes() {
@@ -424,13 +432,14 @@ module cKit.stage {
     }
 
     setSegmentTiming(value: any) {
-      var newDelta = this.stageConfig.uiTranslators['segmentLength'].import(value);
       if(this.segment<this.keyframes.length-1) {
+        var newDelta = this.stageConfig.uiTranslators['seamlessAnimationTime'].import(value);
         var theDiff = newDelta - this.keyframes[this.segment+1].timestamp + this.keyframes[this.segment].timestamp;
         for(var seg = this.segment+1; seg<this.keyframes.length; seg++) {
           this.keyframes[seg].timestamp = this.keyframes[seg].timestamp + theDiff; // could be negative
         }
       } else {
+        var newDelta = this.stageConfig.uiTranslators['pauseTime'].import(value);
         this.stageConfig.seamlessAnimationTime = newDelta;
       }
     }

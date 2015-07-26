@@ -12,7 +12,7 @@
             <div class="label tall-label2 left ml-20">Alpha</div>
             <div class="left ml-10 tall-label2">
               <input class="form-field" size="2" scene-element="backgroundAlpha"
-                   ng-focus="fieldFocus()" ng-blur="backgroundAlphaChange()"/>
+                   ng-focus="fieldFocus()" ng-enter="blurField(event)" ng-blur="unfocus();"/>
             </div>
           </div>
         </div>
@@ -25,6 +25,15 @@
             <select ng-options="image.id as image.label for image in getImageList()" ng-model="selectedBackground" ng-change="updateBackground();" convert-to-number>
               <option value="">Select Background Image</option>
             </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-5 label tall-label">Line Color</div>
+          <div class="col-xs-7">
+            <div id="scene-line-color" class="cHolder left"></div>
+            <div id="cpc-scene-line" class="cpc clearfix left mt-10" style="display:none"></div>
+            &nbsp;
           </div>
         </div>
 
