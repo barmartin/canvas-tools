@@ -155,22 +155,12 @@ declare module cKit.elements {
     class UINumber extends UITranslatorBase implements UITranslator {
         multiplier: number;
         maxSigFigs: number;
-        constrain: number;
+        constraint: number;
         minimum: number;
         modOrMax: number;
-        constructor(label: string, multiplier?: number, maxSigFigs?: number, constrain?: number, modOrMax?: number, minimum?: number);
+        constructor(label: string, multiplier?: number, maxSigFigs?: number, constraint?: number, modOrMax?: number, minimum?: number);
         export(value: number): number;
         import(value: number): number;
-    }
-    class UIVector extends UITranslatorBase implements UITranslator {
-        multiplier: number;
-        maxSigFigs: number;
-        constrain: number;
-        minimum: number;
-        modOrMax: number;
-        constructor(label: string, multiplier?: number, maxSigFigs?: number, constrain?: number, modOrMax?: number, minimum?: number);
-        export(vector: Vector): Vector;
-        import(vector: Vector): Vector;
     }
     enum UIStringContraints {
         NONE = 0,
@@ -182,6 +172,16 @@ declare module cKit.elements {
         constructor(label: string, constraint?: UIStringContraints, possibleValues?: any[]);
         export(value: string): string;
         import(value: string): string;
+    }
+    class UIVector extends UITranslatorBase implements UITranslator {
+        multiplier: number;
+        maxSigFigs: number;
+        constraint: number;
+        minimum: number;
+        modOrMax: number;
+        constructor(label: string, multiplier?: number, maxSigFigs?: number, constraint?: number, modOrMax?: number, minimum?: number);
+        export(vector: Vector): Vector;
+        import(vector: Vector): Vector;
     }
 }
 declare module cKit.elements {
@@ -218,7 +218,9 @@ declare module cKit.objects {
         cPoints: Array<CPoint>;
         transformPoints: Array<CPoint>;
         fillImage: elements.ImageResource;
+        lineColor: string;
         constructor(kit: any);
+        draw(): void;
         getUIAttribute(target: string): any;
         setUIAttribute(target: string, newValue: any): any;
         getControlPoint(index: any): Vector;
@@ -289,6 +291,7 @@ declare module cKit.objects {
     class Text extends baseObject {
         text: string;
         fontSize: number;
+        textAlign: string;
         constructor(kit: any, text?: string);
         draw(): void;
         setState(target: string, newValue: any): void;

@@ -13,7 +13,7 @@ declare module cKit.app.services {
     function initLibUI(): void;
     function getSampleJSON(): any;
 }
-declare module cKit.app.directives.stopEvents {
+declare module cKit.app.directives.utilDirectives {
     var NAME: string;
     function run(): void;
 }

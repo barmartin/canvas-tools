@@ -465,16 +465,16 @@ var cKit;
         elements.UITranslatorBase = UITranslatorBase;
         var UINumber = (function (_super) {
             __extends(UINumber, _super);
-            function UINumber(label, multiplier, maxSigFigs, constrain, modOrMax, minimum) {
+            function UINumber(label, multiplier, maxSigFigs, constraint, modOrMax, minimum) {
                 if (multiplier === void 0) { multiplier = 1; }
                 if (maxSigFigs === void 0) { maxSigFigs = 3; }
-                if (constrain === void 0) { constrain = CONSTRAINTS.NONE; }
+                if (constraint === void 0) { constraint = CONSTRAINTS.NONE; }
                 if (modOrMax === void 0) { modOrMax = cKit.constants.TWOPI; }
                 if (minimum === void 0) { minimum = 0; }
                 _super.call(this, TYPES.NUMBER, label);
                 this.multiplier = multiplier;
                 this.maxSigFigs = maxSigFigs;
-                this.constrain = constrain;
+                this.constraint = constraint;
                 this.minimum = minimum;
                 this.modOrMax = modOrMax;
             }
@@ -482,8 +482,8 @@ var cKit;
                 return _u.reduceSig(value * this.multiplier, this.maxSigFigs);
             };
             UINumber.prototype.import = function (value) {
-                if (this.constrain) {
-                    if (this.constrain === CONSTRAINTS.MINMAX) {
+                if (this.constraint) {
+                    if (this.constraint === CONSTRAINTS.MINMAX) {
                         return Math.max(Math.min(this.modOrMax, value / this.multiplier), this.minimum);
                     }
                     else {
@@ -501,42 +501,6 @@ var cKit;
             return UINumber;
         })(UITranslatorBase);
         elements.UINumber = UINumber;
-        var UIVector = (function (_super) {
-            __extends(UIVector, _super);
-            function UIVector(label, multiplier, maxSigFigs, constrain, modOrMax, minimum) {
-                if (multiplier === void 0) { multiplier = 1; }
-                if (maxSigFigs === void 0) { maxSigFigs = 3; }
-                if (constrain === void 0) { constrain = CONSTRAINTS.NONE; }
-                if (modOrMax === void 0) { modOrMax = 0; }
-                if (minimum === void 0) { minimum = 0; }
-                _super.call(this, TYPES.VECTOR, label);
-                this.multiplier = multiplier;
-                this.maxSigFigs = maxSigFigs;
-                this.constrain = constrain;
-                this.modOrMax = modOrMax;
-                this.minimum = minimum;
-            }
-            UIVector.prototype.export = function (vector) {
-                return new elements.Vector(_u.reduceSig(vector.y * this.multiplier, this.maxSigFigs), _u.reduceSig(vector.y * this.multiplier, this.maxSigFigs));
-            };
-            UIVector.prototype.import = function (vector) {
-                if (this.constrain) {
-                    if (this.constrain === CONSTRAINTS.MINMAX) {
-                        return new elements.Vector(Math.max(Math.min(this.modOrMax, vector.x / this.multiplier), this.minimum), Math.max(Math.min(this.modOrMax, vector.y / this.multiplier), this.minimum));
-                    }
-                    else {
-                        // Not really sure if we might need this (yet) so I'm not writing it
-                        // Mod vectors could be interesting for infinite roll across the canvas
-                        return new elements.Vector(0, 0);
-                    }
-                }
-                else {
-                    return new elements.Vector(vector.x / this.multiplier, vector.y / this.multiplier);
-                }
-            };
-            return UIVector;
-        })(UITranslatorBase);
-        elements.UIVector = UIVector;
         (function (UIStringContraints) {
             UIStringContraints[UIStringContraints["NONE"] = 0] = "NONE";
             UIStringContraints[UIStringContraints["LIST"] = 1] = "LIST";
@@ -570,6 +534,42 @@ var cKit;
             return UIString;
         })(UITranslatorBase);
         elements.UIString = UIString;
+        var UIVector = (function (_super) {
+            __extends(UIVector, _super);
+            function UIVector(label, multiplier, maxSigFigs, constraint, modOrMax, minimum) {
+                if (multiplier === void 0) { multiplier = 1; }
+                if (maxSigFigs === void 0) { maxSigFigs = 3; }
+                if (constraint === void 0) { constraint = CONSTRAINTS.NONE; }
+                if (modOrMax === void 0) { modOrMax = 0; }
+                if (minimum === void 0) { minimum = 0; }
+                _super.call(this, TYPES.VECTOR, label);
+                this.multiplier = multiplier;
+                this.maxSigFigs = maxSigFigs;
+                this.constraint = constraint;
+                this.modOrMax = modOrMax;
+                this.minimum = minimum;
+            }
+            UIVector.prototype.export = function (vector) {
+                return new elements.Vector(_u.reduceSig(vector.y * this.multiplier, this.maxSigFigs), _u.reduceSig(vector.y * this.multiplier, this.maxSigFigs));
+            };
+            UIVector.prototype.import = function (vector) {
+                if (this.constraint) {
+                    if (this.constraint === CONSTRAINTS.MINMAX) {
+                        return new elements.Vector(Math.max(Math.min(this.modOrMax, vector.x / this.multiplier), this.minimum), Math.max(Math.min(this.modOrMax, vector.y / this.multiplier), this.minimum));
+                    }
+                    else {
+                        // Not really sure if we might need this (yet) so I'm not writing it
+                        // Mod vectors could be interesting for infinite roll across the canvas
+                        return new elements.Vector(0, 0);
+                    }
+                }
+                else {
+                    return new elements.Vector(vector.x / this.multiplier, vector.y / this.multiplier);
+                }
+            };
+            return UIVector;
+        })(UITranslatorBase);
+        elements.UIVector = UIVector;
     })(elements = cKit.elements || (cKit.elements = {}));
 })(cKit || (cKit = {}));
 var cKit;
@@ -735,6 +735,7 @@ var cKit;
         var CPoint = elements.CPoint;
         var UINumber = elements.UINumber;
         var UIVector = elements.UIVector;
+        var UIString = elements.UIString;
         var CONSTRAINTS = elements.CONSTRAINTS;
         var _u = cKit.util;
         var baseObject = (function () {
@@ -742,15 +743,18 @@ var cKit;
                 this.rotation = 0;
                 this.scale = 1;
                 this.fillImage = null;
+                this.lineColor = cKit.constants.LINE_COLOR;
                 this.kit = kit;
                 this.center = new Vector(kit.midWidth, kit.midHeight);
                 this.uiTranslators = {
                     rotation: new UINumber('Rotation', 180 / Math.PI, 2, CONSTRAINTS.MOD, cKit.constants.TWOPI),
                     scale: new UINumber('Scale', 1, 2, CONSTRAINTS.MINMAX, 9999, 0),
                     center: new UIVector('Center', 1, 3, CONSTRAINTS.NONE),
+                    lineColor: new UIString('Line Color')
                 };
                 this.uiTranslators['center'].display = false;
-                this.animationAttributes = ['rotation', 'scale', 'center'];
+                this.uiTranslators['lineColor'].display = false;
+                this.animationAttributes = ['rotation', 'scale', 'center', 'lineColor'];
                 this.stateAttributes = ['fillImage', 'id'];
                 this.type = 'generic';
                 // Transform variables
@@ -768,6 +772,10 @@ var cKit;
                 rotatePoint.rotate(this.rotation);
                 this.transformPoints = [new CPoint(0, 0), rotatePoint, new CPoint(this.scaleDistance, 0)];
             }
+            /* just set basics, no object to draw */
+            baseObject.prototype.draw = function () {
+                this.kit.context.strokeStyle = '#' + this.lineColor;
+            };
             /* Get and Set UIAttribute are for the interface */
             baseObject.prototype.getUIAttribute = function (target) {
                 if (target === 'fillImage') {
@@ -989,6 +997,7 @@ var cKit;
                 this.kit.context.transform(this.scale, 0, 0, this.scale, this.center.x, this.center.y);
             };
             PetalFlower.prototype.draw = function () {
+                _super.prototype.draw.call(this);
                 var index = 0;
                 var flower = this;
                 var kit = this.kit;
@@ -1224,8 +1233,9 @@ var cKit;
                         return val;
                     }
                     else if (target === 'accent') {
-                        var val = cKit.util.parseIntOrDefault(newValue, 1);
-                        this.accentRadialPoint(this.uiTranslators['accent'].import(val));
+                        var val = this.uiTranslators['accent'].import(cKit.util.parseIntOrDefault(newValue, 1));
+                        this.accentRadialPoint(val);
+                        return val;
                     }
                     else {
                         return _super.prototype.setUIAttribute.call(this, target, newValue);
@@ -1351,10 +1361,12 @@ var cKit;
                 if (text === void 0) { text = ''; }
                 _super.call(this, kit);
                 this.type = 'textLayer';
+                this.textAlign = 'left';
                 this.text = text;
                 this.fontSize = 16;
                 this.uiTranslators['text'] = new elements.UIString('Text');
                 this.uiTranslators['fontSize'] = new elements.UIString('Font Size');
+                this.uiTranslators['textAlign'] = new elements.UIString('Alignment', elements.UIStringContraints.LIST, ['left', 'center', 'right', 'start', 'end']);
                 this.center.x = this.kit.canvasHeight / 4;
                 this.center.y = this.kit.canvasWidth / 4;
                 this.cPoints.push(new CPoint(0, 0));
@@ -1362,18 +1374,28 @@ var cKit;
                 this.stateAttributes = this.stateAttributes.concat(['fontSize']);
             }
             Text.prototype.draw = function () {
+                // super.draw();
                 var kit = this.kit;
                 var ctx = kit.context;
                 //if(_u.exists(this.fillImage.loaded) && this.fillImage.loaded) {
                 //ctx.drawImage(this.fillImage.image, this.cPoints[0].x, this.cPoints[0].y, this.cPoints[1].x-this.cPoints[0].x, this.cPoints[2].y - this.cPoints[1].y);
                 // }
                 ctx.font = this.fontSize + "px Arial";
-                // ctx.fillText(" World", this.cPoints[0].x, this.cPoints[0].y);
-                ctx.strokeText(this.text, this.cPoints[0].x + 10, this.cPoints[0].y);
+                ctx.fillStyle = '#' + this.lineColor;
+                ctx.textAlign = this.textAlign;
+                //ctx.strokeText
+                var margin;
+                if (this.textAlign === 'left' || this.textAlign === 'start') {
+                    margin = 15;
+                }
+                else if (this.textAlign === 'end' || this.textAlign === 'right') {
+                    margin = -20;
+                }
+                else {
+                    margin = 0;
+                }
+                ctx.fillText(this.text, this.cPoints[0].x + margin, this.cPoints[0].y + 5);
             };
-            /*resetScalePoint(xPosition) {
-             this.transformPoints[2].x = this.scaleDistance;
-             }*/
             Text.prototype.setState = function (target, newValue) {
                 if (target === "shapePoints") {
                     this.setControlPoints(newValue);
@@ -1657,6 +1679,14 @@ var cKit;
                     thisObj.center = new Vector(obFrom.attributes['center'].x * (1.0 - sig) + obTo.attributes['center'].x * sig, obFrom.attributes['center'].y * (1.0 - sig) + obTo.attributes['center'].y * sig);
                     thisObj.scale = obFrom.attributes['scale'] * (1.0 - sig) + obTo.attributes['scale'] * sig;
                     thisObj.setControlPoints(newCPs);
+                    if (obFrom.attributes['lineColor'] !== obTo.attributes['lineColor']) {
+                        var lCF = obFrom.attributes['lineColor'];
+                        var lCT = obTo.attributes['lineColor'];
+                        var newR = Math.floor((parseInt(lCF.substring(0, 2), 16) * (1.0 - sig) + parseInt(lCT.substring(0, 2), 16) * sig)).toString(16);
+                        var newG = Math.floor((parseInt(lCF.substring(2, 4), 16) * (1.0 - sig) + parseInt(lCT.substring(2, 4), 16) * sig)).toString(16);
+                        var newB = Math.floor((parseInt(lCF.substring(4, 6), 16) * (1.0 - sig) + parseInt(lCT.substring(4, 6), 16) * sig)).toString(16);
+                        thisObj.lineColor = newR + newG + newB;
+                    }
                 }
             };
             Stage.prototype.exportKeyframes = function () {
@@ -1870,14 +1900,15 @@ var cKit;
                 }
             };
             Stage.prototype.setSegmentTiming = function (value) {
-                var newDelta = this.stageConfig.uiTranslators['segmentLength'].import(value);
                 if (this.segment < this.keyframes.length - 1) {
+                    var newDelta = this.stageConfig.uiTranslators['seamlessAnimationTime'].import(value);
                     var theDiff = newDelta - this.keyframes[this.segment + 1].timestamp + this.keyframes[this.segment].timestamp;
                     for (var seg = this.segment + 1; seg < this.keyframes.length; seg++) {
                         this.keyframes[seg].timestamp = this.keyframes[seg].timestamp + theDiff; // could be negative
                     }
                 }
                 else {
+                    var newDelta = this.stageConfig.uiTranslators['pauseTime'].import(value);
                     this.stageConfig.seamlessAnimationTime = newDelta;
                 }
             };
@@ -2002,8 +2033,9 @@ var cKit;
             this.resourceList = new stage.ResourceList(this);
             this.stage = new stage.Stage(this);
             // Triggered after any event that needs to refresh UI (injected)
-            this.digest = function () {
-            };
+            this.digest = function () { };
+            // Triggered after any event that needs to refresh color pickers UI (injected)
+            this.colorFunc = function () { };
             // SETUP ID to all interface elements and setter methods in package
             this.settingShelf = { 'toggleCurveColor': this.toggleCurveColor, 'editMode': this.editMode };
             /* TODO init with constructor arguments / configure somehow? */
@@ -2068,6 +2100,7 @@ var cKit;
                 kit.context.restore();
             });
             // Always draw active control points on top (last)
+            this.context.strokeStyle = '#' + this.stage.stageConfig.lineColor;
             if (this.editMode === controlModes.EDIT_SHAPE) {
                 this.resourceList.objects[kit.selectedObject].drawControlPoints();
             }
@@ -2162,22 +2195,6 @@ var cKit;
             this.restoreModes();
             this.redraw();
         };
-        /*getFillImageId() {
-          var img = this.resourceList.objects[kit.selectedObject].fillImage;
-          if(_u.dnexist(img) || img === null) {
-            return -1;
-          } else {
-            return this.resourceList.images.indexOf(img);
-          }
-        } */
-        /*getBackgroundImageId() {
-          var img = this.stage.stageConfig.backgroundImage;
-          if(_u.dnexist(img) || img === null) {
-            return -1;
-          } else {
-            return this.resourceList.images.indexOf(img);
-          }
-        }*/
         /*
          * Used to set the canvas state with the keyframe interpolation scene states
          * //Objects in the scene are used to store temporary states,
@@ -2223,7 +2240,9 @@ var cKit;
         CanvasKit.prototype.setObjectAttribute = function (target, value) {
             if (_u.exists(this.resourceList.objects[this.selectedObject].uiTranslators[target])) {
                 var value = this.resourceList.objects[this.selectedObject].setUIAttribute(target, value);
-                this.stage.setKeyframeAttribute(target, this.stage.segment, this.selectedObject, value);
+                if (this.resourceList.objects[this.selectedObject].animationAttributes.indexOf(target) !== -1) {
+                    this.stage.setKeyframeAttribute(target, this.stage.segment, this.selectedObject, value);
+                }
                 this.redraw();
             }
         };
@@ -2287,12 +2306,16 @@ var cKit;
         CanvasKit.prototype.selectFirst = function () {
             this.stage.segment = 0;
             this.stage.loadState(0);
+            this.digest();
+            this.colorFunc();
             this.redraw();
         };
         CanvasKit.prototype.selectPrev = function () {
             if (this.stage.segment > 0) {
                 this.stage.segment--;
                 this.stage.loadState(this.stage.segment);
+                this.digest();
+                this.colorFunc();
                 this.redraw();
             }
         };
@@ -2302,11 +2325,15 @@ var cKit;
                 this.stage.newKeyframe();
             }
             this.stage.loadState(this.stage.segment);
+            this.digest();
+            this.colorFunc();
             this.redraw();
         };
         CanvasKit.prototype.selectLast = function () {
             this.stage.segment = this.stage.keyframes.length - 1;
             this.stage.loadState(this.stage.segment);
+            this.digest();
+            this.colorFunc();
             this.redraw();
         };
         /* Animation
