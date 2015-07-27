@@ -13,7 +13,7 @@ module cKit.app.ui {
     return {
       restrict: 'A',
       controller: 'sceneController',
-      templateUrl: '../../views/interface/scene.html'
+      templateUrl: 'views/interface/scene.html'
     };
   }
 

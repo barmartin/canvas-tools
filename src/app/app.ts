@@ -6,7 +6,7 @@ module cKit.app {
       var home = {
         name: 'home',
         url: '/',
-        templateUrl: '/views/home.html'
+        templateUrl: 'views/home.html'
       };
       $stateProvider.state(home);
     }
