@@ -311,7 +311,7 @@ var cKit;
                 return {
                     restrict: 'A',
                     controller: 'sceneController',
-                    templateUrl: '../../views/interface/scene.html'
+                    templateUrl: 'views/interface/scene.html'
                 };
             }
             function animationPanel() {
@@ -805,7 +805,7 @@ var cKit;
                 var home = {
                     name: 'home',
                     url: '/',
-                    templateUrl: '/views/home.html'
+                    templateUrl: 'views/home.html'
                 };
                 $stateProvider.state(home);
             }
