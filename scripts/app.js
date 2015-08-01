@@ -640,9 +640,8 @@ var cKit;
                     $scope.getImage = function () {
                         kit.getImage();
                     };
-                    $scope.updateFill = function () {
-                        //console.log('update fill:' + $scope.selectedFill);
-                        kit.setFillImage($scope.selectedFill);
+                    $scope.updateFill = function (selectedFill) {
+                        kit.setFillImage(selectedFill);
                     };
                     $scope.$watch(function () {
                         return kit.getObjectAttribute('fillImage');
@@ -697,8 +696,8 @@ var cKit;
                     }, function (value) {
                         $scope.selectedBackground = value;
                     });
-                    $scope.updateBackground = function () {
-                        kit.setSceneAttribute('backgroundImage', $scope.selectedBackground);
+                    $scope.updateBackground = function (selectedBackground) {
+                        kit.setSceneAttribute('backgroundImage', selectedBackground);
                     };
                     $scope.getImage = function () {
                         kit.getImage();

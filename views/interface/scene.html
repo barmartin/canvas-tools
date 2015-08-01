@@ -22,7 +22,7 @@
             </div>&nbsp;
           </div>
           <div class="col-xs-7">
-            <select ng-options="image.id as image.label for image in getImageList()" ng-model="selectedBackground" ng-change="updateBackground();" convert-to-number>
+            <select ng-options="image.id as image.label for image in getImageList()" ng-model="selectedBackground" ng-change="updateBackground(selectedBackground);" convert-to-number>
               <option value="">Select Background Image</option>
             </select>
           </div>
