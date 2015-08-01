@@ -29,9 +29,8 @@ module cKit.app.ui.object {
       kit.getImage();
     };
 
-    $scope.updateFill = () => {
-      //console.log('update fill:' + $scope.selectedFill);
-      kit.setFillImage($scope.selectedFill);
+    $scope.updateFill = (selectedFill) => {
+      kit.setFillImage(selectedFill);
     };
 
 
