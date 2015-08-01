@@ -30,7 +30,7 @@
       <div class="row" ng-if="kit.getSelectedObject().type !== 'textLayer'" >
         <div class="col-xs-5 label tall-label">&nbsp;</div>
         <div class="col-xs-7">
-          <select ng-options="image.id as image.label for image in getImageList()" ng-model="selectedFill" ng-change="updateFill();" convert-to-number>
+          <select ng-options="image.id as image.label for image in getImageList()" ng-model="selectedFill" ng-change="updateFill(selectedFill);" convert-to-number>
             <option value="">Select Fill Image</option>
           </select>
         </div>

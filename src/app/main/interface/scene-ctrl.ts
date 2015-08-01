@@ -34,8 +34,8 @@ module cKit.app.ui.state {
       $scope.selectedBackground = value;
     });
 
-    $scope.updateBackground = function() {
-      kit.setSceneAttribute('backgroundImage', $scope.selectedBackground);
+    $scope.updateBackground = function(selectedBackground) {
+      kit.setSceneAttribute('backgroundImage', selectedBackground);
     };
 
     $scope.getImage = function () {
