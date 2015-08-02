@@ -29,7 +29,7 @@ module cKit.events {
   /*
    * All this function should to is toggle inDrag to true
    * if a control point has been clicked
-   */[[[[[[[[]]]]]]]]
+   */
   function startDrag(event) {
     console.log('start drag');
     var kit:cKit.CanvasKit = this;
