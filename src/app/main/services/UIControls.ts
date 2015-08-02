@@ -138,8 +138,9 @@ module cKit.app.services {
       return false;
     }
     var keyPressed = String.fromCharCode(event.keyCode);
-
+    var keyCode = parseInt(event.keyCode);
     // OBJECT SELECTION
+    /*
     if (keyPressed === '1') {
       kit.selectObject(0);
     } else if (keyPressed === '2') {
@@ -148,13 +149,22 @@ module cKit.app.services {
       kit.selectObject(2);
     } else if (keyPressed === '4') {
       kit.selectObject(3);
+    */
 
+    if(keyCode < 58 && keyCode > 47 ) {
+      if(keyCode == 48) {
+        // 0 -> 9
+        kit.selectObject(9)
+      } else {
+        // 1 -> 9 === 0 -> 8
+        kit.selectObject(keyCode - 49);
+      }
       // KEYFRAME SELECTION
-      // LEFT CURSOR (BACK)
-    } else if (event.keyCode == '37' || keyPressed == '%') {
+      // LEFT CURSOR (BACK) or Z
+    } else if (keyCode == 37 || keyPressed == '%' || keyCode === 90) {
       kit.selectPrev();
-      // RIGHT CURSOR (FORWARD)
-    } else if (event.keyCode == '39' || keyPressed == "'") {
+      // RIGHT CURSOR (FORWARD) or X
+    } else if (keyCode == 39 || keyPressed == "'" || keyCode == 88) {
       kit.selectNext();
       // 65 A KEY (STOP)
     } else if (keyPressed == 'A') {

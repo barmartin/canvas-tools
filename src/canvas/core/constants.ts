@@ -5,7 +5,7 @@ module cKit.constants {
   export var TWOPI = 2*Math.PI;
 
   // SCENE SETTINGS
-  export var MAX_OBJECTS = 4;
+  export var MAX_OBJECTS = 10;
   export var DEFAULT_RAYS = 6;
   export var DEFAULT_TIMING = 1000;
   export var DEFAULT_PAUSETIME = 0;
