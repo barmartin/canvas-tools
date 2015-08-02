@@ -33,6 +33,8 @@ module cKit.stage {
         }
       } else if(itemConfig.id === 'textLayer') {
         this.objects.push(new objects.Text(this.kit));
+      } else if(itemConfig.id === 'sketch') {
+        this.objects.push(new objects.Sketch(this.kit));
       }
       return this.objects.length-1;
     }
@@ -44,6 +46,8 @@ module cKit.stage {
         this.objects[selectedObject] = new objects.ImageLayer(this.kit);
       } else if(itemType === 'textLayer') {
         this.objects[selectedObject] = new objects.Text(this.kit);
+      } else if(itemType === 'sketch'){
+        this.objects[selectedObject] = new objects.Sketch(this.kit);
       }
     }
 

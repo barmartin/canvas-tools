@@ -131,12 +131,12 @@ module cKit.objects {
       }
     }
 
-    setItemFromUI(target:string, newValue:any) {
+    /*setItemFromUI(target:string, newValue:any) {
       var translator: UITranslator = this.uiTranslators[target];
       if(_u.exists(this.uiTranslators)) {
         this[target] = translator.import(newValue);
       }
-    }
+    }*/
 
     /*
     getState(target:string){

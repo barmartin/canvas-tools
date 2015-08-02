@@ -4,7 +4,7 @@ module cKit.objects {
   export var objectTypes: Dictionary<string> = {
     petalFlower: "Petal Flower",
     imageLayer: "Image Layer",
-    textLayer: "Text",
+    textLayer: "Text"
     //GENERIC: "Generic"
   };
 }

@@ -24,7 +24,7 @@ module cKit.events {
     kit.canvas.addEventListener('mousedown', startDrag.bind(kit), false);
     kit.canvas.addEventListener('mouseup', endDrag.bind(kit), false);
     kit.canvas.addEventListener('mousemove', move.bind(kit), false);
-  };
+  }
 
   /*
    * All this function should to is toggle inDrag to true
@@ -36,6 +36,12 @@ module cKit.events {
     if (kit.stage.animationMode===true) {
       return;
     }
+    var selectedObject = kit.getSelectedObject();
+    if(selectedObject.type === 'sketch') {
+      selectedObject.setUIAttribute('startDraw', _u.getPosition(event, kit.canvas));
+      // kit.redraw();
+      return;
+    }
     var position: Vector = _u.getPosition(event, kit.canvas);
     var object: objects.baseObject = kit.resourceList.objects[kit.selectedObject];
     if(kit.editMode===controlModes.EDIT_SHAPE) {
@@ -45,6 +51,7 @@ module cKit.events {
           thisPoint.inDrag = true;
           kit.dragMode = true;
           kit.redraw();
+          return;
         }
       });
     } else if(kit.editMode===controlModes.EDIT_TRANSFORM) {
@@ -62,6 +69,7 @@ module cKit.events {
           thisPoint.inDrag = true;
           kit.dragMode = true;
           kit.redraw();
+          return;
         }
       });
     }
@@ -71,6 +79,12 @@ module cKit.events {
     var kit:cKit.CanvasKit = this;
     if (kit.stage.animationMode===true) {
       kit.dragMode = false;
+      return;
+    }
+    var selectedObject = kit.getSelectedObject();
+    if(selectedObject.type === 'sketch') {
+      selectedObject.setUIAttribute('endDraw', _u.getPosition(event, kit.canvas));
+      // kit.redraw();
       return;
     }
     kit.dragMode = false;
@@ -101,6 +115,12 @@ module cKit.events {
 
   function move(event){
     var kit:cKit.CanvasKit = this;
+    var selectedObject = kit.getSelectedObject();
+    if(selectedObject.type === 'sketch') {
+      selectedObject.setUIAttribute('draw', _u.getPosition(event, kit.canvas));
+      // kit.redraw();
+      return;
+    }
     if (kit.dragMode!==true || kit.stage.animationMode===true) {
       return;
     }
