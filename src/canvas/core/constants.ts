@@ -21,7 +21,7 @@ module cKit.constants {
 
   export var DEFAULT_FRAME_RATE = 50;
 
-  export var MAX_CLICK_DISTANCE = 2;
+  export var MAX_CLICK_DISTANCE = 6;
   export var SOURCE_MODES = {
     'lighter': 'lighter',
     'darker': 'darker',

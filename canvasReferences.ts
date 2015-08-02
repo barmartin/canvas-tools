@@ -11,6 +11,7 @@
 
 /// <reference path="src/canvas/core/events.ts" />
 
+/// <reference path="src/canvas/objects/objectTypes.ts"/>
 /// <reference path="src/canvas/objects/baseObject.ts"/>
 /// <reference path="src/canvas/objects/baseInterface.ts" />
 /// <reference path="src/canvas/objects/PetalFlower.ts" />
@@ -21,3 +22,4 @@
 /// <reference path="src/canvas/stage/Stage.ts" />
 
 /// <reference path="src/canvas/core/core.ts" />
+

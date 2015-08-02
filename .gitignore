@@ -6,3 +6,5 @@ dist/
 .idea/
 *.DS_STORE
 npm-debug.log
+canvasReferences.ts
+src/canvas/objects/sketch.ts

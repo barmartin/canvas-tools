@@ -60,11 +60,6 @@
             <div ng-model="objectSelector" ng-click="selectObject(3)" class="btn btn-default" ng-class="objectSelectorClasses(3)" btn-radio="3">4</div>
           </div>
           <div stop-events ng-click="addObject()" ng-class="maxObjects()" class="btn btn-default ml-10"> + </div>
-          <div class="btn-group edit-mode ml-20">
-            <div ng-click="setEditMode(0)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(0)" btn-radio="0" id="edit-shape">Shape</div>
-            <div ng-click="setEditMode(1)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(1)" btn-radio="1" id="edit-transform">Transform</div>
-            <div ng-click="setEditMode(2)" ng-model="editMode" class="btn btn-default" ng-class="editSelectorClasses(2)" btn-radio="2">None</div>
-          </div>
         </div>
         <div class="panel-collapse" ng-class="{'collapse':!isActive('objectPanel')}">
           <div class="panel-body">
