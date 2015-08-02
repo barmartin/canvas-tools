@@ -33,6 +33,7 @@ button,
   font-weight: 300;
   font-size: 16px;
   cursor: pointer;
+  vertical-align: top;
   padding: 10px 13px;
   border-radius: 4px;
   border-color: #327160;
@@ -97,7 +98,7 @@ button:hover,
 }
 .panel-body {
   background-color: #171a23;
-  padding: 15px 15px 5px;
+  padding: 0;
 }
 .interface .row {
   padding: 7px;
@@ -205,6 +206,9 @@ textarea {
   border-bottom: 1px solid #d4d4d4;
   padding: 10px;
 }
+.row {
+  margin: 0;
+}
 .row.last {
   border-bottom: none;
   margin-bottom: 0;
@@ -275,4 +279,10 @@ footer {
 }
 .pt-0 {
   padding-top: 0;
+}
+.pt-5 {
+  padding-top: 5px;
+}
+.pt-15 {
+  padding-top: 15px;
 }

@@ -7,7 +7,7 @@ var cKit;
         constants.TWOPIDIV360 = Math.PI / 180;
         constants.TWOPI = 2 * Math.PI;
         // SCENE SETTINGS
-        constants.MAX_OBJECTS = 4;
+        constants.MAX_OBJECTS = 10;
         constants.DEFAULT_RAYS = 6;
         constants.DEFAULT_TIMING = 1000;
         constants.DEFAULT_PAUSETIME = 0;
@@ -19,7 +19,7 @@ var cKit;
         constants.BACKGROUND_ALPHA = 1;
         constants.LINE_COLOR = '9fb4f4';
         constants.DEFAULT_FRAME_RATE = 50;
-        constants.MAX_CLICK_DISTANCE = 2;
+        constants.MAX_CLICK_DISTANCE = 6;
         constants.SOURCE_MODES = {
             'lighter': 'lighter',
             'darker': 'darker',
@@ -605,7 +605,7 @@ var cKit;
         function bindEvents() {
             var kit = cKit.kit;
             /* TODO (WIP for touch devices) */
-            kit.canvas.addEventListener('touchstart', startDrag.bind(kit), false);
+            kit.canvas.addEventListener('touchstart', startTouch.bind(kit), false);
             kit.canvas.addEventListener('touchend', endDrag.bind(kit), false);
             kit.canvas.addEventListener('touchmove', move.bind(kit), false);
             // Mouse Canvas Events
@@ -618,8 +618,9 @@ var cKit;
         /*
          * All this function should to is toggle inDrag to true
          * if a control point has been clicked
-         */
+         */ [[[[[[[[]]]]]]]];
         function startDrag(event) {
+            console.log('start drag');
             var kit = this;
             if (kit.stage.animationMode === true) {
                 return;
@@ -724,7 +725,58 @@ var cKit;
             }
         }
         ;
+        function startTouch(event) {
+            console.log('touch');
+            var kit = this;
+            if (kit.stage.animationMode === true) {
+                return;
+            }
+            var position = _u.getPosition(event, kit.canvas);
+            var object = kit.resourceList.objects[kit.selectedObject];
+            if (kit.editMode === controlModes.EDIT_SHAPE) {
+                var actualPosition = object.reverseTransformPoint(position);
+                object.cPoints.forEach(function (thisPoint) {
+                    if (thisPoint.mouseInside(actualPosition, object.scale)) {
+                        thisPoint.inDrag = true;
+                        kit.dragMode = true;
+                        kit.redraw();
+                    }
+                });
+            }
+            else if (kit.editMode === controlModes.EDIT_TRANSFORM) {
+                object.transformPoints.forEach(function (thisPoint, index) {
+                    var positionInsideObject;
+                    if (index !== 2) {
+                        positionInsideObject = new Vector(position.x - object.center.x, position.y - object.center.y);
+                        positionInsideObject.rotate(-object.rotation);
+                    }
+                    else {
+                        // Scale control point is not rotated
+                        object.lastScale = object.scale;
+                        positionInsideObject = new Vector(position.x - object.center.x, position.y - object.center.y);
+                    }
+                    if (thisPoint.mouseInside(positionInsideObject, object.scale)) {
+                        thisPoint.inDrag = true;
+                        kit.dragMode = true;
+                        kit.redraw();
+                    }
+                });
+            }
+        }
     })(events = cKit.events || (cKit.events = {}));
+})(cKit || (cKit = {}));
+/* seperating this in order to keep WIP object types outside the project git */
+/* Must disable ignore in .gitignore to commit changes */
+var cKit;
+(function (cKit) {
+    var objects;
+    (function (objects) {
+        objects.objectTypes = {
+            petalFlower: "Petal Flower",
+            imageLayer: "Image Layer",
+            textLayer: "Text",
+        };
+    })(objects = cKit.objects || (cKit.objects = {}));
 })(cKit || (cKit = {}));
 var cKit;
 (function (cKit) {
@@ -1396,14 +1448,6 @@ var cKit;
                 }
                 ctx.fillText(this.text, this.cPoints[0].x + margin, this.cPoints[0].y + 5);
             };
-            Text.prototype.setState = function (target, newValue) {
-                if (target === "shapePoints") {
-                    this.setControlPoints(newValue);
-                }
-                else {
-                    this[target] = newValue;
-                }
-            };
             /* For the mouse drag event */
             Text.prototype.setControlPointFromUI = function (index, newPoint) {
                 this.center.x += newPoint.x;
@@ -1415,6 +1459,8 @@ var cKit;
     })(objects = cKit.objects || (cKit.objects = {}));
 })(cKit || (cKit = {}));
 ;
+//cKit.kit.stage.keyframes.forEach(function(item) { item.objStates.forEach( function(objState, index) { console.log(objState.attributes.lineColor); console.log(index); }); });
+//cKit.kit.stage.keyframes.forEach(function(item) { item.objStates.forEach( function(objState, index) { if(index<3) objState.attributes.lineColor = '24d9f4' }); });
 var cKit;
 (function (cKit) {
     var stage;
@@ -2022,11 +2068,7 @@ var cKit;
             /* Generic type needs to be changed in object inherited from baseObject
              * or you won't be able to create it from the interface
              */
-            this.objectTypes = {
-                petalFlower: "Petal Flower",
-                imageLayer: "Image Layer",
-                textLayer: "Text" //,
-            };
+            this.objectTypes = cKit.objects.objectTypes;
             /* attaching for external libs to use if needed */
             this._u = _u;
             this.constants = cKit.constants;
@@ -2426,6 +2468,7 @@ var cKit;
 /// <reference path="src/canvas/elements/UITranslators.ts" />
 /// <reference path="src/canvas/elements/ObjState.ts" />
 /// <reference path="src/canvas/core/events.ts" />
+/// <reference path="src/canvas/objects/objectTypes.ts"/>
 /// <reference path="src/canvas/objects/baseObject.ts"/>
 /// <reference path="src/canvas/objects/baseInterface.ts" />
 /// <reference path="src/canvas/objects/PetalFlower.ts" />
@@ -2433,5 +2476,59 @@ var cKit;
 /// <reference path="src/canvas/objects/Text.ts" />
 /// <reference path="src/canvas/stage/Resources.ts" />
 /// <reference path="src/canvas/stage/Stage.ts" />
-/// <reference path="src/canvas/core/core.ts" /> 
-//# sourceMappingURL=cKit.js.map
+/// <reference path="src/canvas/core/core.ts" />
+var cKit;
+(function (cKit) {
+    var objects;
+    (function (objects) {
+        var elements = cKit.elements;
+        var CPoint = elements.CPoint;
+        /* objPoint is a reference to the point inside the pedal */
+        var Sketch = (function (_super) {
+            __extends(Sketch, _super);
+            function Sketch(kit) {
+                _super.call(this, kit);
+                this.type = 'sketch';
+                //this.uiTranslators['text'] = new elements.UIString('Text');
+                //this.uiTranslators['fontSize'] = new elements.UIString('Font Size');
+                //this.uiTranslators['textAlign'] = new elements.UIString('Alignment', elements.UIStringContraints.LIST, ['left', 'center', 'right', 'start', 'end']);
+                this.center.x = this.kit.canvasHeight / 4;
+                this.center.y = this.kit.canvasWidth / 4;
+                this.cPoints.push(new CPoint(0, 0));
+                //this.animationAttributes = this.animationAttributes.concat(['text']);
+                //this.stateAttributes = this.stateAttributes.concat(['fontSize']);
+            }
+            Sketch.prototype.draw = function () {
+                // super.draw();
+                var kit = this.kit;
+                var ctx = kit.context;
+                //if(_u.exists(this.fillImage.loaded) && this.fillImage.loaded) {
+                //ctx.drawImage(this.fillImage.image, this.cPoints[0].x, this.cPoints[0].y, this.cPoints[1].x-this.cPoints[0].x, this.cPoints[2].y - this.cPoints[1].y);
+                // }
+                ctx.font = this.fontSize + "px Arial";
+                ctx.fillStyle = '#' + this.lineColor;
+                ctx.textAlign = this.textAlign;
+                //ctx.strokeText
+                var margin;
+                if (this.textAlign === 'left' || this.textAlign === 'start') {
+                    margin = 15;
+                }
+                else if (this.textAlign === 'end' || this.textAlign === 'right') {
+                    margin = -20;
+                }
+                else {
+                    margin = 0;
+                }
+                ctx.fillText(this.text, this.cPoints[0].x + margin, this.cPoints[0].y + 5);
+            };
+            /* For the mouse drag event */
+            Sketch.prototype.setControlPointFromUI = function (index, newPoint) {
+                this.center.x += newPoint.x;
+                this.center.y += newPoint.y;
+            };
+            return Sketch;
+        })(objects.baseObject);
+        objects.Sketch = Sketch;
+    })(objects = cKit.objects || (cKit.objects = {}));
+})(cKit || (cKit = {}));
+;
