@@ -52,12 +52,7 @@ module cKit {
     /* Generic type needs to be changed in object inherited from baseObject
      * or you won't be able to create it from the interface
      */
-    objectTypes: Dictionary<string> = {
-      petalFlower: "Petal Flower",
-      imageLayer: "Image Layer",
-      textLayer: "Text"//,
-      //GENERIC: "Generic"
-    };
+    objectTypes: Dictionary<string> = cKit.objects.objectTypes;
 
     /* attaching for external libs to use if needed */
     _u:any = _u;

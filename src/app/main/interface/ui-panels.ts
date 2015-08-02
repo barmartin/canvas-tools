@@ -175,6 +175,9 @@ module cKit.app.ui {
     }, function(value) {
       $scope.imageList = kit.getImageList();
     });*/
+    $scope.getRange = (size: Number) => {
+      return new Array(size);
+    }
 
     return this;
   }

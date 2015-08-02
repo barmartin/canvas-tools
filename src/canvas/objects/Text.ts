@@ -53,14 +53,6 @@ module cKit.objects {
       ctx.fillText(this.text, this.cPoints[0].x + margin, this.cPoints[0].y + 5);
     }
 
-    setState(target:string, newValue:any) {
-      if(target==="shapePoints") {
-        this.setControlPoints(newValue);
-      } else {
-        this[target] = newValue;
-      }
-    }
-
     /* For the mouse drag event */
     setControlPointFromUI(index, newPoint) {
       this.center.x += newPoint.x;
@@ -68,3 +60,7 @@ module cKit.objects {
     }
   }
 };
+
+
+//cKit.kit.stage.keyframes.forEach(function(item) { item.objStates.forEach( function(objState, index) { console.log(objState.attributes.lineColor); console.log(index); }); });
+//cKit.kit.stage.keyframes.forEach(function(item) { item.objStates.forEach( function(objState, index) { if(index<3) objState.attributes.lineColor = '24d9f4' }); });

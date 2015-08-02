@@ -17,7 +17,7 @@ module cKit.events {
   export function bindEvents(){
     var kit = cKit.kit;
     /* TODO (WIP for touch devices) */
-    kit.canvas.addEventListener('touchstart', startDrag.bind(kit), false);
+    kit.canvas.addEventListener('touchstart', startTouch.bind(kit), false);
     kit.canvas.addEventListener('touchend', endDrag.bind(kit), false);
     kit.canvas.addEventListener('touchmove', move.bind(kit), false);
     // Mouse Canvas Events
@@ -31,6 +31,7 @@ module cKit.events {
    * if a control point has been clicked
    */
   function startDrag(event) {
+    console.log('start drag');
     var kit:cKit.CanvasKit = this;
     if (kit.stage.animationMode===true) {
       return;
@@ -151,5 +152,41 @@ module cKit.events {
     }
   };
 
+  function startTouch(event) {
+    console.log('touch');
+    var kit:cKit.CanvasKit = this;
+    if (kit.stage.animationMode===true) {
+      return;
+    }
+    var position: Vector = _u.getPosition(event, kit.canvas);
+    var object: objects.baseObject = kit.resourceList.objects[kit.selectedObject];
+    if(kit.editMode===controlModes.EDIT_SHAPE) {
+      var actualPosition = object.reverseTransformPoint(position);
+      object.cPoints.forEach( ( thisPoint: CPoint ) => {
+        if(thisPoint.mouseInside(actualPosition, object.scale)){
+          thisPoint.inDrag = true;
+          kit.dragMode = true;
+          kit.redraw();
+        }
+      });
+    } else if(kit.editMode===controlModes.EDIT_TRANSFORM) {
+      object.transformPoints.forEach( (thisPoint: CPoint, index: number ) => {
+        var positionInsideObject: Vector;
+        if(index!==2) {
+          positionInsideObject = new Vector(position.x-object.center.x, position.y-object.center.y);
+          positionInsideObject.rotate(-object.rotation);
+        } else {
+          // Scale control point is not rotated
+          object.lastScale = object.scale;
+          positionInsideObject = new Vector(position.x-object.center.x, position.y-object.center.y);
+        }
+        if(thisPoint.mouseInside(positionInsideObject, object.scale)){
+          thisPoint.inDrag = true;
+          kit.dragMode = true;
+          kit.redraw();
+        }
+      });
+    }
+  }
 
 }
