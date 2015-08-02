@@ -46,6 +46,9 @@ module cKit {
 
     debugMode:boolean;
 
+    tabletPlug:any;
+    penAPI:any;
+
     /* Generic type needs to be changed in object inherited from baseObject
      * or you won't be able to create it from the interface
      */
@@ -77,6 +80,7 @@ module cKit {
         //{ id: 'imageLayer', index:3 },
         this.defaultObject
         //, { id: 'textLayer' }
+        // { id: 'sketch' }
       ];
 
       // TESTING
@@ -100,6 +104,8 @@ module cKit {
         // this.loadData(dataz, false);
         // testing imageSmothing
         // this.context.imageSmoothingEnabled = false;
+        this.tabletPlug = document.getElementById('wtPlugin');
+        if(this.tabletPlug && typeof this.tabletPlug!='undefined') this.penAPI = this.tabletPlug.penAPI;
       }
       // Setup the scene
       this.build();

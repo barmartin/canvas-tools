@@ -17,7 +17,7 @@ module cKit.constants {
 
   export var BACKGROUND_COLOR = '010201';
   export var BACKGROUND_ALPHA = 1;
-  export var LINE_COLOR = '9fb4f4';
+  export var LINE_COLOR = '8987f4';
 
   export var DEFAULT_FRAME_RATE = 50;
 
